@@ -1,0 +1,16 @@
+# GoFrame CLI 工具配置文件
+# 用于代码生成、数据库操作等开发工具的配置
+
+# GF CLI 工具配置
+gfcli:
+  # 数据库配置
+  gen:
+    dao:
+    - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf_admin"
+      tables: ""
+      removePrefix: ""
+      descriptionTag: true
+      noModelComment: false
+      path: "./internal"
+      group: "default"
+      jsonCase: "CamelLower"
