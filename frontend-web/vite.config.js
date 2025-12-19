@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import UnoCSS from 'unocss/vite'
 
 // Vite 配置文件
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    UnoCSS()
+  ],
   
   resolve: {
     alias: {

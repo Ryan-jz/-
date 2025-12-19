@@ -1,243 +1,1131 @@
 <!--
-  前台首页
+  前台首页 - 参考 Bad Reichenhaller 经典垂直布局
 -->
 <template>
   <div class="home-container">
-    <!-- 导航栏 -->
+    <!-- 高对比度模式切换按钮 -->
+
+
+    <!-- 页头 -->
     <header class="header">
-      <div class="container">
-        <div class="logo">GF Admin</div>
-        <nav class="nav">
-          <router-link to="/">首页</router-link>
-          <router-link to="/about">关于我们</router-link>
-          <router-link to="/contact">联系我们</router-link>
-        </nav>
+      <!-- 顶部栏：Logo、社交媒体、语言切换 -->
+      <div class="top-bar">
+        <div class="container">
+          <router-link to="/" class="logo">
+            <img src="@/assets/images/logo.png" class="logo" alt="Brand Logo" />
+          </router-link>
+ 
+        </div>
       </div>
+
+      <!-- 主导航 -->
+      <nav class="primary-navigation" :class="{ affixed: isNavFixed }">
+        <div class="container">
+          <button class="menu-toggle" @click="mobileMenuOpen = !mobileMenuOpen">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          
+          <ul class="nav-menu" :class="{ open: mobileMenuOpen }">
+            <li class="nav-item has-dropdown">
+              <a href="#" @click.prevent="toggleDropdown('products')">
+                产品
+                <span class="arrow">▼</span>
+              </a>
+              <ul class="dropdown-menu" v-show="activeDropdown === 'products'">
+                <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">调味盐系列</a></li>
+                <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">阿尔卑斯盐</a></li>
+                <li><a href="#table-salt" @click="scrollToSection('table-salt')">食用盐</a></li>
+                <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">特色盐</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#sustainability" @click="scrollToSection('sustainability')">可持续发展</a>
+            </li>
+            <li class="nav-item">
+              <router-link to="/about">品牌故事</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/contact">联系我们</router-link>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </header>
 
-    <!-- 主横幅 -->
-    <section class="hero">
-      <div class="container">
-        <h1>欢迎使用 GF Admin 管理系统</h1>
-        <p>基于 GoFrame + Vue3 的现代化后台管理解决方案</p>
-        <div class="hero-buttons">
-          <button class="btn btn-primary">立即开始</button>
-          <button class="btn btn-secondary">了解更多</button>
+    <!-- 主内容区 -->
+    <main class="main-content">
+    
+      <!-- Hero Banner -->
+      <section class="hero-banner">
+        <div class="container">
+          <div class="title">优质盐，成就卓越调味</div>
+          <div class="hero-content">
+            <p class="subtitle">好东西需要时间：我们美味的阿尔卑斯盐形成于大约2.5亿年前原始海洋蒸发之时。如今，它深埋于巴伐利亚阿尔卑斯山的岩石之中，自那时起便未曾改变。这真是大自然的馈赠！</p>
+            <p class="subtitle">我们珍贵的盐产自纯净的高山盐水，这种盐水是由新鲜的山泉水缓慢溶解岩石中的盐分而形成的。这就是巴特赖兴哈勒（Bad Reichenhaller）众多不同种类盐的天然来源。这些盐包括添加或未添加维生素和微量元素的阿尔卑斯盐（AlpenSalz）、风味独特的琼瑶浆调味盐（GewürzSalz）以及其他特色盐产品。</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 特性介绍 -->
-    <section class="features">
-      <div class="container">
-        <h2>核心特性</h2>
-        <div class="feature-grid">
-          <div class="feature-item">
-            <div class="feature-icon">🚀</div>
-            <h3>高性能</h3>
-            <p>基于 GoFrame 框架，提供高性能的后端服务</p>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎨</div>
-            <h3>现代化 UI</h3>
-            <p>使用 Vue3 + Element Plus 构建美观的用户界面</p>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🔒</div>
-            <h3>安全可靠</h3>
-            <p>JWT 认证，完善的权限管理体系</p>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📱</div>
-            <h3>响应式设计</h3>
-            <p>完美适配各种设备和屏幕尺寸</p>
-          </div>
+      <!-- 阿尔卑斯盐产品板块 -->
+      <section class="product-section-area">
+        <div class="container">
+          <ProductSection
+            category="经典"
+            title="阿尔卑斯盐"
+            description="巴特赖兴哈勒阿尔卑斯盐产品世代以来都是厨房必备。无论过去还是现在，无论您喜欢烹饪什么菜肴，阿尔卑斯盐都是您烹饪和调味的得力助手。在如今注重营养的饮食文化中，我们采用纯正阿尔卑斯盐水制成的蒸发盐，风味恰到好处。此外，它们还添加了碘、氟、叶酸和硒等营养成分，提供人体必需的矿物质。"
+            :products="alpineSaltProducts"
+            :columns="5"
+            max-width="100%"
+            spacing="60px"
+          />
         </div>
-      </div>
-    </section>
+      </section>
+
+    
+    </main>
 
     <!-- 页脚 -->
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2024 GF Admin. All rights reserved.</p>
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>产品系列</h4>
+            <ul>
+              <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">调味盐系列</a></li>
+              <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">阿尔卑斯盐</a></li>
+              <li><a href="#table-salt" @click="scrollToSection('table-salt')">食用盐</a></li>
+              <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">特色盐</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-section">
+            <h4>关于我们</h4>
+            <ul>
+              <li><router-link to="/about">品牌故事</router-link></li>
+              <li><a href="#sustainability" @click="scrollToSection('sustainability')">可持续发展</a></li>
+              <li><a href="#">新闻中心</a></li>
+              <li><a href="#">职业机会</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-section">
+            <h4>客户服务</h4>
+            <ul>
+              <li><router-link to="/contact">联系我们</router-link></li>
+              <li><a href="#">常见问题</a></li>
+              <li><a href="#">配送信息</a></li>
+              <li><a href="#">退换货政策</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-section">
+            <h4>法律信息</h4>
+            <ul>
+              <li><a href="#">隐私政策</a></li>
+              <li><a href="#">使用条款</a></li>
+              <li><a href="#">Cookie政策</a></li>
+              <li><a href="#">版权声明</a></li>
+            </ul>
+          </div>
+          
+          <div class="footer-section">
+            <h4>关注我们</h4>
+            <div class="footer-social">
+              <a href="#" aria-label="Facebook">Facebook</a>
+              <a href="#" aria-label="Instagram">Instagram</a>
+              <a href="#" aria-label="TikTok">TikTok</a>
+              <a href="#" aria-label="YouTube">YouTube</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer-bottom">
+          <p>&copy; 2024 Brand Name. All rights reserved.</p>
+          <p class="footer-group">Part of International Salt Group</p>
+        </div>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
-// 首页组件
+import { ref, onMounted, onUnmounted } from 'vue'
+import ProductSection from '@/components/ProductSection.vue'
+
+// 状态管理
+const highContrast = ref(false)
+const currentLang = ref('zh')
+const mobileMenuOpen = ref(false)
+const activeDropdown = ref(null)
+const isNavFixed = ref(false)
+
+// 产品数据
+const seasonedSaltProducts = ref([
+  { id: 1, name: 'BBQ调味盐 - 禽肉专用', image: 'https://via.placeholder.com/300x350?text=BBQ+Poultry' },
+  { id: 2, name: 'BBQ调味盐 - 牛肉专用', image: 'https://via.placeholder.com/300x350?text=BBQ+Beef' },
+  { id: 3, name: '地中海香草盐', image: 'https://via.placeholder.com/300x350?text=Mediterranean' },
+  { id: 4, name: '大蒜香草盐', image: 'https://via.placeholder.com/300x350?text=Garlic+Herb' }
+])
+
+const alpineSaltProducts = ref([
+  { id: 5, name: '阿尔卑斯粗盐', image: '@/assets/images/02.png' },
+  { id: 6, name: '阿尔卑斯细盐', image: '@/assets/images/02.png' },
+  { id: 7, name: 'AlpenJodSalz + 碘化物', image: '@/assets/images/02.png' },
+  { id: 8, name: 'AlpenJodSalz + 氟化物 + Folsäure', image: '@/assets/images/02.png' },
+  { id: 9, name: '阿尔卑斯盐 + 碘', image: '@/assets/images/02.png' },
+  { id: 10, name: '阿尔卑斯盐袋装', image: '@/assets/images/02.png' }
+])
+
+const tableSaltProducts = ref([
+  { id: 8, name: '精制食用盐', image: 'https://via.placeholder.com/300x350?text=Table+Salt' },
+  { id: 9, name: '加碘食用盐', image: 'https://via.placeholder.com/300x350?text=Iodized' },
+  { id: 10, name: '低钠食用盐', image: 'https://via.placeholder.com/300x350?text=Low+Sodium' },
+  { id: 11, name: '海盐', image: 'https://via.placeholder.com/300x350?text=Sea+Salt' }
+])
+
+const specialtySaltProducts = ref([
+  { id: 12, name: '喜马拉雅粉盐', image: 'https://via.placeholder.com/300x350?text=Himalayan' },
+  { id: 13, name: '黑盐', image: 'https://via.placeholder.com/300x350?text=Black+Salt' },
+  { id: 14, name: '烟熏盐', image: 'https://via.placeholder.com/300x350?text=Smoked' }
+])
+
+// 切换高对比度模式
+const toggleHighContrast = () => {
+  highContrast.value = !highContrast.value
+  document.body.classList.toggle('high-contrast', highContrast.value)
+}
+
+// 切换下拉菜单
+const toggleDropdown = (menu) => {
+  activeDropdown.value = activeDropdown.value === menu ? null : menu
+}
+
+// 平滑滚动到指定板块
+const scrollToSection = (sectionId) => {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    const offset = 100 // 导航栏高度
+    const elementPosition = element.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.pageYOffset - offset
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    })
+  }
+  mobileMenuOpen.value = false
+  activeDropdown.value = null
+}
+
+// 监听滚动事件，实现导航栏固定
+const handleScroll = () => {
+  isNavFixed.value = window.scrollY > 100
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <style lang="scss" scoped>
-.home-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.main-content {
+  width: 100%;
+}
+// 容器
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.header {
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px 0;
+.home-container {
+
+     background-image:url('@/assets/images/background.jpg');
+         background-repeat: no-repeat;
+    
+     background-size:100% ;
+
+
+}
+
+// 高对比度切换按钮
+.high-contrast-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
+  .icon {
+    font-size: 20px;
+  }
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  &.active {
+    background-color: #000;
+    color: #fff;
+  }
+}
+
+// 页头
+.header {
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// 顶部栏
+.top-bar {
+
+  padding: 2px 0;
+  height:112px;
+  display:flex;
+  align-items:center;
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    height:100%;
   }
   
   .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #409eff;
+    height:100%;
+    img {
+      height: 100%;
+      display: block;
+    }
   }
   
-  .nav {
+  .top-bar-right {
     display: flex;
+    align-items: center;
     gap: 30px;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 15px;
     
     a {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: #f0f0f0;
       color: #333;
       text-decoration: none;
-      font-size: 16px;
+      transition: all 0.3s;
+      
+      &:hover {
+        background-color: #c41e3a;
+        color: #fff;
+      }
+    }
+  }
+  
+  .language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    button {
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 14px;
       transition: color 0.3s;
       
       &:hover,
-      &.router-link-active {
-        color: #409eff;
+      &.active {
+        color: #c41e3a;
+        font-weight: 600;
       }
+    }
+    
+    .separator {
+      color: #ccc;
     }
   }
 }
 
-.hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  padding: 100px 0;
-  text-align: center;
+// 主导航
+.primary-navigation {
+  position: relative;
+  transition: all 0.3s;
+  height:58px;
+  border-top:2px solid #fff;
+  border-bottom:3px solid #fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B 100%);
+  &.affixed {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
   
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+    position: relative;
   }
   
-  h1 {
-    font-size: 48px;
-    margin-bottom: 20px;
-  }
-  
-  p {
-    font-size: 20px;
-    margin-bottom: 40px;
-    opacity: 0.9;
-  }
-  
-  .hero-buttons {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  .btn {
-    padding: 12px 30px;
-    font-size: 16px;
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.3s;
+    padding: 10px;
+    z-index: 10;
     
-    &.btn-primary {
+    span {
+      width: 25px;
+      height: 3px;
       background-color: #fff;
-      color: #667eea;
-      
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
+      transition: all 0.3s;
+      display: block;
     }
     
-    &.btn-secondary {
-      background-color: transparent;
-      color: #fff;
-      border: 2px solid #fff;
+    &:hover span {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+  
+  .nav-menu {
+    display: flex;
+    justify-content:center;
+    list-style: none;
+
+    padding: 0;
+    margin: 0;
+    
+    .nav-item {
+      position: relative;
       
-      &:hover {
-        background-color: #fff;
-        color: #667eea;
+      > a {
+        display: block;
+        padding: 20px 25px;
+        color: #333;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s;
+        color:#fff
+
+  
+      }
+      
+      &.has-dropdown {
+        .dropdown-menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background-color: #fff;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          min-width: 220px;
+          list-style: none;
+          padding: 10px 0;
+          margin: 0;
+          z-index: 1000;
+          
+          li {
+            a {
+              display: block;
+              padding: 12px 20px;
+              color: #333;
+              text-decoration: none;
+              transition: all 0.3s;
+              
+              &:hover {
+                background-color: #f8f8f8;
+                color: #c41e3a;
+                padding-left: 25px;
+              }
+            }
+          }
+        }
       }
     }
   }
 }
 
-.features {
-  padding: 80px 0;
-  background-color: #f5f7fa;
+// Hero Banner
+.hero-banner {
+
+  padding-top:130px;
+  color: #000;
+  position: relative;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+  }
+  
+  .title {
+    font-size: 2.57143em;
+    margin-top: 20px;
+    margin-bottom: 42px;
+    color: #000;
+    text-align: center;
+  }
+  
+  .hero-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    
+    h1 {
+      font-size: 56px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: #000;
+      text-align: left;
+      line-height: 28px;
+      margin-bottom: 26px;
+    }
+  }
+}
+
+// 产品板块区域
+.product-section-area {
+  padding: 60px 0;
+
   
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
   }
+}
+
+// 产品板块
+.product-section {
+  padding: 80px 0;
   
-  h2 {
-    text-align: center;
-    font-size: 36px;
-    margin-bottom: 60px;
-    color: #333;
+  &.alt-bg {
+    background-color: #f8f8f8;
   }
   
-  .feature-grid {
+  .anchor {
+    display: block;
+    position: relative;
+    top: -100px;
+    visibility: hidden;
+  }
+  
+  .section-header {
+    margin-bottom: 40px;
+    
+    h3 {
+      font-size: 42px;
+      color: #333;
+      line-height: 1.3;
+      
+      .subtitle {
+        display: block;
+        font-size: 16px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        font-weight: 400;
+      }
+    }
+  }
+  
+  .ce-bodytext {
+    max-width: 800px;
+    margin-bottom: 50px;
+    
+    p {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #666;
+    }
+  }
+  
+  .ce-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    
+    &[data-ce-columns="3"] {
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    
+    &[data-ce-columns="4"] {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .gallery-item {
+      figure {
+        margin: 0;
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        a {
+          display: block;
+          
+          img {
+            width: 100%;
+            height: auto;
+            display: block;
+          }
+        }
+        
+        figcaption {
+          padding: 20px;
+          text-align: center;
+          font-size: 16px;
+          color: #333;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// 可持续发展板块
+.sustainability-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #4a7c59 0%, #2d5a3d 100%);
+  color: #fff;
+  
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+    
+    h2 {
+      font-size: 42px;
+      margin: 0;
+    }
+  }
+  
+  .sustainability-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 40px;
   }
   
-  .feature-item {
+  .sustainability-item {
     text-align: center;
     padding: 30px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s;
     
     &:hover {
+      background-color: rgba(255, 255, 255, 0.15);
       transform: translateY(-5px);
     }
     
-    .feature-icon {
+    .icon {
       font-size: 48px;
       margin-bottom: 20px;
     }
     
-    h3 {
-      font-size: 24px;
+    h4 {
+      font-size: 22px;
       margin-bottom: 15px;
-      color: #333;
     }
     
     p {
-      color: #666;
+      font-size: 16px;
+      opacity: 0.9;
       line-height: 1.6;
     }
   }
 }
 
+// 页脚
 .footer {
-  background-color: #333;
+  background-color: #2c2c2c;
   color: #fff;
-  padding: 30px 0;
-  text-align: center;
-  margin-top: auto;
+  padding: 60px 0 20px;
   
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  
+  .footer-section {
+    h4 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+      li {
+        margin-bottom: 12px;
+        
+        a {
+          color: #ccc;
+          text-decoration: none;
+          transition: color 0.3s;
+          font-size: 14px;
+          
+          &:hover {
+            color: #fff;
+          }
+        }
+      }
+    }
+    
+    .footer-social {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      
+      a {
+        color: #ccc;
+        text-decoration: none;
+        transition: color 0.3s;
+        font-size: 14px;
+        
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid #444;
+    padding-top: 30px;
+    text-align: center;
+    
+    p {
+      margin: 5px 0;
+      color: #999;
+      font-size: 14px;
+    }
+    
+    .footer-group {
+      font-size: 13px;
+      color: #777;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  // 容器在移动端减少内边距
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 15px;
+  }
+
+  // 顶部栏移动端优化
+  .top-bar {
+    height: auto;
+    padding: 10px 0;
+    
+    .container {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .logo {
+      height: 60px;
+      
+      img {
+        height: 100%;
+      }
+    }
+    
+    .top-bar-right {
+      gap: 15px;
+      
+      .social-links {
+        gap: 10px;
+        
+        a {
+          width: 28px;
+          height: 28px;
+          font-size: 14px;
+        }
+      }
+      
+      .language-switcher {
+        font-size: 12px;
+      }
+    }
+  }
+
+  // 主导航移动端优化
+  .primary-navigation {
+    height: auto;
+    padding: 10px 0;
+    
+    .container {
+      width: 100%;
+    }
+    
+    .menu-toggle {
+      display: flex;
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      
+      span {
+        background-color: #fff;
+      }
+    }
+    
+    .nav-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, #92121B 0%, #D5061C 100%);
+      flex-direction: column;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s;
+      
+      &.open {
+        max-height: 500px;
+      }
+      
+      .nav-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        > a {
+          padding: 15px 20px;
+          color: #fff;
+          font-size: 14px;
+        }
+        
+        .dropdown-menu {
+          position: static;
+          box-shadow: none;
+          background-color: rgba(0, 0, 0, 0.2);
+          
+          li a {
+            color: #fff;
+            font-size: 13px;
+            padding: 10px 30px;
+          }
+        }
+      }
+    }
+  }
+
+  // Hero Banner 移动端优化
+  .hero-banner {
+  
+    padding: 40px 0;
+    
+    .container {
+      padding: 0 15px;
+    }
+    
+    .title {
+      font-size: 1.8em !important;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      line-height: 1.3;
+      text-align: center;
+    }
+    
+    .hero-content {
+      max-width: 100%;
+      padding: 0 10px;
+      
+      h1 {
+        font-size: 28px !important;
+        line-height: 1.3;
+      }
+      
+      .subtitle {
+        font-size: 14px;
+        line-height: 1.6;
+        text-align: left;
+        margin-bottom: 20px;
+      }
+    }
+  }
+
+  // 主内容区移动端优化
+  .main-content {
+    width: 100%;
+  }
+  
+  // 产品板块区域移动端优化
+  .product-section-area {
+    padding: 40px 0;
+    
+    .container {
+      padding: 0 15px;
+    }
+  }
+  
+  // 产品板块移动端优化
+  .product-section {
+    padding: 40px 0;
+    
+    .section-header {
+      margin-bottom: 25px;
+      
+      h3 {
+        font-size: 28px;
+        
+        .subtitle {
+          font-size: 12px;
+          margin-bottom: 8px;
+        }
+      }
+    }
+    
+    .ce-bodytext {
+      margin-bottom: 30px;
+      
+      p {
+        font-size: 14px;
+        line-height: 1.6;
+      }
+    }
+    
+    .ce-gallery {
+      gap: 20px;
+      
+      &[data-ce-columns="3"],
+      &[data-ce-columns="4"] {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+      
+      .gallery-item {
+        figure {
+          figcaption {
+            padding: 12px;
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+
+  // 可持续发展板块移动端优化
+  .sustainability-section {
+    padding: 40px 0;
+    
+    .section-header {
+      margin-bottom: 30px;
+      
+      h2 {
+        font-size: 28px;
+      }
+    }
+    
+    .sustainability-content {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    .sustainability-item {
+      padding: 20px;
+      
+      .icon {
+        font-size: 36px;
+      }
+      
+      h4 {
+        font-size: 18px;
+      }
+      
+      p {
+        font-size: 14px;
+      }
+    }
+  }
+
+  // 页脚移动端优化
+  .footer {
+    padding: 40px 0 20px;
+    
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+    
+    .footer-section {
+      h4 {
+        font-size: 16px;
+        margin-bottom: 15px;
+      }
+      
+      ul li {
+        margin-bottom: 8px;
+        
+        a {
+          font-size: 13px;
+        }
+      }
+      
+      .footer-social {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+    }
+    
+    .footer-bottom {
+      padding-top: 20px;
+      
+      p {
+        font-size: 12px;
+      }
+    }
+  }
+
+  // 背景图片移动端优化
+  .home-container {
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+// 超小屏幕优化 (480px 以下)
+@media (max-width: 480px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .top-bar {
+    .logo {
+      height: 50px;
+    }
+  }
+
+  .hero-banner {
+    padding-top:130px;
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 10px;
+    }
+    
+    .title {
+      font-size: 1.5em !important;
+    }
+    
+    .hero-content {
+      .subtitle {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .product-section-area {
+    padding: 30px 0;
+    
+    .container {
+      padding: 0 10px;
+    }
+  }
+
+  .product-section {
+    padding: 30px 0;
+    
+    .section-header h3 {
+      font-size: 24px;
+    }
+    
+    .ce-gallery {
+      gap: 15px;
+      
+      &[data-ce-columns="3"],
+      &[data-ce-columns="4"] {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .sustainability-section {
+    padding: 30px 0;
+    
+    .section-header h2 {
+      font-size: 24px;
+    }
+  }
+
+  .footer {
+    padding: 30px 0 15px;
+  }
+}
+
+// 高对比度模式样式
+:global(body.high-contrast) {
+  .home-container {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .header,
+  .primary-navigation {
+    background-color: #000 !important;
+    border-bottom: 2px solid #fff;
+  }
+  
+  .nav-menu a {
+    color: #fff !important;
+  }
+  
+  .product-section {
+    background-color: #000 !important;
+    color: #fff;
+    
+    h3, p {
+      color: #fff !important;
+    }
   }
 }
 </style>
