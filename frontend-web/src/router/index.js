@@ -48,7 +48,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title ? `${to.meta.title} - GF Admin` : 'GF Admin'
+  document.title = to.meta.title ? `${to.meta.title} ` : '白金盐'
   next()
 })
 

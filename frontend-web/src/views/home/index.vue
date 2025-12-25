@@ -176,7 +176,7 @@
         </div>
         
         <div class="footer-bottom">
-          <p>&copy; 2024 Brand Name. All rights reserved.</p>
+          <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2024052802号-2</a></p>
           <p class="footer-group">Part of International Salt Group</p>
         </div>
       </div>
@@ -837,6 +837,16 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
       margin: 5px 0;
       color: #999;
       font-size: 14px;
+      
+      a {
+        color: #999;
+        text-decoration: none;
+        transition: color 0.3s;
+        
+        &:hover {
+          color: #fff;
+        }
+      }
     }
     
     .footer-group {

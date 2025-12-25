@@ -48,14 +48,23 @@
           </div> -->
           
           <!-- 标题区域 -->
-          <h1 class="main-title">页面精心打造中</h1>
-          <p class="subtitle">就像我们精心制作每一罐阿尔卑斯盐一样</p>
-          <p class="description">我们正在为您准备一个完美的体验</p>
+          <h1 class="main-title">
+            页面精心打造中
+            <span class="title-en">Page Under Construction</span>
+          </h1>
+          <p class="subtitle">
+            就像我们精心制作每一罐阿尔卑斯盐一样
+            <span class="subtitle-en">Just like we carefully craft every jar of Alpine salt</span>
+          </p>
+          <p class="description">
+            我们正在为您准备一个完美的体验
+            <span class="description-en">We are preparing a perfect experience for you</span>
+          </p>
           
           <!-- 进度展示 -->
           <div class="progress-section">
             <div class="progress-label">
-              <span>开发进度</span>
+              <span>开发进度 <span class="label-en">Development Progress</span></span>
               <span class="progress-percent">{{ overallProgress }}%</span>
             </div>
             <div class="progress-bar-wrapper">
@@ -67,25 +76,37 @@
           
           <!-- 店铺二维码  -->
           <div class="qrcode-section">
-            <h3 class="qrcode-title">扫码进入店铺</h3>
+            <h3 class="qrcode-title">
+              扫码进入店铺
+              <span class="title-en">Scan to Enter Store</span>
+            </h3>
             <div class="qrcode-grid">
               <div class="qrcode-item" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
                 <div class="qrcode-image">
                   <img src="@/assets/images/douyin.jpg" alt="抖音店铺" />
                 </div>
-                <div class="qrcode-label">抖音店铺</div>
+                <div class="qrcode-label">
+                  抖音店铺
+                  <span class="label-en">Douyin Store</span>
+                </div>
               </div>
               <div class="qrcode-item" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
                 <div class="qrcode-image">
                   <img src="@/assets/images/tianmao.png" alt="天猫店铺" />
                 </div>
-                <div class="qrcode-label">天猫店铺</div>
+                <div class="qrcode-label">
+                  天猫店铺
+                  <span class="label-en">Tmall Store</span>
+                </div>
               </div>
               <div class="qrcode-item" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
                 <div class="qrcode-image">
                   <img src="@/assets/images/jingdong.jpg" alt="京东店铺" />
                 </div>
-                <div class="qrcode-label">京东店铺</div>
+                <div class="qrcode-label">
+                  京东店铺
+                  <span class="label-en">JD Store</span>
+                </div>
               </div>
             </div>
           </div>
@@ -142,7 +163,7 @@
     <!-- 页脚 -->
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2024 Brand Name. All rights reserved.</p>
+        <p> <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2024052802号-2</a></p>
       </div>
     </footer>
   </div>
@@ -160,13 +181,7 @@ const hoveredFeature = ref(null)
 // 进度
 const overallProgress = ref(0)
 
-// 特性数据
-const features = ref([
-  { icon: '🎨', title: '精美设计', desc: '延续品牌一贯的优雅风格' },
-  { icon: '⚡', title: '快速加载', desc: '优化性能，提升用户体验' },
-  { icon: '📱', title: '响应式布局', desc: '完美适配各种设备屏幕' },
-  { icon: '🔒', title: '安全可靠', desc: '保护您的数据和隐私' }
-])
+
 
 // 倒计时
 const countdown = ref({
@@ -450,18 +465,45 @@ onUnmounted(() => {
   font-weight: bold;
   color: #2b2b2e;
   margin: 0 0 20px 0;
+  
+  .title-en {
+    display: block;
+    font-size: 24px;
+    font-weight: 500;
+    color: #666;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
 }
 
 .subtitle {
   font-size: 20px;
   color: #666;
   margin: 0 0 10px 0;
+  
+  .subtitle-en {
+    display: block;
+    font-size: 16px;
+    color: #999;
+    margin-top: 8px;
+    font-style: italic;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
 }
 
 .description {
   font-size: 16px;
   color: #999;
   margin: 0 0 50px 0;
+  
+  .description-en {
+    display: block;
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 6px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
 }
 
 // 进度条
@@ -476,6 +518,14 @@ onUnmounted(() => {
     font-size: 16px;
     font-weight: 600;
     color: #2b2b2e;
+    
+    .label-en {
+      font-size: 13px;
+      font-weight: 400;
+      color: #999;
+      margin-left: 8px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
     
     .progress-percent {
       color: #c41e3a;
@@ -522,6 +572,15 @@ onUnmounted(() => {
     font-weight: 600;
     color: #2b2b2e;
     margin: 0 0 30px 0;
+    
+    .title-en {
+      display: block;
+      font-size: 18px;
+      font-weight: 400;
+      color: #999;
+      margin-top: 8px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
   }
   
   .qrcode-grid {
@@ -566,6 +625,15 @@ onUnmounted(() => {
       font-size: 16px;
       font-weight: 600;
       color: #2b2b2e;
+      
+      .label-en {
+        display: block;
+        font-size: 13px;
+        font-weight: 400;
+        color: #999;
+        margin-top: 4px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
       
       &::before {
         content: '';
@@ -729,6 +797,16 @@ onUnmounted(() => {
     margin: 0;
     font-size: 14px;
     color: #999;
+    
+    a {
+      color: #999;
+      text-decoration: none;
+      transition: color 0.3s;
+      
+      &:hover {
+        color: #fff;
+      }
+    }
   }
 }
 
