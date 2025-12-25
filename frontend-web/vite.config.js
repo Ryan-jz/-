@@ -5,6 +5,7 @@ import UnoCSS from 'unocss/vite'
 
 // Vite 配置文件
 export default defineConfig({
+  base: './',
   plugins: [
     vue(),
     UnoCSS()
@@ -17,6 +18,7 @@ export default defineConfig({
   },
   
   server: {
+   host: "0.0.0.0",
     port: 3001,
     open: true,
     cors: true,

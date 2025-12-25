@@ -1,14 +1,14 @@
 /**
  * 前台路由配置
  */
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('@/views/home/index.vue'),
-    meta: { title: '首页' }
+    component: () => import('@/views/under-construction/index.vue'),
+    meta: { title: '网站建设中' }
   },
   {
     path: '/about',
@@ -33,11 +33,17 @@ const routes = [
     name: 'TestUnoCSS',
     component: () => import('@/views/test-unocss.vue'),
     meta: { title: 'UnoCSS 测试' }
+  },
+  {
+    path: '/under-construction',
+    name: 'UnderConstruction',
+    component: () => import('@/views/under-construction/index.vue'),
+    meta: { title: '网站建设中' }
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 

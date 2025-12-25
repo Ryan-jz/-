@@ -83,19 +83,25 @@ defineProps({
 
 <style scoped>
 .product-section-wrapper {
-  margin:0 80px;
+  margin: 0 auto;
   width: 100%;
+  max-width: v-bind(maxWidth);
+  padding: 0 20px;
 }
 
 .category-label {
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   font-weight: 400;
+  font-size: 14px;
+  color: #999;
 }
 
 .product-title {
   line-height: 1.2;
-  color: #333;
+  color: #2b2b2e;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .product-description {
@@ -105,36 +111,38 @@ defineProps({
 
 .product-description p {
   line-height: 1.8;
+  font-size: 16px;
+  color: #666;
 }
 
 /* 产品网格 */
 .product-grid {
   display: grid;
-  gap: 30px;
+  gap: 24px;
   margin-top: 40px;
 }
 
 .product-grid.grid-cols-3 {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
 .product-grid.grid-cols-4 {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 .product-grid.grid-cols-5 {
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 }
 
 .product-grid.grid-cols-6 {
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
 .product-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-item:hover {
@@ -152,33 +160,37 @@ defineProps({
 
 .product-image-wrapper {
   width: 100%;
-  aspect-ratio: 1 / 1.2;
+  aspect-ratio: 3 / 4;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 15px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease; */
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-item:hover .product-image-wrapper {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .product-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: 10px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-item:hover .product-image {
+  transform: scale(1.05);
 }
 
 .product-name {
   text-align: center;
-  font-size: 14px;
-  color: #333;
+  font-size: 15px;
+  color: #2b2b2e;
   line-height: 1.4;
   font-weight: 500;
   transition: color 0.3s ease;
@@ -189,10 +201,16 @@ defineProps({
 }
 
 /* 响应式设计 */
+@media (max-width: 1024px) {
+  .product-section-wrapper {
+    padding: 0 40px;
+  }
+}
+
 @media (max-width: 768px) {
   .product-section-wrapper {
-    padding: 0 15px;
-    margin-bottom: 20px !important;
+    padding: 0 20px;
+    margin-bottom: 40px !important;
   }
 
   .category-label {
@@ -201,12 +219,12 @@ defineProps({
   }
 
   .product-title {
-    font-size: 1.75rem;
+    font-size: 28px;
     line-height: 1.3;
   }
   
   .product-description {
-    margin-top: 15px;
+    margin-top: 16px;
     margin-bottom: 30px;
   }
   
@@ -216,7 +234,7 @@ defineProps({
   }
 
   .product-grid {
-    gap: 20px;
+    gap: 16px;
     margin-top: 30px;
   }
 
@@ -227,14 +245,23 @@ defineProps({
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 
+  .product-image-wrapper {
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
   .product-name {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
+  .product-section-wrapper {
+    padding: 0 15px;
+  }
+
   .product-title {
-    font-size: 1.5rem;
+    font-size: 24px;
   }
   
   .product-description p {
@@ -242,7 +269,8 @@ defineProps({
   }
 
   .product-grid {
-    gap: 15px;
+    gap: 12px;
+    margin-top: 24px;
   }
 
   .product-grid.grid-cols-3,
@@ -253,11 +281,11 @@ defineProps({
   }
 
   .product-image-wrapper {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .product-name {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 </style>

@@ -29,16 +29,50 @@
           
           <ul class="nav-menu" :class="{ open: mobileMenuOpen }">
             <li class="nav-item has-dropdown">
-              <a href="#" @click.prevent="toggleDropdown('products')">
+              <span class="nav-link">
                 产品
                 <span class="arrow">▼</span>
-              </a>
-              <ul class="dropdown-menu" v-show="activeDropdown === 'products'">
-                <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">调味盐系列</a></li>
-                <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">阿尔卑斯盐</a></li>
-                <li><a href="#table-salt" @click="scrollToSection('table-salt')">食用盐</a></li>
-                <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">特色盐</a></li>
-              </ul>
+              </span>
+              <div class="dropdown-menu-wrapper">
+                <div class="dropdown-menu">
+                  <div class="dropdown-container">
+                    <div class="dropdown-content">
+                      <div class="dropdown-column">
+                        <h4 class="dropdown-title">调味盐系列</h4>
+                        <ul>
+                          <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">BBQ调味盐</a></li>
+                          <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">香草调味盐</a></li>
+                          <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">大蒜调味盐</a></li>
+                        </ul>
+                      </div>
+                      <div class="dropdown-column">
+                        <h4 class="dropdown-title">阿尔卑斯盐</h4>
+                        <ul>
+                          <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">粗盐</a></li>
+                          <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">细盐</a></li>
+                          <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">研磨盐</a></li>
+                        </ul>
+                      </div>
+                      <div class="dropdown-column">
+                        <h4 class="dropdown-title">食用盐</h4>
+                        <ul>
+                          <li><a href="#table-salt" @click="scrollToSection('table-salt')">精制食用盐</a></li>
+                          <li><a href="#table-salt" @click="scrollToSection('table-salt')">加碘盐</a></li>
+                          <li><a href="#table-salt" @click="scrollToSection('table-salt')">海盐</a></li>
+                        </ul>
+                      </div>
+                      <div class="dropdown-column">
+                        <h4 class="dropdown-title">特色盐</h4>
+                        <ul>
+                          <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">喜马拉雅粉盐</a></li>
+                          <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">黑盐</a></li>
+                          <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">烟熏盐</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </li>
             <li class="nav-item">
               <a href="#sustainability" @click="scrollToSection('sustainability')">可持续发展</a>
@@ -153,53 +187,39 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import ProductSection from '@/components/ProductSection.vue'
+import { getProductList } from '@/api/product'
 
 // 状态管理
-const highContrast = ref(false)
-const currentLang = ref('zh')
 const mobileMenuOpen = ref(false)
-const activeDropdown = ref(null)
 const isNavFixed = ref(false)
 
 // 产品数据
-const seasonedSaltProducts = ref([
-  { id: 1, name: 'BBQ调味盐 - 禽肉专用', image: 'https://via.placeholder.com/300x350?text=BBQ+Poultry' },
-  { id: 2, name: 'BBQ调味盐 - 牛肉专用', image: 'https://via.placeholder.com/300x350?text=BBQ+Beef' },
-  { id: 3, name: '地中海香草盐', image: 'https://via.placeholder.com/300x350?text=Mediterranean' },
-  { id: 4, name: '大蒜香草盐', image: 'https://via.placeholder.com/300x350?text=Garlic+Herb' }
-])
+const alpineSaltProducts = ref([])
 
-const alpineSaltProducts = ref([
-  { id: 5, name: '阿尔卑斯粗盐', image: '@/assets/images/02.png' },
-  { id: 6, name: '阿尔卑斯细盐', image: '@/assets/images/02.png' },
-  { id: 7, name: 'AlpenJodSalz + 碘化物', image: '@/assets/images/02.png' },
-  { id: 8, name: 'AlpenJodSalz + 氟化物 + Folsäure', image: '@/assets/images/02.png' },
-  { id: 9, name: '阿尔卑斯盐 + 碘', image: '@/assets/images/02.png' },
-  { id: 10, name: '阿尔卑斯盐袋装', image: '@/assets/images/02.png' }
-])
-
-const tableSaltProducts = ref([
-  { id: 8, name: '精制食用盐', image: 'https://via.placeholder.com/300x350?text=Table+Salt' },
-  { id: 9, name: '加碘食用盐', image: 'https://via.placeholder.com/300x350?text=Iodized' },
-  { id: 10, name: '低钠食用盐', image: 'https://via.placeholder.com/300x350?text=Low+Sodium' },
-  { id: 11, name: '海盐', image: 'https://via.placeholder.com/300x350?text=Sea+Salt' }
-])
-
-const specialtySaltProducts = ref([
-  { id: 12, name: '喜马拉雅粉盐', image: 'https://via.placeholder.com/300x350?text=Himalayan' },
-  { id: 13, name: '黑盐', image: 'https://via.placeholder.com/300x350?text=Black+Salt' },
-  { id: 14, name: '烟熏盐', image: 'https://via.placeholder.com/300x350?text=Smoked' }
-])
-
-// 切换高对比度模式
-const toggleHighContrast = () => {
-  highContrast.value = !highContrast.value
-  document.body.classList.toggle('high-contrast', highContrast.value)
-}
-
-// 切换下拉菜单
-const toggleDropdown = (menu) => {
-  activeDropdown.value = activeDropdown.value === menu ? null : menu
+// 加载产品数据
+const loadProducts = async () => {
+  try {
+    const res = await getProductList({
+      categoryId: 2, // 阿尔卑斯盐分类ID
+      status: 1,
+      page: 1,
+      pageSize: 20
+    })
+    if (res.data && res.data.list) {
+      alpineSaltProducts.value = res.data.list
+    }
+  } catch (error) {
+    console.error('加载产品数据失败:', error)
+    // 如果API失败，使用默认数据
+    alpineSaltProducts.value = [
+      { id: 5, name: '阿尔卑斯粗盐', image: '@/assets/images/02.png' },
+      { id: 6, name: '阿尔卑斯细盐', image: '@/assets/images/02.png' },
+      { id: 7, name: 'AlpenJodSalz + 碘化物', image: '@/assets/images/02.png' },
+      { id: 8, name: 'AlpenJodSalz + 氟化物 + Folsäure', image: '@/assets/images/02.png' },
+      { id: 9, name: '阿尔卑斯盐 + 碘', image: '@/assets/images/02.png' },
+      { id: 10, name: '阿尔卑斯盐袋装', image: '@/assets/images/02.png' }
+    ]
+  }
 }
 
 // 平滑滚动到指定板块
@@ -216,7 +236,6 @@ const scrollToSection = (sectionId) => {
     })
   }
   mobileMenuOpen.value = false
-  activeDropdown.value = null
 }
 
 // 监听滚动事件，实现导航栏固定
@@ -226,6 +245,7 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  loadProducts()
 })
 
 onUnmounted(() => {
@@ -416,53 +436,130 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   
   .nav-menu {
     display: flex;
-    justify-content:center;
+    justify-content: center;
     list-style: none;
-
     padding: 0;
     margin: 0;
     
     .nav-item {
-      position: relative;
+      position: static;
       
-      > a {
+      > a,
+      .nav-link {
         display: block;
         padding: 20px 25px;
-        color: #333;
+        color: #fff;
         text-decoration: none;
         font-size: 16px;
         font-weight: 500;
         transition: all 0.3s;
-        color:#fff
-
-  
+        cursor: pointer;
+        
+        &:hover {
+          opacity: 0.8;
+        }
+        
+        .arrow {
+          font-size: 10px;
+          margin-left: 5px;
+          transition: transform 0.3s;
+        }
       }
       
       &.has-dropdown {
-        .dropdown-menu {
-          position: absolute;
-          top: 100%;
+        &:hover {
+          .nav-link .arrow {
+            transform: rotate(180deg);
+          }
+          
+          .dropdown-menu-wrapper {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+          }
+        }
+        
+        .dropdown-menu-wrapper {
+          position: fixed;
+          top: 170px;
           left: 0;
-          background-color: #fff;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          min-width: 220px;
-          list-style: none;
-          padding: 10px 0;
-          margin: 0;
+          right: 0;
+          width: 100vw;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s ease;
           z-index: 1000;
           
-          li {
-            a {
-              display: block;
-              padding: 12px 20px;
-              color: #333;
-              text-decoration: none;
-              transition: all 0.3s;
+          .dropdown-menu {
+            background-color: #fff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 40px 0;
+            
+            .dropdown-container {
+              max-width: 1400px;
+              margin: 0 auto;
+              padding: 0 40px;
+            }
+            
+            .dropdown-content {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 40px;
+            }
+            
+            .dropdown-column {
+              .dropdown-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #2b2b2e;
+                margin: 0 0 20px 0;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #c41e3a;
+              }
               
-              &:hover {
-                background-color: #f8f8f8;
-                color: #c41e3a;
-                padding-left: 25px;
+              ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                
+                li {
+                  margin-bottom: 12px;
+                  
+                  a {
+                    display: block;
+                    padding: 8px 0;
+                    color: #666;
+                    text-decoration: none;
+                    font-size: 14px;
+                    transition: all 0.3s;
+                    position: relative;
+                    padding-left: 15px;
+                    
+                    &::before {
+                      content: '';
+                      position: absolute;
+                      left: 0;
+                      top: 50%;
+                      transform: translateY(-50%);
+                      width: 6px;
+                      height: 6px;
+                      background: #c41e3a;
+                      border-radius: 50%;
+                      opacity: 0;
+                      transition: opacity 0.3s;
+                    }
+                    
+                    &:hover {
+                      color: #c41e3a;
+                      padding-left: 20px;
+                      
+                      &::before {
+                        opacity: 1;
+                      }
+                    }
+                  }
+                }
               }
             }
           }

@@ -6,7 +6,7 @@ gfcli:
   # 数据库配置
   gen:
     dao:
-    - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf_admin"
+    - link: "mysql:root:123456@tcp(127.0.0.1:3306)/gs"
       tables: ""
       removePrefix: ""
       descriptionTag: true

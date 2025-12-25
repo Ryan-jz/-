@@ -3,14 +3,10 @@
 package api
 
 import (
-	"context"
-
-	"gf-admin/api/v1/auth"
 	"gf-admin/internal/service"
 
-	"github.com/gogf/gf/v2/crypto/gmd5"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 // AuthController 认证控制器
@@ -20,90 +16,54 @@ var Auth = cAuth{}
 type cAuth struct{}
 
 // Login 用户登录接口
-// 验证用户名密码，返回 JWT Token
-func (c *cAuth) Login(ctx context.Context, req *auth.LoginReq) (res *auth.LoginRes, err error) {
-	// 查询用户
-	var user struct {
-		UserId   int64  `json:"userId"`
-		UserName string `json:"userName"`
-		Password string `json:"password"`
-		Status   int    `json:"status"`
+func (c *cAuth) Login(r *ghttp.Request) {
+	var req struct {
+		Username string `json:"username" v:"required#用户名不能为空"`
+		Password string `json:"password" v:"required#密码不能为空"`
+	}
+	
+	if err := r.Parse(&req); err != nil {
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
 	}
 
-	err = g.DB().Model("sys_user").
-		Where("user_name", req.Username).
-		Where("del_flag", 0).
-		Scan(&user)
-
+	token, userId, userName, err := service.Auth().Login(r.Context(), req.Username, req.Password)
 	if err != nil {
-		return nil, err
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
 	}
 
-	// 检查是否查询到数据
-	if user.UserId == 0 {
-		return nil, gerror.New("用户不存在")
-	}
-
-	// 验证密码
-	encryptPassword, _ := gmd5.Encrypt(req.Password)
-	if user.Password != encryptPassword {
-		return nil, gerror.New("密码错误")
-	}
-
-	// 检查用户状态
-	if user.Status != 0 {
-		return nil, gerror.New("账号已被停用")
-	}
-
-	// 生成 Token
-	token, err := service.JWT().GenerateToken(user.UserId, user.UserName)
-	if err != nil {
-		return nil, err
-	}
-
-	return &auth.LoginRes{
-		Token:    token,
-		UserId:   user.UserId,
-		UserName: user.UserName,
-	}, nil
+	r.Response.WriteJson(g.Map{
+		"code":    0,
+		"message": "success",
+		"data": g.Map{
+			"token":    token,
+			"userId":   userId,
+			"userName": userName,
+		},
+	})
 }
 
 // GetInfo 获取当前登录用户信息
-func (c *cAuth) GetInfo(ctx context.Context, req *auth.GetInfoReq) (res *auth.GetInfoRes, err error) {
+func (c *cAuth) GetInfo(r *ghttp.Request) {
 	// 从上下文获取用户信息
-	customCtx := service.Context().Get(ctx)
+	customCtx := service.Context().Get(r.Context())
 	if customCtx == nil {
-		return nil, gerror.New("获取用户信息失败")
+		r.Response.WriteJson(g.Map{"code": 1, "message": "获取用户信息失败"})
+		return
 	}
 
 	claims := customCtx.Data["ContextKey"].(*service.Claims)
 
-	// 查询用户详细信息
-	var user struct {
-		UserId      int64  `json:"userId"`
-		UserName    string `json:"userName"`
-		NickName    string `json:"nickName"`
-		Email       string `json:"email"`
-		Phonenumber string `json:"phonenumber"`
-		Sex         string `json:"sex"`
-		Avatar      string `json:"avatar"`
-	}
-
-	err = g.DB().Model("sys_user").
-		Where("user_id", claims.UserId).
-		Scan(&user)
-
+	userInfo, err := service.Auth().GetUserInfo(r.Context(), claims.UserId)
 	if err != nil {
-		return nil, err
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
 	}
 
-	return &auth.GetInfoRes{
-		UserId:      user.UserId,
-		UserName:    user.UserName,
-		NickName:    user.NickName,
-		Email:       user.Email,
-		Phonenumber: user.Phonenumber,
-		Sex:         user.Sex,
-		Avatar:      user.Avatar,
-	}, nil
+	r.Response.WriteJson(g.Map{
+		"code":    0,
+		"message": "success",
+		"data":    userInfo,
+	})
 }

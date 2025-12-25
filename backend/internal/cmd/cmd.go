@@ -9,8 +9,7 @@ import (
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcmd"
 
-	"gf-admin/internal/controller/admin"
-	"gf-admin/internal/controller/api"
+	"gf-admin/internal/router"
 	"gf-admin/internal/service"
 )
 
@@ -30,29 +29,8 @@ var (
 			// 配置跨域中间件
 			s.Use(MiddlewareCORS)
 
-			// 注册路由组
-			s.Group("/", func(group *ghttp.RouterGroup) {
-				// 不需要认证的路由
-				group.Bind(
-					api.Auth,  // 认证相关接口
-				)
-
-				// 需要认证的管理后台路由
-				group.Group("/admin", func(adminGroup *ghttp.RouterGroup) {
-					// JWT 认证中间件
-					adminGroup.Middleware(service.Middleware().Auth)
-					
-					adminGroup.Bind(
-						admin.User,     // 用户管理
-						admin.Role,     // 角色管理
-						admin.Menu,     // 菜单管理
-						admin.Dept,     // 部门管理
-						admin.Dict,     // 字典管理
-						admin.Config,   // 配置管理
-						admin.Log,      // 日志管理
-					)
-				})
-			})
+			// 注册路由
+			router.RegisterRoutes(s)
 
 			// 启动服务器
 			s.Run()
