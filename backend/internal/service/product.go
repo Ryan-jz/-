@@ -12,6 +12,9 @@ import (
 // IProduct 产品服务接口
 type IProduct interface {
 	GetCategoryList(ctx context.Context, status *int) ([]product.CategoryItem, error)
+	CreateCategory(ctx context.Context, req interface{}) (uint, error)
+	UpdateCategory(ctx context.Context, req interface{}) error
+	DeleteCategory(ctx context.Context, id uint) error
 	GetList(ctx context.Context, categoryId *uint, keyword string, status *int, page, pageSize int) ([]product.ListItem, int, error)
 	GetDetail(ctx context.Context, id uint) (*product.DetailRes, error)
 	Create(ctx context.Context, req *product.CreateReq) (uint, error)
@@ -46,6 +49,72 @@ func (s *productImpl) GetCategoryList(ctx context.Context, status *int) ([]produ
 	}
 
 	return list, nil
+}
+
+// CreateCategory 创建产品分类
+func (s *productImpl) CreateCategory(ctx context.Context, req interface{}) (uint, error) {
+	result, err := g.DB().Model("product_category").Data(req).Insert()
+	if err != nil {
+		return 0, err
+	}
+
+	id, _ := result.LastInsertId()
+	return uint(id), nil
+}
+
+// UpdateCategory 更新产品分类
+func (s *productImpl) UpdateCategory(ctx context.Context, req interface{}) error {
+	// 将 interface{} 转换为 map
+	var reqMap g.Map
+	
+	// 使用类型断言或 JSON 转换
+	jsonBytes, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+	
+	if err := json.Unmarshal(jsonBytes, &reqMap); err != nil {
+		return err
+	}
+
+	id := reqMap["id"]
+	delete(reqMap, "id")
+
+	// 检查分类是否存在
+	count, err := g.DB().Model("product_category").Where("id", id).Count()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return gerror.New("分类不存在")
+	}
+
+	_, err = g.DB().Model("product_category").Data(reqMap).Where("id", id).Update()
+	return err
+}
+
+// DeleteCategory 删除产品分类
+func (s *productImpl) DeleteCategory(ctx context.Context, id uint) error {
+	// 检查分类是否存在
+	count, err := g.DB().Model("product_category").Where("id", id).Count()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return gerror.New("分类不存在")
+	}
+
+	// 检查是否有产品使用该分类
+	productCount, err := g.DB().Model("product").Where("category_id", id).Count()
+	if err != nil {
+		return err
+	}
+	if productCount > 0 {
+		return gerror.New("该分类下还有产品，无法删除")
+	}
+
+	_, err = g.DB().Model("product_category").Where("id", id).Delete()
+	return err
 }
 
 // GetList 获取产品列表

@@ -41,7 +41,8 @@ service.interceptors.response.use(
     const res = response.data
     
     // 根据业务状态码判断请求是否成功
-    if (res.code === 200) {
+    // 后端返回 code: 0 表示成功
+    if (res.code === 0) {
       return res
     } else {
       // 业务错误处理

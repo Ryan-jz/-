@@ -44,33 +44,41 @@ func (s *authImpl) Login(ctx context.Context, username, password string) (token 
 		Status   int    `json:"status"`
 	}
 
+	g.Log().Infof(ctx, "查询用户: username=%s", username)
+
 	err = g.DB().Model("sys_user").
 		Where("user_name", username).
 		Where("del_flag", 0).
 		Scan(&user)
 
 	if err != nil {
+		g.Log().Errorf(ctx, "数据库查询失败: %v", err)
 		return "", 0, "", err
 	}
 
 	// 检查是否查询到数据
 	if user.UserId == 0 {
+		g.Log().Warningf(ctx, "用户不存在: username=%s", username)
 		return "", 0, "", gerror.New("用户不存在")
 	}
 
 	// 验证密码（这里简化处理，实际应该使用加密）
 	if user.Password != password {
+		g.Log().Warningf(ctx, "密码错误: username=%s", username)
+		g.Log().Infof(ctx, "密码错误: usernamePwd=%s, password=%s",  user.Password, password)
 		return "", 0, "", gerror.New("密码错误")
 	}
 
 	// 检查用户状态
 	if user.Status != 0 {
+		g.Log().Warningf(ctx, "账号已被停用: username=%s", username)
 		return "", 0, "", gerror.New("账号已被停用")
 	}
 
 	// 生成 Token
 	token, err = JWT().GenerateToken(user.UserId, user.UserName)
 	if err != nil {
+		g.Log().Errorf(ctx, "生成Token失败: %v", err)
 		return "", 0, "", err
 	}
 

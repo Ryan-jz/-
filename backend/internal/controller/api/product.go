@@ -37,6 +37,80 @@ func (c *cProduct) CategoryList(r *ghttp.Request) {
 	})
 }
 
+// CategoryCreate 创建产品分类
+func (c *cProduct) CategoryCreate(r *ghttp.Request) {
+	var req struct {
+		Name        string `json:"name" v:"required#分类名称不能为空"`
+		NameEn      string `json:"nameEn"`
+		Slug        string `json:"slug" v:"required#分类标识不能为空"`
+		Description string `json:"description"`
+		SortOrder   int    `json:"sortOrder"`
+		Status      int    `json:"status" d:"1"`
+	}
+	
+	if err := r.Parse(&req); err != nil {
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
+	}
+
+	id, err := service.Product().CreateCategory(r.Context(), &req)
+	if err != nil {
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
+	}
+
+	r.Response.WriteJson(g.Map{
+		"code":    0,
+		"message": "success",
+		"data":    g.Map{"id": id},
+	})
+}
+
+// CategoryUpdate 更新产品分类
+func (c *cProduct) CategoryUpdate(r *ghttp.Request) {
+	var req struct {
+		Id          uint   `json:"id" v:"required#分类ID不能为空"`
+		Name        string `json:"name" v:"required#分类名称不能为空"`
+		NameEn      string `json:"nameEn"`
+		Slug        string `json:"slug" v:"required#分类标识不能为空"`
+		Description string `json:"description"`
+		SortOrder   int    `json:"sortOrder"`
+		Status      int    `json:"status"`
+	}
+	
+	if err := r.Parse(&req); err != nil {
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
+	}
+
+	err := service.Product().UpdateCategory(r.Context(), &req)
+	if err != nil {
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
+	}
+
+	r.Response.WriteJson(g.Map{
+		"code":    0,
+		"message": "success",
+	})
+}
+
+// CategoryDelete 删除产品分类
+func (c *cProduct) CategoryDelete(r *ghttp.Request) {
+	id := r.Get("id").Uint()
+
+	err := service.Product().DeleteCategory(r.Context(), id)
+	if err != nil {
+		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		return
+	}
+
+	r.Response.WriteJson(g.Map{
+		"code":    0,
+		"message": "success",
+	})
+}
+
 // List 获取产品列表
 func (c *cProduct) List(r *ghttp.Request) {
 	var req struct {

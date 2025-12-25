@@ -23,16 +23,21 @@ func (c *cAuth) Login(r *ghttp.Request) {
 	}
 	
 	if err := r.Parse(&req); err != nil {
+		g.Log().Error(r.Context(), "登录请求解析失败:", err)
 		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
 		return
 	}
+
+	g.Log().Infof(r.Context(), "用户登录请求: username=%s", req.Username)
 
 	token, userId, userName, err := service.Auth().Login(r.Context(), req.Username, req.Password)
 	if err != nil {
+		g.Log().Error(r.Context(), "登录失败:", err)
 		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
 		return
 	}
 
+	g.Log().Infof(r.Context(), "用户登录成功: userId=%d, userName=%s", userId, userName)
 	r.Response.WriteJson(g.Map{
 		"code":    0,
 		"message": "success",

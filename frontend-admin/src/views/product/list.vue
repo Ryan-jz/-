@@ -42,11 +42,13 @@
         <el-table-column label="产品图片" width="100">
           <template #default="{ row }">
             <el-image
-              :src="row.image"
+              v-if="row.image"
+              :src="getImageUrl(row.image)"
               fit="cover"
               style="width: 60px; height: 60px; border-radius: 4px"
-              :preview-src-list="[row.image]"
+              :preview-src-list="[getImageUrl(row.image)]"
             />
+            <span v-else>-</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="产品名称" min-width="200" />
@@ -135,7 +137,7 @@
           />
         </el-form-item>
         <el-form-item label="主图片" prop="image">
-          <el-input v-model="formData.image" placeholder="请输入图片URL" />
+          <ImageUpload v-model="formData.image" placeholder="上传产品主图" />
         </el-form-item>
         <el-form-item label="价格" prop="price">
           <el-input-number v-model="formData.price" :min="0" :precision="2" :step="0.1" />
@@ -183,6 +185,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import ImageUpload from '@/components/ImageUpload.vue'
 import {
   getCategoryList,
   getProductList,
@@ -261,6 +264,13 @@ const loadProductList = async () => {
 const getCategoryName = (categoryId) => {
   const category = categoryList.value.find(item => item.id === categoryId)
   return category ? category.name : '-'
+}
+
+// 获取完整图片URL
+const getImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `/api${url}`
 }
 
 // 搜索

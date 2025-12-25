@@ -26,6 +26,26 @@
           <template #title>首页</template>
         </el-menu-item>
         
+        <el-sub-menu index="/product">
+          <template #title>
+            <el-icon><Goods /></el-icon>
+            <span>产品管理</span>
+          </template>
+          <el-menu-item index="/product/list">
+            <el-icon><List /></el-icon>
+            <template #title>产品列表</template>
+          </el-menu-item>
+          <el-menu-item index="/product/category">
+            <el-icon><Menu /></el-icon>
+            <template #title>分类管理</template>
+          </el-menu-item>
+        </el-sub-menu>
+        
+        <el-menu-item index="/recipe/list">
+          <el-icon><Reading /></el-icon>
+          <template #title>食谱管理</template>
+        </el-menu-item>
+        
         <el-sub-menu index="/system">
           <template #title>
             <el-icon><Setting /></el-icon>

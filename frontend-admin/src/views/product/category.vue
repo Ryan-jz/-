@@ -87,7 +87,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getCategoryList } from '@/api/product'
+import {
+  getCategoryList,
+  createCategory,
+  updateCategory,
+  deleteCategory
+} from '@/api/product'
 
 // 数据
 const loading = ref(false)
@@ -156,8 +161,13 @@ const handleSubmit = async () => {
     if (!valid) return
     
     try {
-      // 这里需要添加创建/更新分类的API
-      ElMessage.success('操作成功')
+      if (formData.id) {
+        await updateCategory(formData)
+        ElMessage.success('更新成功')
+      } else {
+        await createCategory(formData)
+        ElMessage.success('创建成功')
+      }
       dialogVisible.value = false
       loadCategoryList()
     } catch (error) {
@@ -174,11 +184,11 @@ const handleDelete = (row) => {
     type: 'warning'
   }).then(async () => {
     try {
-      // 这里需要添加删除分类的API
+      await deleteCategory(row.id)
       ElMessage.success('删除成功')
       loadCategoryList()
     } catch (error) {
-      ElMessage.error('删除失败')
+      ElMessage.error(error.message || '删除失败')
     }
   })
 }

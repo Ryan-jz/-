@@ -26,6 +26,24 @@ const routes = [
         meta: { title: '首页', icon: 'HomeFilled' }
       },
       {
+        path: 'product/list',
+        name: 'ProductList',
+        component: () => import('@/views/product/list.vue'),
+        meta: { title: '产品管理', icon: 'Goods' }
+      },
+      {
+        path: 'product/category',
+        name: 'ProductCategory',
+        component: () => import('@/views/product/category.vue'),
+        meta: { title: '分类管理', icon: 'Menu' }
+      },
+      {
+        path: 'recipe/list',
+        name: 'RecipeList',
+        component: () => import('@/views/recipe/list.vue'),
+        meta: { title: '食谱管理', icon: 'Reading' }
+      },
+      {
         path: 'system/user',
         name: 'User',
         component: () => import('@/views/system/user/index.vue'),
