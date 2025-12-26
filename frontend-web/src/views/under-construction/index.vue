@@ -54,7 +54,7 @@
           </h1>
           <p class="subtitle">
             就像我们精心制作每一罐阿尔卑斯盐一样
-            <span class="subtitle-en">Just like we carefully craft every jar of Alpine salt</span>
+            <span class="subtitle-en">Just like we carefully craft every jar of Alpensalze</span>
           </p>
           <p class="description">
             我们正在为您准备一个完美的体验

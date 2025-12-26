@@ -4,10 +4,18 @@
 <template>
   <div class="home-container">
     <!-- 高对比度模式切换按钮 -->
-
+      <!-- 轮播图 -->
 
     <!-- 页头 -->
     <header class="header">
+        <Carousel 
+        :items="carouselItems"
+        :autoplay="true"
+        :interval="5000"
+        aspect-ratio="16/9"
+        @button-click="handleCarouselButtonClick"
+      />
+
       <!-- 顶部栏：Logo、社交媒体、语言切换 -->
       <div class="top-bar">
         <div class="container">
@@ -19,91 +27,29 @@
       </div>
 
       <!-- 主导航 -->
-      <nav class="primary-navigation" :class="{ affixed: isNavFixed }">
-        <div class="container">
-          <button class="menu-toggle" @click="mobileMenuOpen = !mobileMenuOpen">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-          
-          <ul class="nav-menu" :class="{ open: mobileMenuOpen }">
-            <li class="nav-item has-dropdown">
-              <span class="nav-link">
-                产品
-                <span class="arrow">▼</span>
-              </span>
-              <div class="dropdown-menu-wrapper">
-                <div class="dropdown-menu">
-                  <div class="dropdown-container">
-                    <div class="dropdown-content">
-                      <div class="dropdown-column">
-                        <h4 class="dropdown-title">调味盐系列</h4>
-                        <ul>
-                          <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">BBQ调味盐</a></li>
-                          <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">香草调味盐</a></li>
-                          <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">大蒜调味盐</a></li>
-                        </ul>
-                      </div>
-                      <div class="dropdown-column">
-                        <h4 class="dropdown-title">阿尔卑斯盐</h4>
-                        <ul>
-                          <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">粗盐</a></li>
-                          <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">细盐</a></li>
-                          <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">研磨盐</a></li>
-                        </ul>
-                      </div>
-                      <div class="dropdown-column">
-                        <h4 class="dropdown-title">食用盐</h4>
-                        <ul>
-                          <li><a href="#table-salt" @click="scrollToSection('table-salt')">精制食用盐</a></li>
-                          <li><a href="#table-salt" @click="scrollToSection('table-salt')">加碘盐</a></li>
-                          <li><a href="#table-salt" @click="scrollToSection('table-salt')">海盐</a></li>
-                        </ul>
-                      </div>
-                      <div class="dropdown-column">
-                        <h4 class="dropdown-title">特色盐</h4>
-                        <ul>
-                          <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">喜马拉雅粉盐</a></li>
-                          <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">黑盐</a></li>
-                          <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">烟熏盐</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li class="nav-item">
-              <a href="#sustainability" @click="scrollToSection('sustainability')">可持续发展</a>
-            </li>
-            <li class="nav-item">
-              <router-link to="/about">品牌故事</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/contact">联系我们</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <!-- 主导航 -->
+    
     </header>
 
     <!-- 主内容区 -->
     <main class="main-content">
     
+
+      <PrimaryNavigation 
+        :is-nav-fixed="isNavFixed" 
+        @scroll-to-section="scrollToSection"
+      />
       <!-- Hero Banner -->
       <section class="hero-banner">
         <div class="container">
-          <div class="title">优质盐，成就卓越调味</div>
-          <div class="hero-content">
-            <p class="subtitle">好东西需要时间：我们美味的阿尔卑斯盐形成于大约2.5亿年前原始海洋蒸发之时。如今，它深埋于巴伐利亚阿尔卑斯山的岩石之中，自那时起便未曾改变。这真是大自然的馈赠！</p>
-            <p class="subtitle">我们珍贵的盐产自纯净的高山盐水，这种盐水是由新鲜的山泉水缓慢溶解岩石中的盐分而形成的。这就是巴特赖兴哈勒（Bad Reichenhaller）众多不同种类盐的天然来源。这些盐包括添加或未添加维生素和微量元素的阿尔卑斯盐（AlpenSalz）、风味独特的琼瑶浆调味盐（GewürzSalz）以及其他特色盐产品。</p>
-          </div>
+          <div class="copyTitle">产品</div>
+          <div class="title">阿尔卑斯山的宝藏</div>
+      
         </div>
       </section>
 
       <!-- 阿尔卑斯盐产品板块 -->
-      <section class="product-section-area">
+      <!-- <section class="product-section-area">
         <div class="container">
           <ProductSection
             category="经典"
@@ -115,7 +61,7 @@
             spacing="60px"
           />
         </div>
-      </section>
+      </section> -->
 
     
     </main>
@@ -187,7 +133,47 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import ProductSection from '@/components/ProductSection.vue'
+import Carousel from '@/components/Carousel.vue'
 import { getProductList } from '@/api/product'
+import { getBannerList } from '@/api/banner'
+import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
+
+// 轮播图数据
+const carouselItems = ref([])
+
+// 加载轮播图数据
+const loadBanners = async () => {
+  try {
+    const res = await getBannerList({
+      position: 'home',
+      status: 1,
+      page: 1,
+      pageSize: 10
+    })
+    if (res.data && res.data.list) {
+      carouselItems.value = res.data.list.map(item => ({
+        id: item.bannerId,
+        title: item.title,
+        description: item.description,
+        mediaType: item.mediaType,
+        mediaUrl: item.mediaUrl,
+        buttonText: item.buttonText,
+        buttonLink: item.buttonLink
+      }))
+    }
+  } catch (error) {
+    console.error('加载轮播图失败:', error)
+  }
+}
+
+// 轮播图按钮点击事件
+const handleCarouselButtonClick = (item) => {
+  if (item.buttonLink && item.buttonLink.startsWith('#')) {
+    scrollToSection(item.buttonLink.substring(1))
+  } else if (item.buttonLink) {
+    window.location.href = item.buttonLink
+  }
+}
 
 // 状态管理
 const mobileMenuOpen = ref(false)
@@ -245,6 +231,7 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  loadBanners()
   loadProducts()
 })
 
@@ -256,6 +243,12 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .main-content {
   width: 100%;
+}
+.copyTitle{
+  color: #b0b2b3;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
 }
 // 容器
 .container {
@@ -308,12 +301,16 @@ onUnmounted(() => {
 // 页头
 .header {
 
+  width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  height: 80vh;
 
-// 顶部栏
+  // 顶部栏
 .top-bar {
-
+  position: absolute;
+  width: 100%;
+  top: 20px;
+  left: 0;
   padding: 2px 0;
   height:112px;
   display:flex;
@@ -387,12 +384,15 @@ onUnmounted(() => {
     }
   }
 }
+}
+
+
 
 // 主导航
 .primary-navigation {
   position: relative;
   transition: all 0.3s;
-  height:58px;
+  height:68px;
   border-top:2px solid #fff;
   border-bottom:3px solid #fff;
   display:flex;
@@ -572,7 +572,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 // Hero Banner
 .hero-banner {
 
-  padding-top:130px;
+  padding-top:80px;
   color: #000;
   position: relative;
   
@@ -585,7 +585,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   
   .title {
     font-size: 2.57143em;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 42px;
     color: #000;
     text-align: center;

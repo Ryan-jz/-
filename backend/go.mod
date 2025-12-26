@@ -1,6 +1,8 @@
 module gf-admin
 
-go 1.21
+go 1.24.0
+
+toolchain go1.24.11
 
 require (
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.6.4
@@ -8,8 +10,12 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 )
 
+require golang.org/x/crypto v0.46.0
+
 require (
 	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/PuerkitoBio/goquery v1.11.0 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -27,8 +33,8 @@ require (
 	go.opentelemetry.io/otel v1.14.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.14.0 // indirect
 	go.opentelemetry.io/otel/trace v1.14.0 // indirect
-	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

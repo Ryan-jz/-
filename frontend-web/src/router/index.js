@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('@/views/under-construction/index.vue'),
+    component: () => import('@/views/home/index.vue'),
     meta: { title: '网站建设中' }
   },
   {

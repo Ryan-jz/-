@@ -56,7 +56,7 @@ go mod tidy
 ```yaml
 database:
   default:
-    link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf_admin"
+    link: "mysql:root:123456@tcp(127.0.0.1:3306)/bai_jin_yan"
 ```
 
 ### 3. 初始化数据库

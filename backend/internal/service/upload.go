@@ -18,6 +18,7 @@ import (
 // IUpload 文件上传服务接口
 type IUpload interface {
 	UploadImage(ctx context.Context, file *ghttp.UploadFile) (string, error)
+	UploadVideo(ctx context.Context, file *ghttp.UploadFile) (string, error)
 	DeleteFile(ctx context.Context, filePath string) error
 }
 
@@ -55,7 +56,7 @@ func (s *uploadImpl) UploadImage(ctx context.Context, file *ghttp.UploadFile) (s
 	}
 
 	// 生成文件保存路径
-	savePath, err := s.generateSavePath(file.Filename)
+	savePath, err := s.generateSavePath(file.Filename, "images")
 	if err != nil {
 		g.Log().Errorf(ctx, "生成保存路径失败: %v", err)
 		return "", gerror.New("生成保存路径失败")
@@ -70,18 +71,93 @@ func (s *uploadImpl) UploadImage(ctx context.Context, file *ghttp.UploadFile) (s
 		}
 	}
 
-	// 保存文件
-	if _, err := file.Save(savePath, true); err != nil {
+	// 先保存文件到目录（使用原始文件名）
+	if _, err := file.Save(dir); err != nil {
 		g.Log().Errorf(ctx, "保存文件失败: %v", err)
 		return "", gerror.New("保存文件失败")
 	}
+	
+	// 重命名为目标文件名
+	uploadedPath := filepath.Join(dir, file.Filename)
+	if uploadedPath != savePath {
+		if err := gfile.Rename(uploadedPath, savePath); err != nil {
+			g.Log().Errorf(ctx, "重命名文件失败: %v", err)
+			// 尝试删除已上传的文件
+			gfile.Remove(uploadedPath)
+			return "", gerror.New("重命名文件失败")
+		}
+	}
 
-	// 返回访问路径（相对路径）
-	relativePath := strings.Replace(savePath, "public/", "/", 1)
+	// 返回完整访问路径
+	// 将 public/uploads/... 转换为 /uploads/...
+	relativePath := strings.TrimPrefix(savePath, "public")
 	relativePath = strings.ReplaceAll(relativePath, "\\", "/")
+	
+	// 获取服务器地址
+	serverUrl := s.getServerUrl(ctx)
+	fullUrl := serverUrl + relativePath
 
-	g.Log().Infof(ctx, "文件上传成功: %s", relativePath)
-	return relativePath, nil
+	g.Log().Infof(ctx, "文件上传成功: %s", fullUrl)
+	return fullUrl, nil
+}
+
+// UploadVideo 上传视频文件
+func (s *uploadImpl) UploadVideo(ctx context.Context, file *ghttp.UploadFile) (string, error) {
+	// 验证文件类型
+	if !s.isVideoFile(file.Filename) {
+		return "", gerror.New("只支持上传视频文件（mp4、avi、mov、wmv、flv、webm）")
+	}
+
+	// 验证文件大小（限制 50MB）
+	if file.Size > 50*1024*1024 {
+		return "", gerror.New("视频大小不能超过 50MB")
+	}
+
+	// 生成文件保存路径
+	savePath, err := s.generateSavePath(file.Filename, "videos")
+	g.Log().Infof(ctx, "保存路径: %s", savePath)
+	if err != nil {
+		g.Log().Errorf(ctx, "生成保存路径失败: %v", err)
+		return "", gerror.New("生成保存路径失败")
+	}
+
+	// 确保目录存在
+	dir := filepath.Dir(savePath)
+	if !gfile.Exists(dir) {
+		if err := gfile.Mkdir(dir); err != nil {
+			g.Log().Errorf(ctx, "创建目录失败: %v", err)
+			return "", gerror.New("创建目录失败")
+		}
+	}
+
+	// 先保存文件到目录（使用原始文件名）
+	if _, err := file.Save(dir); err != nil {
+		g.Log().Errorf(ctx, "保存文件失败: %v", err)
+		return "", gerror.New("保存文件失败")
+	}
+	
+	// 重命名为目标文件名
+	uploadedPath := filepath.Join(dir, file.Filename)
+	if uploadedPath != savePath {
+		if err := gfile.Rename(uploadedPath, savePath); err != nil {
+			g.Log().Errorf(ctx, "重命名文件失败: %v", err)
+			// 尝试删除已上传的文件
+			gfile.Remove(uploadedPath)
+			return "", gerror.New("重命名文件失败")
+		}
+	}
+
+	// 返回完整访问路径
+	// 将 public/uploads/... 转换为 /uploads/...
+	relativePath := strings.TrimPrefix(savePath, "public")
+	relativePath = strings.ReplaceAll(relativePath, "\\", "/")
+	
+	// 获取服务器地址
+	serverUrl := s.getServerUrl(ctx)
+	fullUrl := serverUrl + relativePath
+
+	g.Log().Infof(ctx, "视频上传成功: %s", fullUrl)
+	return fullUrl, nil
 }
 
 // DeleteFile 删除文件
@@ -115,8 +191,20 @@ func (s *uploadImpl) isImageFile(filename string) bool {
 	return false
 }
 
+// isVideoFile 判断是否为视频文件
+func (s *uploadImpl) isVideoFile(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	allowedExts := []string{".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm"}
+	for _, allowedExt := range allowedExts {
+		if ext == allowedExt {
+			return true
+		}
+	}
+	return false
+}
+
 // generateSavePath 生成文件保存路径
-func (s *uploadImpl) generateSavePath(filename string) (string, error) {
+func (s *uploadImpl) generateSavePath(filename string, fileType string) (string, error) {
 	// 获取文件扩展名
 	ext := filepath.Ext(filename)
 
@@ -131,8 +219,20 @@ func (s *uploadImpl) generateSavePath(filename string) (string, error) {
 	dateDir := time.Now().Format("2006/01/02")
 	newFilename := fmt.Sprintf("%s_%s%s", timestamp, gstr.SubStr(hash, 0, 8), ext)
 
-	// 完整路径：public/uploads/images/2024/01/02/20240102150405_abc12345.jpg
-	savePath := filepath.Join("public", "uploads", "images", dateDir, newFilename)
+	// 完整路径：public/uploads/images|videos/2024/01/02/20240102150405_abc12345.jpg
+	savePath := filepath.Join("public", "uploads", fileType, dateDir, newFilename)
 
 	return savePath, nil
+}
+
+// getServerUrl 获取服务器地址
+func (s *uploadImpl) getServerUrl(ctx context.Context) string {
+	// 从配置文件读取服务器地址
+	serverUrl := g.Cfg().MustGet(ctx, "server.url").String()
+	if serverUrl != "" {
+		return serverUrl
+	}
+	
+	// 如果配置文件没有，使用默认值
+	return "http://localhost:8000"
 }

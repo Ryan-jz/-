@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `phonenumber` varchar(11) DEFAULT NULL COMMENT '手机号码',
   `sex` char(1) DEFAULT '0' COMMENT '用户性别（0男 1女 2未知）',
   `avatar` varchar(100) DEFAULT NULL COMMENT '头像地址',
-  `password` varchar(100) NOT NULL COMMENT '密码',
+  `password` varchar(255) NOT NULL COMMENT '密码',
   `status` char(1) DEFAULT '0' COMMENT '帐号状态（0正常 1停用）',
   `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统用户表';
 
 -- 插入测试用户（用户名: admin, 密码: admin）
+-- 密码已使用 bcrypt 加密
 INSERT INTO `sys_user` (`user_name`, `nick_name`, `email`, `phonenumber`, `sex`, `password`, `status`, `del_flag`)
-VALUES ('admin', '管理员', 'admin@example.com', '13800138000', '0', 'admin', '0', '0')
+VALUES ('admin', '管理员', 'admin@example.com', '13800138000', '0', '$2a$10$gYn0EynARjJebHThLfUSVOypTKjYpyucFIiC0bRJTxOeAPFQ.hJFm', '0', '0')
 ON DUPLICATE KEY UPDATE `user_name` = `user_name`;

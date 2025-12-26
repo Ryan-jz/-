@@ -46,6 +46,11 @@
           <template #title>食谱管理</template>
         </el-menu-item>
         
+        <el-menu-item index="/banner/list">
+          <el-icon><Picture /></el-icon>
+          <template #title>轮播图管理</template>
+        </el-menu-item>
+        
         <el-sub-menu index="/system">
           <template #title>
             <el-icon><Setting /></el-icon>

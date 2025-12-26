@@ -45,6 +45,39 @@ func (c *cUpload) Image(r *ghttp.Request) {
 	})
 }
 
+// Video 上传视频
+func (c *cUpload) Video(r *ghttp.Request) {
+	// 获取上传的文件
+	file := r.GetUploadFile("file")
+	if file == nil {
+		r.Response.WriteJson(g.Map{
+			"code":    1,
+			"message": "请选择要上传的文件",
+		})
+		return
+	}
+
+	// 调用上传服务
+	url, err := service.Upload().UploadVideo(r.Context(), file)
+	if err != nil {
+		g.Log().Error(r.Context(), "视频上传失败:", err)
+		r.Response.WriteJson(g.Map{
+			"code":    1,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	g.Log().Infof(r.Context(), "视频上传成功: %s", url)
+	r.Response.WriteJson(g.Map{
+		"code":    0,
+		"message": "上传成功",
+		"data": g.Map{
+			"url": url,
+		},
+	})
+}
+
 // Delete 删除文件
 func (c *cUpload) Delete(r *ghttp.Request) {
 	var req struct {

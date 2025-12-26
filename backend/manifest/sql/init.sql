@@ -1,7 +1,7 @@
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS `gf_admin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `bai_jin_yan` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE `gf_admin`;
+USE `bai_jin_yan`;
 
 -- ----------------------------
 -- 用户表

@@ -9,8 +9,13 @@ import (
 
 // RegisterRoutes 注册所有路由
 func RegisterRoutes(s *ghttp.Server) {
-	// 配置静态文件服务 - 用于访问上传的图片
+	// 配置静态文件服务 - 用于访问上传的文件
 	s.AddStaticPath("/uploads", "public/uploads")
+
+	// 兼容旧版 API 路径
+	s.Group("/api", func(group *ghttp.RouterGroup) {
+		group.GET("/getInfo", api.Auth.GetInfo)
+	})
 
 	s.Group("/api/v1", func(group *ghttp.RouterGroup) {
 		// 认证相关路由
@@ -19,6 +24,7 @@ func RegisterRoutes(s *ghttp.Server) {
 
 		// 文件上传路由
 		group.POST("/upload/image", api.Upload.Image)
+		group.POST("/upload/video", api.Upload.Video)
 		group.POST("/upload/delete", api.Upload.Delete)
 
 		// 产品相关路由
@@ -39,5 +45,12 @@ func RegisterRoutes(s *ghttp.Server) {
 		group.POST("/recipe/create", api.Recipe.Create)
 		group.PUT("/recipe/update", api.Recipe.Update)
 		group.DELETE("/recipe/delete/:id", api.Recipe.Delete)
+
+		// 轮播图相关路由
+		group.GET("/banner/list", api.Banner.GetList)
+		group.GET("/banner/detail", api.Banner.GetDetail)
+		group.POST("/banner/create", api.Banner.Create)
+		group.PUT("/banner/update", api.Banner.Update)
+		group.DELETE("/banner/delete", api.Banner.Delete)
 	})
 }

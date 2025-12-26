@@ -44,6 +44,12 @@ const routes = [
         meta: { title: '食谱管理', icon: 'Reading' }
       },
       {
+        path: 'banner/list',
+        name: 'BannerList',
+        component: () => import('@/views/banner/index.vue'),
+        meta: { title: '轮播图管理', icon: 'Picture' }
+      },
+      {
         path: 'system/user',
         name: 'User',
         component: () => import('@/views/system/user/index.vue'),

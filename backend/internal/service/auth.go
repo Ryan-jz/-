@@ -5,6 +5,7 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // IAuth 认证服务接口
@@ -62,10 +63,9 @@ func (s *authImpl) Login(ctx context.Context, username, password string) (token 
 		return "", 0, "", gerror.New("用户不存在")
 	}
 
-	// 验证密码（这里简化处理，实际应该使用加密）
-	if user.Password != password {
+	// 验证密码（使用 bcrypt 加密验证）
+	if !verifyPassword(user.Password, password) {
 		g.Log().Warningf(ctx, "密码错误: username=%s", username)
-		g.Log().Infof(ctx, "密码错误: usernamePwd=%s, password=%s",  user.Password, password)
 		return "", 0, "", gerror.New("密码错误")
 	}
 
@@ -119,4 +119,16 @@ func (s *authImpl) GetUserInfo(ctx context.Context, userId int64) (map[string]in
 		"sex":         user.Sex,
 		"avatar":      user.Avatar,
 	}, nil
+}
+
+// hashPassword 对密码进行加密
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+// verifyPassword 验证密码是否匹配
+func verifyPassword(hashedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }

@@ -166,7 +166,7 @@ npm run dev
 # 数据库配置
 database:
   default:
-    link: "mysql:root:123456@tcp(127.0.0.1:3306)/gf_admin"
+    link: "mysql:root:123456@tcp(127.0.0.1:3306)/bai_jin_yan"
     
 # Redis 配置
 redis:
