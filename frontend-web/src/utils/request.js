@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getLocale } from '@/locales'
 
 // 创建axios实例
 const service = axios.create({
@@ -12,6 +13,13 @@ console.log('Environment:', import.meta.env.MODE)
 // 请求拦截器
 service.interceptors.request.use(
   config => {
+    // 添加语言参数到请求头
+    const locale = getLocale()
+    config.headers['Accept-Language'] = locale
+    
+    // 也可以作为查询参数（可选）
+    // config.params = { ...config.params, lang: locale }
+    
     // 可以在这里添加token等
     return config
   },
