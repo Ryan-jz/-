@@ -1,0 +1,61 @@
+# 服务器配置
+server:
+  address: ":8000"              # 服务监听地址
+  dumpRouterMap: true          # 是否打印路由表
+  routeOverWrite: true         # 是否允许路由覆盖
+  accessLogEnabled: true       # 是否开启访问日志
+  errorLogEnabled: true        # 是否开启错误日志
+  pprofEnabled: false          # 是否开启性能分析
+  logPath: "temp/logs/server"  # 日志文件路径
+  logStdout: true             # 是否输出到终端
+  errorStack: true            # 是否记录错误堆栈
+  clientMaxBodySize: 810241024 # 客户端提交的Body最大尺寸(字节)
+  
+  # 优雅重启/停止配置
+  graceful: true
+  gracefulTimeout: 5
+
+# 日志配置
+logger:
+  path: "temp/logs"           # 日志文件路径
+  file: "{Y-m-d}.log"        # 日志文件格式
+  level: "all"               # 日志级别: all, dev, prod, debug, info, notice, warning, error, critical
+  stdout: true               # 是否输出到终端
+  ctxKeys: ["RequestId"]     # 自动打印Context的变量名称
+
+# 数据库配置
+database:
+  logger:
+    path: "temp/logs/sql"
+    file: "{Y-m-d}.log"
+    level: "all"
+    stdout: true
+    
+  default:
+    link: "mysql:Ryan:jz0723..@tcp(127.0.0.1:3306)/gf_admin"
+    debug: true              # 是否开启调试模式
+    charset: "utf8mb4"       # 数据库编码
+    dryRun: false           # ORM空跑(只读不写)
+    maxIdle: 10             # 连接池最大闲置连接数
+    maxOpen: 100            # 连接池最大打开连接数
+    maxLifetime: 30s        # 连接对象可重复使用的时间长度
+
+# Redis配置
+redis:
+  default:
+    address: "127.0.0.1:6379"
+    db: 0
+    pass: ""
+    idleTimeout: 600s
+
+# JWT配置
+jwt:
+  signingKey: "gf-admin-secret-key-2024"  # JWT签名密钥
+  expireTime: 86400                        # Token过期时间(秒) 24小时
+
+# 系统配置
+system:
+  name: "GF Admin"                         # 系统名称
+  version: "1.0.0"                         # 系统版本
+  uploadPath: "temp/upload"                # 上传文件路径
+  uploadMaxSize: 10485760                  # 上传文件最大大小(字节) 10MB

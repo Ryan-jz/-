@@ -10,11 +10,13 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 )
 
-require golang.org/x/crypto v0.46.0
+require (
+	github.com/PuerkitoBio/goquery v1.11.0
+	golang.org/x/crypto v0.46.0
+)
 
 require (
 	github.com/BurntSushi/toml v1.2.0 // indirect
-	github.com/PuerkitoBio/goquery v1.11.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
