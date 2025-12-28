@@ -1,0 +1,29 @@
+# 忽略不需要打包到镜像的文件
+.git
+.gitignore
+.env
+*.md
+README.md
+
+# 构建产物
+dist/
+*.exe
+gf-admin
+
+# 临时文件
+temp/
+*.log
+
+# IDE 配置
+.vscode/
+.idea/
+
+# 依赖
+vendor/
+
+# 测试文件
+*_test.go
+
+# 上传的文件（运行时生成）
+public/uploads/*
+!public/uploads/.gitkeep

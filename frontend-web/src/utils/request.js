@@ -6,6 +6,9 @@ const service = axios.create({
   timeout: 15000
 })
 
+console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL)
+console.log('Environment:', import.meta.env.MODE)
+
 // 请求拦截器
 service.interceptors.request.use(
   config => {

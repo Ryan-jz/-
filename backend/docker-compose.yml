@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gf-admin-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # 挂载配置文件（可以在宿主机修改配置）
+      - ./manifest/config:/app/manifest/config
+      # 挂载上传文件目录（持久化）
+      - ./public/uploads:/app/public/uploads
+      # 挂载日志目录
+      - ./temp/logs:/app/temp/logs
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - gf-admin-network
+    depends_on:
+      - mysql
+
+  # MySQL 数据库（可选，如果使用外部数据库可以删除）
+  mysql:
+    image: mysql:8.0
+    container_name: gf-admin-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: gf_admin
+      MYSQL_USER: gfadmin
+      MYSQL_PASSWORD: gfadmin123
+      TZ: Asia/Shanghai
+    volumes:
+      # 持久化数据库数据
+      - mysql-data:/var/lib/mysql
+      # 初始化 SQL 脚本
+      - ./manifest/sql:/docker-entrypoint-initdb.d
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    networks:
+      - gf-admin-network
+
+networks:
+  gf-admin-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

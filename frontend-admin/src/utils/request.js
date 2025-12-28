@@ -7,9 +7,19 @@ import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
+// 根据环境获取 API 基础路径
+const getBaseURL = () => {
+  // 生产环境使用公网 IP
+  if (import.meta.env.MODE === 'production') {
+    return 'http://8.133.175.112:8000/api'
+  }
+  // 开发环境使用代理
+  return '/api'
+}
+
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: '/api',           // API 基础路径
+  baseURL: getBaseURL(),     // API 基础路径（根据环境自动切换）
   timeout: 10000,            // 请求超时时间
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'
