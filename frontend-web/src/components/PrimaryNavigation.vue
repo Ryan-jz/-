@@ -18,19 +18,18 @@
               <div class="dropdown-container">
                 <div class="dropdown-content">
                   <div 
-                    v-for="category in productCategories" 
+                    v-for="category in categories" 
                     :key="category.id" 
                     class="dropdown-column"
                   >
-                    <h4 class="dropdown-title">{{ category.title }}</h4>
+                    <router-link :to="`/product?category=${category.id}`">
+                      <h4 class="dropdown-title">{{ category.name }}</h4>
+                    </router-link>
                     <ul>
-                      <li v-for="item in category.items" :key="item.id">
-                        <a 
-                          :href="`#${category.anchor}`" 
-                          @click="handleScrollToSection(category.anchor)"
-                        >
-                          {{ item.name }}
-                        </a>
+                      <li v-for="product in category.products" :key="product.id">
+                        <router-link :to="`/product/${product.id}`">
+                          {{ product.name }}
+                        </router-link>
                       </li>
                     </ul>
                   </div>
@@ -40,13 +39,13 @@
           </div>
         </li>
         <li class="nav-item">
-          <a href="#sustainability" @click="handleScrollToSection('sustainability')">可持续发展</a>
+          <a href="https://www.example.com" target="_blank">德育</a>
         </li>
         <li class="nav-item">
-          <router-link to="/about">品牌故事</router-link>
+          <router-link to="/about">关于</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/contact">联系我们</router-link>
+          <router-link to="/contact">联系</router-link>
         </li>
       </ul>
     </div>
@@ -55,69 +54,36 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { getCategoryWithProducts } from '@/api/product'
 
-const props = defineProps({
+defineProps({
   isNavFixed: {
     type: Boolean,
     default: false
-  },
-  productCategories: {
-    type: Array,
-    default: () => [
-      {
-        id: 'seasoned-salt',
-        title: '调味盐系列',
-        anchor: 'seasoned-salt',
-        items: [
-          { id: 1, name: 'BBQ调味盐' },
-          { id: 2, name: '香草调味盐' },
-          { id: 3, name: '大蒜调味盐' }
-        ]
-      },
-      {
-        id: 'alpine-salt',
-        title: '阿尔卑斯盐',
-        anchor: 'alpine-salt',
-        items: [
-          { id: 1, name: '粗盐' },
-          { id: 2, name: '细盐' },
-          { id: 3, name: '研磨盐' }
-        ]
-      },
-      {
-        id: 'table-salt',
-        title: '食用盐',
-        anchor: 'table-salt',
-        items: [
-          { id: 1, name: '精制食用盐' },
-          { id: 2, name: '加碘盐' },
-          { id: 3, name: '海盐' }
-        ]
-      },
-      {
-        id: 'specialty-salt',
-        title: '特色盐',
-        anchor: 'specialty-salt',
-        items: [
-          { id: 1, name: '喜马拉雅粉盐' },
-          { id: 2, name: '黑盐' },
-          { id: 3, name: '烟熏盐' }
-        ]
-      }
-    ]
   }
 })
 
 const emit = defineEmits(['scroll-to-section'])
 
 const mobileMenuOpen = ref(false)
+const categories = ref([])
+
+const loadCategories = async () => {
+  try {
+    const res = await getCategoryWithProducts({ status: 1 })
+    if (res.code === 0) {
+      categories.value = res.data.list
+    }
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+}
 
 const handleScrollToSection = (section) => {
   mobileMenuOpen.value = false
   emit('scroll-to-section', section)
 }
 
-// 点击外部关闭移动菜单
 const handleClickOutside = (event) => {
   const nav = event.target.closest('.primary-navigation')
   if (!nav && mobileMenuOpen.value) {
@@ -126,6 +92,7 @@ const handleClickOutside = (event) => {
 }
 
 onMounted(() => {
+  loadCategories()
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -154,6 +121,9 @@ onUnmounted(() => {
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .menu-toggle {
@@ -179,6 +149,7 @@ onUnmounted(() => {
   margin: 0;
   padding: 0;
   gap: 40px;
+  flex: 1;
   justify-content: center;
 }
 
@@ -331,6 +302,8 @@ onUnmounted(() => {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    order: 2;
+    width: 100%;
   }
 
   .nav-menu.open {

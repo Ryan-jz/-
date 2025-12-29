@@ -41,10 +41,20 @@
           </el-menu-item>
         </el-sub-menu>
         
-        <el-menu-item index="/recipe/list">
-          <el-icon><Reading /></el-icon>
-          <template #title>食谱管理</template>
-        </el-menu-item>
+        <el-sub-menu index="/recipe">
+          <template #title>
+            <el-icon><Reading /></el-icon>
+            <span>食谱管理</span>
+          </template>
+          <el-menu-item index="/recipe/list">
+            <el-icon><List /></el-icon>
+            <template #title>食谱列表</template>
+          </el-menu-item>
+          <el-menu-item index="/recipe/tag">
+            <el-icon><PriceTag /></el-icon>
+            <template #title>食谱标签</template>
+          </el-menu-item>
+        </el-sub-menu>
         
         <el-menu-item index="/banner/list">
           <el-icon><Picture /></el-icon>

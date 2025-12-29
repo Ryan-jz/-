@@ -35,6 +35,14 @@ export function deleteCategory(id) {
   })
 }
 
+// 获取产品分类国际化数据
+export function getCategoryI18n(id) {
+  return request({
+    url: `/v1/product/category/${id}/i18n`,
+    method: 'get'
+  })
+}
+
 // 获取产品列表
 export function getProductList(params) {
   return request({
@@ -75,5 +83,13 @@ export function deleteProduct(id) {
   return request({
     url: `/v1/product/delete/${id}`,
     method: 'delete'
+  })
+}
+
+// 获取产品国际化数据
+export function getProductI18n(id) {
+  return request({
+    url: `/v1/product/${id}/i18n`,
+    method: 'get'
   })
 }

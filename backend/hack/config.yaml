@@ -3,10 +3,11 @@
 
 # GF CLI 工具配置
 gfcli:
+
   # 数据库配置
   gen:
     dao:
-    - link: "mysql:root:123456@tcp(127.0.0.1:3306)/bai_jin_yan"
+    - link: "mysql:jz:baijinyan!001@tcp(rm-cn-smw4l1pxp0001f8o.rwlb.rds.aliyuncs.com:3306)/bai_jin_yan"
       tables: ""
       removePrefix: ""
       descriptionTag: true

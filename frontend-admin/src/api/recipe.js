@@ -1,13 +1,5 @@
-/**
- * 食谱相关 API
- */
 import request from '@/utils/request'
 
-/**
- * 获取食谱列表
- * @param {Object} params - 查询参数
- * @returns {Promise}
- */
 export function getRecipeList(params) {
   return request({
     url: '/v1/recipe/list',
@@ -16,11 +8,6 @@ export function getRecipeList(params) {
   })
 }
 
-/**
- * 获取食谱详情
- * @param {number} id - 食谱ID
- * @returns {Promise}
- */
 export function getRecipeDetail(id) {
   return request({
     url: `/v1/recipe/detail/${id}`,
@@ -28,11 +15,6 @@ export function getRecipeDetail(id) {
   })
 }
 
-/**
- * 创建食谱
- * @param {Object} data - 食谱数据
- * @returns {Promise}
- */
 export function createRecipe(data) {
   return request({
     url: '/v1/recipe/create',
@@ -41,11 +23,6 @@ export function createRecipe(data) {
   })
 }
 
-/**
- * 更新食谱
- * @param {Object} data - 食谱数据
- * @returns {Promise}
- */
 export function updateRecipe(data) {
   return request({
     url: '/v1/recipe/update',
@@ -54,14 +31,47 @@ export function updateRecipe(data) {
   })
 }
 
-/**
- * 删除食谱
- * @param {number} id - 食谱ID
- * @returns {Promise}
- */
 export function deleteRecipe(id) {
   return request({
     url: `/v1/recipe/delete/${id}`,
+    method: 'delete'
+  })
+}
+
+export function getTagList(params) {
+  return request({
+    url: '/v1/recipe/tag/list',
+    method: 'get',
+    params
+  })
+}
+
+export function getAllTags() {
+  return request({
+    url: '/v1/recipe/tag/all',
+    method: 'get'
+  })
+}
+
+export function createTag(data) {
+  return request({
+    url: '/v1/recipe/tag/create',
+    method: 'post',
+    data
+  })
+}
+
+export function updateTag(data) {
+  return request({
+    url: '/v1/recipe/tag/update',
+    method: 'put',
+    data
+  })
+}
+
+export function deleteTag(id) {
+  return request({
+    url: `/v1/recipe/tag/delete/${id}`,
     method: 'delete'
   })
 }

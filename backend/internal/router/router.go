@@ -3,6 +3,7 @@ package router
 
 import (
 	"gf-admin/internal/controller/api"
+	"gf-admin/internal/middleware"
 
 	"github.com/gogf/gf/v2/net/ghttp"
 )
@@ -18,6 +19,9 @@ func RegisterRoutes(s *ghttp.Server) {
 	})
 
 	s.Group("/api/v1", func(group *ghttp.RouterGroup) {
+		// 使用国际化中间件
+		group.Middleware(middleware.I18n)
+
 		// 认证相关路由
 		group.POST("/login", api.Auth.Login)
 		group.GET("/getInfo", api.Auth.GetInfo)
@@ -29,12 +33,14 @@ func RegisterRoutes(s *ghttp.Server) {
 
 		// 产品相关路由
 		group.GET("/product/category/list", api.Product.CategoryList)
+		group.GET("/product/category/with-products", api.Product.CategoryWithProducts)
 		group.POST("/product/category/create", api.Product.CategoryCreate)
 		group.PUT("/product/category/update", api.Product.CategoryUpdate)
 		group.DELETE("/product/category/delete/:id", api.Product.CategoryDelete)
-		
+
 		group.GET("/product/list", api.Product.List)
 		group.GET("/product/detail/:id", api.Product.Detail)
+
 		group.POST("/product/create", api.Product.Create)
 		group.PUT("/product/update", api.Product.Update)
 		group.DELETE("/product/delete/:id", api.Product.Delete)
@@ -46,9 +52,17 @@ func RegisterRoutes(s *ghttp.Server) {
 		group.PUT("/recipe/update", api.Recipe.Update)
 		group.DELETE("/recipe/delete/:id", api.Recipe.Delete)
 
+		// 食谱标签路由
+		group.GET("/recipe/tag/list", api.RecipeTag.List)
+		group.GET("/recipe/tag/all", api.RecipeTag.All)
+		group.POST("/recipe/tag/create", api.RecipeTag.Create)
+		group.PUT("/recipe/tag/update", api.RecipeTag.Update)
+		group.DELETE("/recipe/tag/delete/:id", api.RecipeTag.Delete)
+
 		// 轮播图相关路由
 		group.GET("/banner/list", api.Banner.GetList)
 		group.GET("/banner/detail", api.Banner.GetDetail)
+
 		group.POST("/banner/create", api.Banner.Create)
 		group.PUT("/banner/update", api.Banner.Update)
 		group.DELETE("/banner/delete", api.Banner.Delete)

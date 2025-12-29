@@ -49,22 +49,26 @@
         :rules="formRules"
         label-width="120px"
       >
-        <el-form-item label="分类名称" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入分类名称" />
-        </el-form-item>
-        <el-form-item label="英文名称" prop="nameEn">
-          <el-input v-model="formData.nameEn" placeholder="请输入英文名称" />
+        <!-- 国际化内容 -->
+        <el-divider content-position="left">多语言内容</el-divider>
+        <CategoryI18nEditor v-model="formData.i18n" />
+        
+        <el-divider content-position="left">其他设置</el-divider>
+        <el-form-item label="分类图片" prop="image">
+          <el-upload
+            class="avatar-uploader"
+            :action="uploadUrl"
+            :headers="uploadHeaders"
+            :show-file-list="false"
+            :on-success="handleImageSuccess"
+            :before-upload="beforeImageUpload"
+          >
+            <img v-if="formData.image" :src="formData.image" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+          </el-upload>
         </el-form-item>
         <el-form-item label="分类标识" prop="slug">
           <el-input v-model="formData.slug" placeholder="例如：alpine-salt" />
-        </el-form-item>
-        <el-form-item label="分类描述" prop="description">
-          <el-input
-            v-model="formData.description"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入分类描述"
-          />
         </el-form-item>
         <el-form-item label="排序" prop="sortOrder">
           <el-input-number v-model="formData.sortOrder" :min="0" />
@@ -87,12 +91,20 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import {
   getCategoryList,
   createCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  getCategoryI18n
 } from '@/api/product'
+import CategoryI18nEditor from '@/components/I18nEditor/CategoryI18nEditor.vue'
+
+const uploadUrl = import.meta.env.VITE_API_BASE_URL + '/api/upload/image'
+const uploadHeaders = {
+  Authorization: 'Bearer ' + localStorage.getItem('token')
+}
 
 // 数据
 const loading = ref(false)
@@ -104,17 +116,19 @@ const dialogTitle = ref('新增分类')
 const formRef = ref(null)
 const formData = reactive({
   id: null,
-  name: '',
-  nameEn: '',
   slug: '',
-  description: '',
+  image: '',
   sortOrder: 0,
-  status: 1
+  status: 1,
+  i18n: {
+    'zh-CN': { name: '', description: '' },
+    'en-US': { name: '', description: '' },
+    'de-DE': { name: '', description: '' }
+  }
 })
 
 // 表单验证规则
 const formRules = {
-  name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
   slug: [{ required: true, message: '请输入分类标识', trigger: 'blur' }]
 }
 
@@ -136,21 +150,70 @@ const handleCreate = () => {
   dialogTitle.value = '新增分类'
   Object.assign(formData, {
     id: null,
-    name: '',
-    nameEn: '',
     slug: '',
-    description: '',
+    image: '',
     sortOrder: 0,
-    status: 1
+    status: 1,
+    i18n: {
+      'zh-CN': { name: '', description: '' },
+      'en-US': { name: '', description: '' },
+      'de-DE': { name: '', description: '' }
+    }
   })
   dialogVisible.value = true
 }
 
 // 编辑
-const handleEdit = (row) => {
+const handleEdit = async (row) => {
   dialogTitle.value = '编辑分类'
-  Object.assign(formData, row)
+  
+  Object.assign(formData, {
+    id: row.id,
+    slug: row.slug,
+    image: row.image || '',
+    sortOrder: row.sortOrder,
+    status: row.status
+  })
+  
+  try {
+    const res = await getCategoryI18n(row.id)
+    if (res.code === 0 && res.data) {
+      formData.i18n = res.data
+    }
+  } catch (error) {
+    console.error('获取国际化数据失败', error)
+    formData.i18n = {
+      'zh-CN': { name: row.name || '', description: row.description || '' },
+      'en-US': { name: row.nameEn || '', description: row.description || '' },
+      'de-DE': { name: row.name || '', description: row.description || '' }
+    }
+  }
+  
   dialogVisible.value = true
+}
+
+const handleImageSuccess = (response) => {
+  if (response.code === 0) {
+    formData.image = response.data.url
+    ElMessage.success('上传成功')
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
+}
+
+const beforeImageUpload = (file) => {
+  const isImage = file.type.startsWith('image/')
+  const isLt5M = file.size / 1024 / 1024 < 5
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件')
+    return false
+  }
+  if (!isLt5M) {
+    ElMessage.error('图片大小不能超过 5MB')
+    return false
+  }
+  return true
 }
 
 // 提交
@@ -208,5 +271,36 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.avatar-uploader {
+  :deep(.el-upload) {
+    border: 1px dashed var(--el-border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
+  }
+
+  :deep(.el-upload:hover) {
+    border-color: var(--el-color-primary);
+  }
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+  line-height: 178px;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+  object-fit: cover;
 }
 </style>

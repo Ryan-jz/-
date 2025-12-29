@@ -12,13 +12,23 @@ export function getBannerList(params) {
 }
 
 /**
- * 获取轮播图详情
+ * 获取轮播图详情（包含国际化数据）
  */
 export function getBannerDetail(bannerId) {
   return request({
     url: '/v1/banner/detail',
     method: 'get',
     params: { bannerId }
+  })
+}
+
+/**
+ * 获取轮播图国际化数据
+ */
+export function getBannerI18n(bannerId) {
+  return request({
+    url: `/v1/banner/${bannerId}/i18n`,
+    method: 'get'
   })
 }
 

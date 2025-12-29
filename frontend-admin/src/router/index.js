@@ -44,6 +44,12 @@ const routes = [
         meta: { title: '食谱管理', icon: 'Reading' }
       },
       {
+        path: 'recipe/tag',
+        name: 'RecipeTag',
+        component: () => import('@/views/recipe/tag.vue'),
+        meta: { title: '食谱标签', icon: 'PriceTag' }
+      },
+      {
         path: 'banner/list',
         name: 'BannerList',
         component: () => import('@/views/banner/index.vue'),

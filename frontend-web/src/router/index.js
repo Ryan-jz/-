@@ -24,6 +24,24 @@ const routes = [
     meta: { title: '联系我们' }
   },
   {
+    path: '/recipe',
+    name: 'Recipe',
+    component: () => import('@/views/recipe/index.vue'),
+    meta: { title: '食谱列表' }
+  },
+  {
+    path: '/recipe/:id',
+    name: 'RecipeDetail',
+    component: () => import('@/views/recipe/detail.vue'),
+    meta: { title: '食谱详情' }
+  },
+  {
+    path: '/product',
+    name: 'Product',
+    component: () => import('@/views/product/index.vue'),
+    meta: { title: '产品列表' }
+  },
+  {
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('@/views/product/detail.vue'),

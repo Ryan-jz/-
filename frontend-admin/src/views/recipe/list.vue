@@ -106,36 +106,7 @@
         :rules="formRules"
         label-width="120px"
       >
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="食谱名称" prop="name">
-              <el-input v-model="formData.name" placeholder="请输入食谱名称" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="英文名称" prop="nameEn">
-              <el-input v-model="formData.nameEn" placeholder="请输入英文名称" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-form-item label="副标题" prop="subtitle">
-          <el-input v-model="formData.subtitle" placeholder="请输入副标题" />
-        </el-form-item>
-
-        <el-form-item label="简介" prop="description">
-          <el-input
-            v-model="formData.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入食谱简介"
-          />
-        </el-form-item>
-
-        <el-form-item label="主图片" prop="image">
-          <ImageUpload v-model="formData.image" placeholder="上传食谱主图" />
-        </el-form-item>
-
+        <el-divider content-position="left">基本信息</el-divider>
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="烹饪时间" prop="cookingTime">
@@ -219,6 +190,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ImageUpload from '@/components/ImageUpload.vue'
 import RichTextEditor from '@/components/RichTextEditor.vue'
+import RecipeI18nEditor from '@/components/I18nEditor/RecipeI18nEditor.vue'
 import {
   getRecipeList,
   createRecipe,
@@ -247,10 +219,6 @@ const dialogTitle = ref('新增食谱')
 const formRef = ref(null)
 const formData = reactive({
   id: null,
-  name: '',
-  nameEn: '',
-  subtitle: '',
-  description: '',
   image: '',
   images: [],
   ingredients: [{ name: '', amount: '' }],
@@ -259,14 +227,13 @@ const formData = reactive({
   difficulty: 1,
   servings: 2,
   productIds: [],
-  tags: '',
   sortOrder: 0,
   status: 1
 })
 
 // 表单验证规则
 const formRules = {
-  name: [{ required: true, message: '请输入食谱名称', trigger: 'blur' }]
+  image: [{ required: true, message: '请上传食谱主图', trigger: 'change' }]
 }
 
 // 获取完整图片URL
@@ -341,10 +308,6 @@ const handleCreate = () => {
   dialogTitle.value = '新增食谱'
   Object.assign(formData, {
     id: null,
-    name: '',
-    nameEn: '',
-    subtitle: '',
-    description: '',
     image: '',
     images: [],
     ingredients: [{ name: '', amount: '' }],
@@ -353,7 +316,6 @@ const handleCreate = () => {
     difficulty: 1,
     servings: 2,
     productIds: [],
-    tags: '',
     sortOrder: 0,
     status: 1
   })
@@ -361,14 +323,24 @@ const handleCreate = () => {
 }
 
 // 编辑
-const handleEdit = (row) => {
+const handleEdit = async (row) => {
   dialogTitle.value = '编辑食谱'
+  
+  // 复制基本数据
   Object.assign(formData, {
-    ...row,
+    id: row.id,
+    image: row.image,
     productIds: row.productIds ? row.productIds.split(',').map(Number) : [],
     ingredients: typeof row.ingredients === 'string' ? JSON.parse(row.ingredients || '[]') : row.ingredients || [{ name: '', amount: '' }],
-    images: typeof row.images === 'string' ? JSON.parse(row.images || '[]') : row.images || []
+    images: typeof row.images === 'string' ? JSON.parse(row.images || '[]') : row.images || [],
+    content: row.content,
+    cookingTime: row.cookingTime,
+    difficulty: row.difficulty,
+    servings: row.servings,
+    sortOrder: row.sortOrder,
+    status: row.status
   })
+  
   dialogVisible.value = true
 }
 

@@ -22,6 +22,8 @@ export default {
     recipes: 'Recipes',
     about: 'About',
     contact: 'Contact',
+    viewAll: 'View All',
+    sustainability: 'Sustainability',
   },
   
   product: {

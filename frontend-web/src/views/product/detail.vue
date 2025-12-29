@@ -66,67 +66,7 @@
     
     </main>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h4>产品系列</h4>
-            <ul>
-              <li><a href="#seasoned-salt" @click="scrollToSection('seasoned-salt')">调味盐系列</a></li>
-              <li><a href="#alpine-salt" @click="scrollToSection('alpine-salt')">阿尔卑斯盐</a></li>
-              <li><a href="#table-salt" @click="scrollToSection('table-salt')">食用盐</a></li>
-              <li><a href="#specialty-salt" @click="scrollToSection('specialty-salt')">特色盐</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-section">
-            <h4>关于我们</h4>
-            <ul>
-              <li><router-link to="/about">品牌故事</router-link></li>
-              <li><a href="#sustainability" @click="scrollToSection('sustainability')">可持续发展</a></li>
-              <li><a href="#">新闻中心</a></li>
-              <li><a href="#">职业机会</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-section">
-            <h4>客户服务</h4>
-            <ul>
-              <li><router-link to="/contact">联系我们</router-link></li>
-              <li><a href="#">常见问题</a></li>
-              <li><a href="#">配送信息</a></li>
-              <li><a href="#">退换货政策</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-section">
-            <h4>法律信息</h4>
-            <ul>
-              <li><a href="#">隐私政策</a></li>
-              <li><a href="#">使用条款</a></li>
-              <li><a href="#">Cookie政策</a></li>
-              <li><a href="#">版权声明</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-section">
-            <h4>关注我们</h4>
-            <div class="footer-social">
-              <a href="#" aria-label="Facebook">Facebook</a>
-              <a href="#" aria-label="Instagram">Instagram</a>
-              <a href="#" aria-label="TikTok">TikTok</a>
-              <a href="#" aria-label="YouTube">YouTube</a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="footer-bottom">
-          <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2024052802号-2</a></p>
-          <p class="footer-group">Part of International Salt Group</p>
-        </div>
-      </div>
-    </footer>
+
   </div>
 </template>
 

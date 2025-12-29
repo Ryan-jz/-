@@ -22,6 +22,8 @@ export default {
     recipes: '食谱',
     about: '关于',
     contact: '联系',
+    viewAll: '查看全部',
+    sustainability: '可持续发展',
   },
   
   product: {

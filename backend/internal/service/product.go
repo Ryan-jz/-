@@ -3,57 +3,55 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"gf-admin/api/v1/product"
+	"gf-admin/internal/dao"
+	"gf-admin/internal/model/entity"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// IProduct 产品服务接口
 type IProduct interface {
-	GetCategoryList(ctx context.Context, status *int) ([]product.CategoryItem, error)
-	CreateCategory(ctx context.Context, req interface{}) (uint, error)
-	UpdateCategory(ctx context.Context, req interface{}) error
+	GetCategoryList(ctx context.Context, status *int) ([]any, error)
+	CreateCategory(ctx context.Context, req any) (uint, error)
+	UpdateCategory(ctx context.Context, req any) error
 	DeleteCategory(ctx context.Context, id uint) error
-	GetList(ctx context.Context, categoryId *uint, keyword string, status *int, page, pageSize int) ([]product.ListItem, int, error)
-	GetDetail(ctx context.Context, id uint) (*product.DetailRes, error)
-	Create(ctx context.Context, req *product.CreateReq) (uint, error)
-	Update(ctx context.Context, req *product.UpdateReq) error
+	GetCategoryWithProducts(ctx context.Context, status *int) ([]any, error)
+	GetList(ctx context.Context, categoryId *uint, keyword string, status *int, page, pageSize int) ([]any, int, error)
+	GetDetail(ctx context.Context, id uint) (any, error)
+	Create(ctx context.Context, req any) (uint, error)
+	Update(ctx context.Context, req any) error
 	Delete(ctx context.Context, id uint) error
 }
 
 type productImpl struct{}
 
 func init() {
-	RegisterProduct(New())
+	RegisterProduct(&productImpl{})
 }
 
-func New() IProduct {
-	return &productImpl{}
-}
-
-// GetCategoryList 获取产品分类列表
-func (s *productImpl) GetCategoryList(ctx context.Context, status *int) ([]product.CategoryItem, error) {
-	var (
-		list []product.CategoryItem
-		m    = g.DB().Model("product_category")
-	)
+func (s *productImpl) GetCategoryList(ctx context.Context, status *int) ([]any, error) {
+	model := dao.ProductCategory.Ctx(ctx)
 
 	if status != nil {
-		m = m.Where("status", *status)
+		model = model.Where("status", *status)
 	}
 
-	err := m.Order("sort_order asc, id asc").Scan(&list)
-	if err != nil {
-		return nil, err
-	}
+	var list []*entity.ProductCategory
+	err := model.Order("sort_order ASC, id ASC").Scan(&list)
 
-	return list, nil
+	result := make([]any, len(list))
+	for i, v := range list {
+		result[i] = v
+	}
+	return result, err
 }
 
-// CreateCategory 创建产品分类
-func (s *productImpl) CreateCategory(ctx context.Context, req interface{}) (uint, error) {
-	result, err := g.DB().Model("product_category").Data(req).Insert()
+func (s *productImpl) CreateCategory(ctx context.Context, req any) (uint, error) {
+	var reqMap g.Map
+	jsonBytes, _ := json.Marshal(req)
+	json.Unmarshal(jsonBytes, &reqMap)
+
+	result, err := dao.ProductCategory.Ctx(ctx).Data(reqMap).Insert()
 	if err != nil {
 		return 0, err
 	}
@@ -62,26 +60,15 @@ func (s *productImpl) CreateCategory(ctx context.Context, req interface{}) (uint
 	return uint(id), nil
 }
 
-// UpdateCategory 更新产品分类
-func (s *productImpl) UpdateCategory(ctx context.Context, req interface{}) error {
-	// 将 interface{} 转换为 map
+func (s *productImpl) UpdateCategory(ctx context.Context, req any) error {
 	var reqMap g.Map
-	
-	// 使用类型断言或 JSON 转换
-	jsonBytes, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-	
-	if err := json.Unmarshal(jsonBytes, &reqMap); err != nil {
-		return err
-	}
+	jsonBytes, _ := json.Marshal(req)
+	json.Unmarshal(jsonBytes, &reqMap)
 
 	id := reqMap["id"]
 	delete(reqMap, "id")
 
-	// 检查分类是否存在
-	count, err := g.DB().Model("product_category").Where("id", id).Count()
+	count, err := dao.ProductCategory.Ctx(ctx).Where("id", id).Count()
 	if err != nil {
 		return err
 	}
@@ -89,14 +76,12 @@ func (s *productImpl) UpdateCategory(ctx context.Context, req interface{}) error
 		return gerror.New("分类不存在")
 	}
 
-	_, err = g.DB().Model("product_category").Data(reqMap).Where("id", id).Update()
+	_, err = dao.ProductCategory.Ctx(ctx).Data(reqMap).Where("id", id).Update()
 	return err
 }
 
-// DeleteCategory 删除产品分类
 func (s *productImpl) DeleteCategory(ctx context.Context, id uint) error {
-	// 检查分类是否存在
-	count, err := g.DB().Model("product_category").Where("id", id).Count()
+	count, err := dao.ProductCategory.Ctx(ctx).Where("id", id).Count()
 	if err != nil {
 		return err
 	}
@@ -104,8 +89,7 @@ func (s *productImpl) DeleteCategory(ctx context.Context, id uint) error {
 		return gerror.New("分类不存在")
 	}
 
-	// 检查是否有产品使用该分类
-	productCount, err := g.DB().Model("product").Where("category_id", id).Count()
+	productCount, err := dao.Product.Ctx(ctx).Where("category_id", id).Count()
 	if err != nil {
 		return err
 	}
@@ -113,95 +97,101 @@ func (s *productImpl) DeleteCategory(ctx context.Context, id uint) error {
 		return gerror.New("该分类下还有产品，无法删除")
 	}
 
-	_, err = g.DB().Model("product_category").Where("id", id).Delete()
+	_, err = dao.ProductCategory.Ctx(ctx).Where("id", id).Delete()
 	return err
 }
 
-// GetList 获取产品列表
-func (s *productImpl) GetList(ctx context.Context, categoryId *uint, keyword string, status *int, page, pageSize int) ([]product.ListItem, int, error) {
-	var (
-		list  []product.ListItem
-		total int
-		m     = g.DB().Model("product")
-	)
-
-	// 分类筛选
-	if categoryId != nil {
-		m = m.Where("category_id", *categoryId)
-	}
-
-	// 关键词搜索
-	if keyword != "" {
-		m = m.WhereLike("name", "%"+keyword+"%")
-	}
-
-	// 状态筛选
+func (s *productImpl) GetCategoryWithProducts(ctx context.Context, status *int) ([]any, error) {
+	categoryModel := dao.ProductCategory.Ctx(ctx)
 	if status != nil {
-		m = m.Where("status", *status)
+		categoryModel = categoryModel.Where("status", *status)
 	}
 
-	// 获取总数
-	total, err := m.Count()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	// 分页查询
-	err = m.Order("sort_order asc, id desc").
-		Page(page, pageSize).
-		Scan(&list)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return list, total, nil
-}
-
-// GetDetail 获取产品详情
-func (s *productImpl) GetDetail(ctx context.Context, id uint) (*product.DetailRes, error) {
-	var detail product.DetailRes
-
-	err := g.DB().Model("product").Where("id", id).Scan(&detail)
+	var categories []*entity.ProductCategory
+	err := categoryModel.Order("sort_order ASC, id ASC").Scan(&categories)
 	if err != nil {
 		return nil, err
 	}
 
-	if detail.Id == 0 {
-		return nil, gerror.New("产品不存在")
+	result := make([]any, 0, len(categories))
+	for _, category := range categories {
+		var products []*entity.Product
+		dao.Product.Ctx(ctx).
+			Where("category_id", category.Id).
+			Where("status", 1).
+			Order("sort_order ASC, id DESC").
+			Scan(&products)
+
+		result = append(result, g.Map{
+			"id":          category.Id,
+			"name":        category.Name,
+			"slug":        category.Slug,
+			"description": category.Description,
+			"image":       category.Image,
+			"sortOrder":   category.SortOrder,
+			"status":      category.Status,
+			"products":    products,
+		})
 	}
 
-	// 增加浏览次数
-	_, _ = g.DB().Model("product").Where("id", id).Increment("view_count", 1)
-
-	return &detail, nil
+	return result, nil
 }
 
-// Create 创建产品
-func (s *productImpl) Create(ctx context.Context, req *product.CreateReq) (uint, error) {
-	// 转换JSON字段
-	imagesJson, _ := json.Marshal(req.Images)
-	featuresJson, _ := json.Marshal(req.Features)
+func (s *productImpl) GetList(ctx context.Context, categoryId *uint, keyword string, status *int, page, pageSize int) ([]any, int, error) {
+	model := dao.Product.Ctx(ctx)
 
-	data := g.Map{
-		"category_id": req.CategoryId,
-		"name":        req.Name,
-		"name_en":     req.NameEn,
-		"subtitle":    req.Subtitle,
-		"description": req.Description,
-		"image":       req.Image,
-		"images":      string(imagesJson),
-		"price":       req.Price,
-		"stock":       req.Stock,
-		"weight":      req.Weight,
-		"ingredients": req.Ingredients,
-		"nutrition":   req.Nutrition,
-		"usage":       req.Usage,
-		"features":    string(featuresJson),
-		"sort_order":  req.SortOrder,
-		"status":      req.Status,
+	if categoryId != nil {
+		model = model.Where("category_id", *categoryId)
+	}
+	if keyword != "" {
+		model = model.WhereLike("name", "%"+keyword+"%")
+	}
+	if status != nil {
+		model = model.Where("status", *status)
 	}
 
-	result, err := g.DB().Model("product").Data(data).Insert()
+	total, err := model.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	var list []*entity.Product
+	err = model.Order("sort_order ASC, id DESC").Limit(pageSize).Offset(offset).Scan(&list)
+
+	result := make([]any, len(list))
+	for i, v := range list {
+		result[i] = v
+	}
+	return result, total, err
+}
+
+func (s *productImpl) GetDetail(ctx context.Context, id uint) (any, error) {
+	var detail *entity.Product
+	err := dao.Product.Ctx(ctx).Where("id", id).Scan(&detail)
+	if err != nil {
+		return nil, err
+	}
+
+	dao.Product.Ctx(ctx).Where("id", id).Increment("view_count", 1)
+	return detail, nil
+}
+
+func (s *productImpl) Create(ctx context.Context, req any) (uint, error) {
+	var reqMap g.Map
+	jsonBytes, _ := json.Marshal(req)
+	json.Unmarshal(jsonBytes, &reqMap)
+
+	if reqMap["images"] != nil {
+		imagesJson, _ := json.Marshal(reqMap["images"])
+		reqMap["images"] = string(imagesJson)
+	}
+	if reqMap["features"] != nil {
+		featuresJson, _ := json.Marshal(reqMap["features"])
+		reqMap["features"] = string(featuresJson)
+	}
+
+	result, err := dao.Product.Ctx(ctx).Data(reqMap).Insert()
 	if err != nil {
 		return 0, err
 	}
@@ -210,10 +200,15 @@ func (s *productImpl) Create(ctx context.Context, req *product.CreateReq) (uint,
 	return uint(id), nil
 }
 
-// Update 更新产品
-func (s *productImpl) Update(ctx context.Context, req *product.UpdateReq) error {
-	// 检查产品是否存在
-	count, err := g.DB().Model("product").Where("id", req.Id).Count()
+func (s *productImpl) Update(ctx context.Context, req any) error {
+	var reqMap g.Map
+	jsonBytes, _ := json.Marshal(req)
+	json.Unmarshal(jsonBytes, &reqMap)
+
+	id := reqMap["id"]
+	delete(reqMap, "id")
+
+	count, err := dao.Product.Ctx(ctx).Where("id", id).Count()
 	if err != nil {
 		return err
 	}
@@ -221,37 +216,21 @@ func (s *productImpl) Update(ctx context.Context, req *product.UpdateReq) error 
 		return gerror.New("产品不存在")
 	}
 
-	// 转换JSON字段
-	imagesJson, _ := json.Marshal(req.Images)
-	featuresJson, _ := json.Marshal(req.Features)
-
-	data := g.Map{
-		"category_id": req.CategoryId,
-		"name":        req.Name,
-		"name_en":     req.NameEn,
-		"subtitle":    req.Subtitle,
-		"description": req.Description,
-		"image":       req.Image,
-		"images":      string(imagesJson),
-		"price":       req.Price,
-		"stock":       req.Stock,
-		"weight":      req.Weight,
-		"ingredients": req.Ingredients,
-		"nutrition":   req.Nutrition,
-		"usage":       req.Usage,
-		"features":    string(featuresJson),
-		"sort_order":  req.SortOrder,
-		"status":      req.Status,
+	if reqMap["images"] != nil {
+		imagesJson, _ := json.Marshal(reqMap["images"])
+		reqMap["images"] = string(imagesJson)
+	}
+	if reqMap["features"] != nil {
+		featuresJson, _ := json.Marshal(reqMap["features"])
+		reqMap["features"] = string(featuresJson)
 	}
 
-	_, err = g.DB().Model("product").Data(data).Where("id", req.Id).Update()
+	_, err = dao.Product.Ctx(ctx).Data(reqMap).Where("id", id).Update()
 	return err
 }
 
-// Delete 删除产品
 func (s *productImpl) Delete(ctx context.Context, id uint) error {
-	// 检查产品是否存在
-	count, err := g.DB().Model("product").Where("id", id).Count()
+	count, err := dao.Product.Ctx(ctx).Where("id", id).Count()
 	if err != nil {
 		return err
 	}
@@ -259,6 +238,6 @@ func (s *productImpl) Delete(ctx context.Context, id uint) error {
 		return gerror.New("产品不存在")
 	}
 
-	_, err = g.DB().Model("product").Where("id", id).Delete()
+	_, err = dao.Product.Ctx(ctx).Where("id", id).Delete()
 	return err
 }

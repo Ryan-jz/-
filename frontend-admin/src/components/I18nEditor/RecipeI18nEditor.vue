@@ -17,7 +17,7 @@
               v-model="formData['zh-CN'].description" 
               type="textarea" 
               :rows="3"
-              placeholder="请输入简介"
+              placeholder="请输入食谱简介"
             />
           </el-form-item>
           
@@ -25,26 +25,14 @@
             <el-input 
               v-model="ingredientsText['zh-CN']" 
               type="textarea" 
-              :rows="5"
-              placeholder="格式：食材名称|用量（每行一个）&#10;例如：鸡肉|500g"
+              :rows="4"
+              placeholder="每行一个食材，格式：食材名称 - 用量"
             />
-            <div class="tip">格式：食材名称|用量（每行一个），例如：鸡肉|500g</div>
-          </el-form-item>
-          
-          <el-form-item label="制作步骤">
-            <el-input 
-              v-model="formData['zh-CN'].content" 
-              type="textarea" 
-              :rows="8"
-              placeholder="请输入制作步骤（支持HTML）"
-            />
+            <div class="tip">提示：每行输入一个食材，例如：鸡肉 - 500g</div>
           </el-form-item>
           
           <el-form-item label="标签">
-            <el-input 
-              v-model="formData['zh-CN'].tags" 
-              placeholder="多个标签用逗号分隔"
-            />
+            <el-input v-model="formData['zh-CN'].tags" placeholder="多个标签用逗号分隔" />
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -65,7 +53,7 @@
               v-model="formData['en-US'].description" 
               type="textarea" 
               :rows="3"
-              placeholder="Enter description"
+              placeholder="Enter recipe description"
             />
           </el-form-item>
           
@@ -73,26 +61,14 @@
             <el-input 
               v-model="ingredientsText['en-US']" 
               type="textarea" 
-              :rows="5"
-              placeholder="Format: ingredient|amount (one per line)&#10;Example: Chicken|500g"
+              :rows="4"
+              placeholder="One ingredient per line, format: Ingredient - Amount"
             />
-            <div class="tip">Format: ingredient|amount (one per line), e.g., Chicken|500g</div>
-          </el-form-item>
-          
-          <el-form-item label="Steps">
-            <el-input 
-              v-model="formData['en-US'].content" 
-              type="textarea" 
-              :rows="8"
-              placeholder="Enter cooking steps (HTML supported)"
-            />
+            <div class="tip">Tip: One ingredient per line, e.g., Chicken - 500g</div>
           </el-form-item>
           
           <el-form-item label="Tags">
-            <el-input 
-              v-model="formData['en-US'].tags" 
-              placeholder="Separate multiple tags with commas"
-            />
+            <el-input v-model="formData['en-US'].tags" placeholder="Separate tags with commas" />
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -113,7 +89,7 @@
               v-model="formData['de-DE'].description" 
               type="textarea" 
               :rows="3"
-              placeholder="Beschreibung eingeben"
+              placeholder="Rezeptbeschreibung eingeben"
             />
           </el-form-item>
           
@@ -121,26 +97,14 @@
             <el-input 
               v-model="ingredientsText['de-DE']" 
               type="textarea" 
-              :rows="5"
-              placeholder="Format: Zutat|Menge (eine pro Zeile)&#10;Beispiel: Hähnchen|500g"
+              :rows="4"
+              placeholder="Eine Zutat pro Zeile, Format: Zutat - Menge"
             />
-            <div class="tip">Format: Zutat|Menge (eine pro Zeile), z.B. Hähnchen|500g</div>
-          </el-form-item>
-          
-          <el-form-item label="Schritte">
-            <el-input 
-              v-model="formData['de-DE'].content" 
-              type="textarea" 
-              :rows="8"
-              placeholder="Kochschritte eingeben (HTML unterstützt)"
-            />
+            <div class="tip">Tipp: Eine Zutat pro Zeile, z.B., Hähnchen - 500g</div>
           </el-form-item>
           
           <el-form-item label="Tags">
-            <el-input 
-              v-model="formData['de-DE'].tags" 
-              placeholder="Mehrere Tags durch Kommas trennen"
-            />
+            <el-input v-model="formData['de-DE'].tags" placeholder="Tags durch Kommas trennen" />
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -172,24 +136,21 @@ const formData = ref({
     name: '',
     subtitle: '',
     description: '',
-    ingredients: [],
-    content: '',
+    ingredients: '',
     tags: ''
   },
   'en-US': {
     name: '',
     subtitle: '',
     description: '',
-    ingredients: [],
-    content: '',
+    ingredients: '',
     tags: ''
   },
   'de-DE': {
     name: '',
     subtitle: '',
     description: '',
-    ingredients: [],
-    content: '',
+    ingredients: '',
     tags: ''
   }
 })
@@ -208,27 +169,14 @@ watch(() => props.modelValue, (newVal) => {
       if (newVal[locale]) {
         formData.value[locale] = { ...formData.value[locale], ...newVal[locale] }
         
-        // 转换ingredients数组为文本
-        if (newVal[locale].ingredients && Array.isArray(newVal[locale].ingredients)) {
+        // 转换ingredients为文本
+        if (newVal[locale].ingredients) {
           ingredientsText.value[locale] = newVal[locale].ingredients
-            .map(item => `${item.name}|${item.amount}`)
-            .join('\n')
         }
       }
     })
   }
 }, { immediate: true, deep: true })
-
-// 解析食材文本为数组
-const parseIngredients = (text) => {
-  if (!text) return []
-  return text.split('\n')
-    .filter(line => line.trim())
-    .map(line => {
-      const [name, amount] = line.split('|').map(s => s.trim())
-      return { name: name || '', amount: amount || '' }
-    })
-}
 
 // 监听表单数据变化，同步到父组件
 watch(formData, (newVal) => {
@@ -236,7 +184,7 @@ watch(formData, (newVal) => {
   Object.keys(newVal).forEach(locale => {
     result[locale] = {
       ...newVal[locale],
-      ingredients: parseIngredients(ingredientsText.value[locale])
+      ingredients: ingredientsText.value[locale] || ''
     }
   })
   emit('update:modelValue', result)
@@ -248,7 +196,7 @@ watch(ingredientsText, () => {
   Object.keys(formData.value).forEach(locale => {
     result[locale] = {
       ...formData.value[locale],
-      ingredients: parseIngredients(ingredientsText.value[locale])
+      ingredients: ingredientsText.value[locale] || ''
     }
   })
   emit('update:modelValue', result)

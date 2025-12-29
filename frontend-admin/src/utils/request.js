@@ -36,6 +36,9 @@ service.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${userStore.token}`
     }
     
+    // 添加语言参数到请求头（默认中文，管理后台主要用于编辑多语言内容）
+    config.headers['Accept-Language'] = 'zh-CN'
+    
     return config
   },
   error => {

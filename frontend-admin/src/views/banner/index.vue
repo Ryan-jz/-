@@ -95,17 +95,11 @@
         :rules="formRules"
         label-width="100px"
       >
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="formData.title" placeholder="请输入标题" />
-        </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input
-            v-model="formData.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入描述"
-          />
-        </el-form-item>
+        <!-- 国际化内容 -->
+        <el-divider content-position="left">多语言内容</el-divider>
+        <BannerI18nEditor v-model="formData.i18n" />
+        
+        <el-divider content-position="left">媒体设置</el-divider>
         <el-form-item label="媒体类型" prop="mediaType">
           <el-radio-group v-model="formData.mediaType">
             <el-radio :label="1">图片</el-radio>
@@ -128,12 +122,11 @@
             <video v-else :src="formData.mediaUrl" class="preview" controls />
           </div>
         </el-form-item>
-        <el-form-item label="按钮文字" prop="buttonText">
-          <el-input v-model="formData.buttonText" placeholder="请输入按钮文字" />
-        </el-form-item>
         <el-form-item label="按钮链接" prop="buttonLink">
           <el-input v-model="formData.buttonLink" placeholder="请输入按钮链接" />
         </el-form-item>
+        
+        <el-divider content-position="left">其他设置</el-divider>
         <el-form-item label="位置" prop="position">
           <el-select v-model="formData.position" placeholder="请选择位置">
             <el-option label="首页" value="home" />
@@ -161,7 +154,8 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getBannerList, createBanner, updateBanner, deleteBanner } from '@/api/banner'
+import { getBannerList, createBanner, updateBanner, deleteBanner, getBannerI18n } from '@/api/banner'
+import BannerI18nEditor from '@/components/I18nEditor/BannerI18nEditor.vue'
 
 const loading = ref(false)
 const bannerList = ref([])
@@ -179,19 +173,20 @@ const dialogTitle = ref('')
 const formRef = ref(null)
 const formData = reactive({
   bannerId: null,
-  title: '',
-  description: '',
   mediaType: 1,
   mediaUrl: '',
-  buttonText: '',
   buttonLink: '',
   position: 'home',
   sortOrder: 0,
-  status: 1
+  status: 1,
+  i18n: {
+    'zh-CN': { title: '', description: '', buttonText: '' },
+    'en-US': { title: '', description: '', buttonText: '' },
+    'de-DE': { title: '', description: '', buttonText: '' }
+  }
 })
 
 const formRules = {
-  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   mediaType: [{ required: true, message: '请选择媒体类型', trigger: 'change' }],
   mediaUrl: [{ required: true, message: '请上传媒体文件', trigger: 'change' }],
   position: [{ required: true, message: '请选择位置', trigger: 'change' }]
@@ -244,9 +239,36 @@ const handleAdd = () => {
 }
 
 // 编辑
-const handleEdit = (row) => {
+const handleEdit = async (row) => {
   dialogTitle.value = '编辑轮播图'
-  Object.assign(formData, row)
+  
+  // 复制基本数据
+  Object.assign(formData, {
+    bannerId: row.bannerId,
+    mediaType: row.mediaType,
+    mediaUrl: row.mediaUrl,
+    buttonLink: row.buttonLink,
+    position: row.position,
+    sortOrder: row.sortOrder,
+    status: row.status
+  })
+  
+  // 获取国际化数据
+  try {
+    const res = await getBannerI18n(row.bannerId)
+    if (res.code === 0 && res.data) {
+      formData.i18n = res.data
+    }
+  } catch (error) {
+    console.error('获取国际化数据失败', error)
+    // 如果获取失败，使用当前行的数据作为默认值
+    formData.i18n = {
+      'zh-CN': { title: row.title || '', description: row.description || '', buttonText: row.buttonText || '' },
+      'en-US': { title: row.title || '', description: row.description || '', buttonText: row.buttonText || '' },
+      'de-DE': { title: row.title || '', description: row.description || '', buttonText: row.buttonText || '' }
+    }
+  }
+  
   dialogVisible.value = true
 }
 
@@ -271,15 +293,17 @@ const handleStatusChange = async (row) => {
   try {
     await updateBanner({
       bannerId: row.bannerId,
-      title: row.title,
-      description: row.description,
       mediaType: row.mediaType,
       mediaUrl: row.mediaUrl,
-      buttonText: row.buttonText,
       buttonLink: row.buttonLink,
       position: row.position,
       sortOrder: row.sortOrder,
-      status: row.status
+      status: row.status,
+      i18n: row.i18n || {
+        'zh-CN': { title: row.title, description: row.description, buttonText: row.buttonText },
+        'en-US': { title: row.title, description: row.description, buttonText: row.buttonText },
+        'de-DE': { title: row.title, description: row.description, buttonText: row.buttonText }
+      }
     })
     ElMessage.success('状态更新成功')
   } catch (error) {
@@ -348,15 +372,17 @@ const handleDialogClose = () => {
   formRef.value?.resetFields()
   Object.assign(formData, {
     bannerId: null,
-    title: '',
-    description: '',
     mediaType: 1,
     mediaUrl: '',
-    buttonText: '',
     buttonLink: '',
     position: 'home',
     sortOrder: 0,
-    status: 1
+    status: 1,
+    i18n: {
+      'zh-CN': { title: '', description: '', buttonText: '' },
+      'en-US': { title: '', description: '', buttonText: '' },
+      'de-DE': { title: '', description: '', buttonText: '' }
+    }
   })
 }
 
