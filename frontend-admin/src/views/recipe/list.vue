@@ -153,8 +153,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="标签" prop="tags">
-          <el-input v-model="formData.tags" placeholder="多个标签用逗号分隔，例如：烤鸡,主菜,家常菜" />
+        <el-form-item label="标签" prop="tagIds">
+          <el-select v-model="formData.tagIds" multiple placeholder="请选择标签" style="width: 100%;">
+            <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id" />
+          </el-select>
         </el-form-item>
 
         <el-form-item label="制作步骤" prop="content">
@@ -195,7 +197,8 @@ import {
   getRecipeList,
   createRecipe,
   updateRecipe,
-  deleteRecipe
+  deleteRecipe,
+  getAllTags
 } from '@/api/recipe'
 import { getProductList } from '@/api/product'
 
@@ -211,6 +214,7 @@ const searchForm = reactive({
 const loading = ref(false)
 const recipeList = ref([])
 const productList = ref([])
+const tags = ref([])
 const total = ref(0)
 
 // 对话框
@@ -227,6 +231,7 @@ const formData = reactive({
   difficulty: 1,
   servings: 2,
   productIds: [],
+  tagIds: [],
   sortOrder: 0,
   status: 1
 })
@@ -303,6 +308,15 @@ const handleReset = () => {
   loadRecipeList()
 }
 
+const loadTags = async () => {
+  try {
+    const res = await getAllTags()
+    tags.value = res.data || []
+  } catch (error) {
+    console.error('获取标签失败')
+  }
+}
+
 // 新增
 const handleCreate = () => {
   dialogTitle.value = '新增食谱'
@@ -316,6 +330,7 @@ const handleCreate = () => {
     difficulty: 1,
     servings: 2,
     productIds: [],
+    tagIds: [],
     sortOrder: 0,
     status: 1
   })
@@ -394,6 +409,7 @@ const handleDelete = (row) => {
 onMounted(() => {
   loadProductList()
   loadRecipeList()
+  loadTags()
 })
 </script>
 

@@ -6,24 +6,7 @@
     <!-- 高对比度模式切换按钮 -->
 
 
-    <!-- 页头 -->
-    <header class="header">
-      <!-- 顶部栏：Logo、社交媒体、语言切换 -->
-      <div class="top-bar">
-        <div class="container">
-          <router-link to="/" class="logo">
-            <img src="@/assets/images/logo.png" class="logo" alt="Brand Logo" />
-          </router-link>
- 
-        </div>
-      </div>
-
-      <!-- 主导航 -->
-      <PrimaryNavigation 
-        :is-nav-fixed="isNavFixed" 
-        @scroll-to-section="scrollToSection"
-      />
-    </header>
+    <PageHeader />
 
     <!-- 主内容区 -->
     <main class="main-content">
@@ -62,112 +45,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import ProductSection from '@/components/ProductSection.vue'
-import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
-import Carousel from '@/components/Carousel.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { getProductList } from '@/api/product'
 
-// 轮播图数据
-const carouselItems = ref([
-  {
-    id: 1,
-    image: 'https://images.unsplash.com/photo-1474440692490-2e83ae13ba29?w=1920',
-    title: '纯净阿尔卑斯盐',
-    description: '源自2.5亿年前的原始海洋，深藏于巴伐利亚阿尔卑斯山',
-    buttonText: '了解更多'
-  },
-  {
-    id: 2,
-    image: 'https://images.unsplash.com/photo-1505935428862-770b6f24f629?w=1920',
-    title: '天然调味盐系列',
-    description: '精选香草与香料，为您的美食增添独特风味',
-    buttonText: '探索产品'
-  },
-  {
-    id: 3,
-    image: 'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1920',
-    title: '可持续发展承诺',
-    description: '保护环境，传承自然的馈赠',
-    buttonText: '了解详情'
-  }
-])
-
-// 轮播图按钮点击事件
-const handleCarouselButtonClick = (item) => {
-  console.log('Carousel button clicked:', item)
-  // 可以根据不同的轮播项跳转到不同页面
-  if (item.id === 1) {
-    scrollToSection('alpine-salt')
-  } else if (item.id === 2) {
-    scrollToSection('seasoned-salt')
-  } else if (item.id === 3) {
-    scrollToSection('sustainability')
-  }
-}
-
-// 状态管理
-const isNavFixed = ref(false)
-
-// 产品数据
+const products = ref([])
 const alpineSaltProducts = ref([])
 
-// 加载产品数据
 const loadProducts = async () => {
   try {
-    const res = await getProductList({
-      categoryId: 2, // 阿尔卑斯盐分类ID
-      status: 1,
-      page: 1,
-      pageSize: 20
-    })
-    if (res.data && res.data.list) {
-      alpineSaltProducts.value = res.data.list
+    const res = await getProductList({ status: 1, page: 1, pageSize: 100 })
+    if (res.data?.list) {
+      products.value = res.data.list
+      alpineSaltProducts.value = res.data.list.filter(p => p.categoryId === 2)
     }
   } catch (error) {
-    console.error('加载产品数据失败:', error)
-    // 如果API失败，使用默认数据
-    alpineSaltProducts.value = [
-      { id: 5, name: '阿尔卑斯粗盐', image: '@/assets/images/02.png' },
-      { id: 6, name: '阿尔卑斯细盐', image: '@/assets/images/02.png' },
-      { id: 7, name: 'AlpenJodSalz + 碘化物', image: '@/assets/images/02.png' },
-      { id: 8, name: 'AlpenJodSalz + 氟化物 + Folsäure', image: '@/assets/images/02.png' },
-      { id: 9, name: '阿尔卑斯盐 + 碘', image: '@/assets/images/02.png' },
-      { id: 10, name: '阿尔卑斯盐袋装', image: '@/assets/images/02.png' }
-    ]
+    console.error('加载产品失败:', error)
   }
-}
-
-// 平滑滚动到指定板块
-const scrollToSection = (sectionId) => {
-  const element = document.getElementById(sectionId)
-  if (element) {
-    const offset = 100 // 导航栏高度
-    const elementPosition = element.getBoundingClientRect().top
-    const offsetPosition = elementPosition + window.pageYOffset - offset
-    
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    })
-  }
-  mobileMenuOpen.value = false
-}
-
-// 监听滚动事件，实现导航栏固定
-const handleScroll = () => {
-  isNavFixed.value = window.scrollY > 100
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
   loadProducts()
 })
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
 </script>
+
 
 <style lang="scss" scoped>
 .main-content {

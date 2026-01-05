@@ -27,43 +27,46 @@
 
     <!-- 主内容区 -->
     <main class="main-content">
-    
-      <!-- 轮播图 -->
-      <Carousel 
-        :items="carouselItems"
-        :autoplay="true"
-        :interval="5000"
-        aspect-ratio="16/9"
-        @button-click="handleCarouselButtonClick"
-      />
-    
-      <!-- Hero Banner -->
-      <section class="hero-banner">
+
+
+      <section v-if="product" class="product-section-area">
         <div class="container">
-          <div class="title">优质盐，成就卓越调味</div>
-          <div class="hero-content">
-            <p class="subtitle">好东西需要时间：我们美味的阿尔卑斯盐形成于大约2.5亿年前原始海洋蒸发之时。如今，它深埋于巴伐利亚阿尔卑斯山的岩石之中，自那时起便未曾改变。这真是大自然的馈赠！</p>
-            <p class="subtitle">我们珍贵的盐产自纯净的高山盐水，这种盐水是由新鲜的山泉水缓慢溶解岩石中的盐分而形成的。这就是巴特赖兴哈勒（Bad Reichenhaller）众多不同种类盐的天然来源。这些盐包括添加或未添加维生素和微量元素的阿尔卑斯盐（AlpenSalz）、风味独特的琼瑶浆调味盐（GewürzSalz）以及其他特色盐产品。</p>
+          <div class="product-detail-layout">
+            <div class="product-left">
+              <h1 class="product-title">{{ product.name }}</h1>
+              <div class="product-description" v-html="product.description"></div>
+              <div class="product-info">
+                <p v-if="product.price"><strong>价格：</strong>¥{{ product.price }}</p>
+                <p v-if="product.weight"><strong>规格：</strong>{{ product.weight }}</p>
+                <p v-if="product.ingredients"><strong>成分：</strong>{{ product.ingredients }}</p>
+                <p v-if="product.usage"><strong>使用方法：</strong>{{ product.usage }}</p>
+                <div v-if="nutritionData && nutritionData.length > 0">
+                  <h3>营养信息</h3>
+                  <table class="nutrition-table">
+                    <thead>
+                      <tr>
+                        <th>营养成分</th>
+                        <th>含量</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(item, index) in nutritionData" :key="index">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.value }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="product-right">
+              <div class="product-images">
+                <img :src="product.image" :alt="product.name" class="product-image" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
-      <!-- 阿尔卑斯盐产品板块 -->
-      <section class="product-section-area">
-        <div class="container">
-          <ProductSection
-            category="经典"
-            title="阿尔卑斯盐"
-            description="巴特赖兴哈勒阿尔卑斯盐产品世代以来都是厨房必备。无论过去还是现在，无论您喜欢烹饪什么菜肴，阿尔卑斯盐都是您烹饪和调味的得力助手。在如今注重营养的饮食文化中，我们采用纯正阿尔卑斯盐水制成的蒸发盐，风味恰到好处。此外，它们还添加了碘、氟、叶酸和硒等营养成分，提供人体必需的矿物质。"
-            :products="alpineSaltProducts"
-            :columns="5"
-            max-width="100%"
-            spacing="60px"
-          />
-        </div>
-      </section>
-
-    
     </main>
 
 
@@ -71,106 +74,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import ProductSection from '@/components/ProductSection.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
-import Carousel from '@/components/Carousel.vue'
-import { getProductList } from '@/api/product'
+import { getProductDetail } from '@/api/product'
 
-// 轮播图数据
-const carouselItems = ref([
-  {
-    id: 1,
-    image: 'https://images.unsplash.com/photo-1474440692490-2e83ae13ba29?w=1920',
-    title: '纯净阿尔卑斯盐',
-    description: '源自2.5亿年前的原始海洋，深藏于巴伐利亚阿尔卑斯山',
-    buttonText: '了解更多'
-  },
-  {
-    id: 2,
-    image: 'https://images.unsplash.com/photo-1505935428862-770b6f24f629?w=1920',
-    title: '天然调味盐系列',
-    description: '精选香草与香料，为您的美食增添独特风味',
-    buttonText: '探索产品'
-  },
-  {
-    id: 3,
-    image: 'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1920',
-    title: '可持续发展承诺',
-    description: '保护环境，传承自然的馈赠',
-    buttonText: '了解详情'
-  }
-])
-
-// 轮播图按钮点击事件
-const handleCarouselButtonClick = (item) => {
-  console.log('Carousel button clicked:', item)
-  // 可以根据不同的轮播项跳转到不同页面
-  if (item.id === 1) {
-    scrollToSection('alpine-salt')
-  } else if (item.id === 2) {
-    scrollToSection('seasoned-salt')
-  } else if (item.id === 3) {
-    scrollToSection('sustainability')
-  }
-}
-
-// 状态管理
+const route = useRoute()
 const isNavFixed = ref(false)
+const product = ref(null)
 
-// 产品数据
-const alpineSaltProducts = ref([])
-
-// 加载产品数据
-const loadProducts = async () => {
+const nutritionData = computed(() => {
+  if (!product.value?.nutrition) return []
   try {
-    const res = await getProductList({
-      categoryId: 2, // 阿尔卑斯盐分类ID
-      status: 1,
-      page: 1,
-      pageSize: 20
-    })
-    if (res.data && res.data.list) {
-      alpineSaltProducts.value = res.data.list
+    return JSON.parse(product.value.nutrition)
+  } catch {
+    return []
+  }
+})
+
+const loadProduct = async () => {
+  try {
+    const id = route.params.id
+    const res = await getProductDetail(id)
+    if (res.data) {
+      product.value = res.data
     }
   } catch (error) {
-    console.error('加载产品数据失败:', error)
-    // 如果API失败，使用默认数据
-    alpineSaltProducts.value = [
-      { id: 5, name: '阿尔卑斯粗盐', image: '@/assets/images/02.png' },
-      { id: 6, name: '阿尔卑斯细盐', image: '@/assets/images/02.png' },
-      { id: 7, name: 'AlpenJodSalz + 碘化物', image: '@/assets/images/02.png' },
-      { id: 8, name: 'AlpenJodSalz + 氟化物 + Folsäure', image: '@/assets/images/02.png' },
-      { id: 9, name: '阿尔卑斯盐 + 碘', image: '@/assets/images/02.png' },
-      { id: 10, name: '阿尔卑斯盐袋装', image: '@/assets/images/02.png' }
-    ]
+    console.error('加载产品详情失败:', error)
   }
 }
 
-// 平滑滚动到指定板块
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId)
   if (element) {
-    const offset = 100 // 导航栏高度
+    const offset = 100
     const elementPosition = element.getBoundingClientRect().top
     const offsetPosition = elementPosition + window.pageYOffset - offset
-    
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    })
+    window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
   }
-  mobileMenuOpen.value = false
 }
 
-// 监听滚动事件，实现导航栏固定
 const handleScroll = () => {
   isNavFixed.value = window.scrollY > 100
 }
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
-  loadProducts()
+  loadProduct()
 })
 
 onUnmounted(() => {
@@ -539,12 +489,68 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 // 产品板块区域
 .product-section-area {
   padding: 60px 0;
-
   
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+  }
+
+  .product-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .product-left {
+    position: sticky;
+    top: 100px;
+    
+    .product-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    
+    .product-description {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .product-info {
+      p {
+        margin-bottom: 15px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      h3 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .product-right {
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    
+    .product-images {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .product-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
   }
 }
 
@@ -935,6 +941,28 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     .container {
       padding: 0 15px;
     }
+
+    .product-detail-layout {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    
+    .product-left {
+      position: static;
+
+      .product-title {
+        font-size: 24px;
+      }
+
+      .product-description {
+        font-size: 14px;
+      }
+    }
+    
+    .product-right {
+      max-height: none;
+      overflow-y: visible;
+    }
   }
   
   // 产品板块移动端优化
@@ -1158,6 +1186,27 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     h3, p {
       color: #fff !important;
     }
+  }
+}
+
+.nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+  }
+  
+  tbody tr:hover {
+    background-color: #f9f9f9;
   }
 }
 </style>

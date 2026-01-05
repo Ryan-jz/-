@@ -2,7 +2,7 @@
  * 路由配置文件
  * 定义应用的所有路由规则和导航守卫
  */
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
 // 路由配置
@@ -79,7 +79,7 @@ const routes = [
 
 // 创建路由实例
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 

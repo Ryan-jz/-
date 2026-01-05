@@ -31,3 +31,8 @@ logger:
   path: "./temp/logs"
   level: "all"
   stdout: true
+
+# JWT配置
+jwt:
+  signingKey: "gf-admin-secret-key-2024"
+  expireTime: 86400

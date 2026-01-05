@@ -109,11 +109,10 @@
         :rules="formRules"
         label-width="120px"
       >
-        <!-- 国际化内容 -->
-        <el-divider content-position="left">多语言内容</el-divider>
-        <ProductI18nEditor v-model="formData.i18n" />
-        
         <el-divider content-position="left">基本信息</el-divider>
+        <el-form-item label="产品名称" prop="name">
+          <el-input v-model="formData.name" placeholder="请输入产品名称" />
+        </el-form-item>
         <el-form-item label="产品分类" prop="categoryId">
           <el-select v-model="formData.categoryId" placeholder="请选择分类" style="width: 100%">
             <el-option
@@ -126,6 +125,12 @@
         </el-form-item>
         <el-form-item label="主图片" prop="image">
           <ImageUpload v-model="formData.image" placeholder="上传产品主图" />
+        </el-form-item>
+        <el-form-item label="副标题" prop="subtitle">
+          <el-input v-model="formData.subtitle" placeholder="请输入副标题" />
+        </el-form-item>
+        <el-form-item label="产品描述" prop="description">
+          <el-input v-model="formData.description" type="textarea" :rows="4" placeholder="请输入产品描述" />
         </el-form-item>
         
         <el-divider content-position="left">价格库存</el-divider>
@@ -154,6 +159,9 @@
             placeholder="请输入使用方法"
           />
         </el-form-item>
+        <el-form-item label="营养信息" prop="nutrition">
+          <NutritionEditor v-model="formData.nutrition" />
+        </el-form-item>
         
         <el-divider content-position="left">其他设置</el-divider>
         <el-form-item label="排序" prop="sortOrder">
@@ -178,14 +186,13 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ImageUpload from '@/components/ImageUpload.vue'
-import ProductI18nEditor from '@/components/I18nEditor/ProductI18nEditor.vue'
+import NutritionEditor from '@/components/NutritionEditor.vue'
 import {
   getCategoryList,
   getProductList,
   createProduct,
   updateProduct,
-  deleteProduct,
-  getProductI18n
+  deleteProduct
 } from '@/api/product'
 
 // 搜索表单
@@ -209,20 +216,19 @@ const dialogTitle = ref('新增产品')
 const formRef = ref(null)
 const formData = reactive({
   id: null,
+  name: '',
+  subtitle: '',
+  description: '',
   categoryId: null,
   image: '',
   price: 0,
   stock: 0,
   weight: '',
   ingredients: '',
+  nutrition: '',
   usage: '',
   sortOrder: 0,
-  status: 1,
-  i18n: {
-    'zh-CN': { name: '', subtitle: '', description: '', ingredients: '', usage: '', features: [] },
-    'en-US': { name: '', subtitle: '', description: '', ingredients: '', usage: '', features: [] },
-    'de-DE': { name: '', subtitle: '', description: '', ingredients: '', usage: '', features: [] }
-  }
+  status: 1
 })
 
 // 表单验证规则
@@ -288,20 +294,19 @@ const handleCreate = () => {
   dialogTitle.value = '新增产品'
   Object.assign(formData, {
     id: null,
+    name: '',
+    subtitle: '',
+    description: '',
     categoryId: null,
     image: '',
     price: 0,
     stock: 0,
     weight: '',
     ingredients: '',
+    nutrition: '',
     usage: '',
     sortOrder: 0,
-    status: 1,
-    i18n: {
-      'zh-CN': { name: '', subtitle: '', description: '', ingredients: '', usage: '', features: [] },
-      'en-US': { name: '', subtitle: '', description: '', ingredients: '', usage: '', features: [] },
-      'de-DE': { name: '', subtitle: '', description: '', ingredients: '', usage: '', features: [] }
-    }
+    status: 1
   })
   dialogVisible.value = true
 }
@@ -310,56 +315,22 @@ const handleCreate = () => {
 const handleEdit = async (row) => {
   dialogTitle.value = '编辑产品'
   
-  // 复制基本数据
   Object.assign(formData, {
     id: row.id,
+    name: row.name,
+    subtitle: row.subtitle,
+    description: row.description,
     categoryId: row.categoryId,
     image: row.image,
     price: row.price,
     stock: row.stock,
     weight: row.weight,
     ingredients: row.ingredients,
+    nutrition: row.nutrition,
     usage: row.usage,
     sortOrder: row.sortOrder,
     status: row.status
   })
-  
-  // 获取国际化数据
-  try {
-    const res = await getProductI18n(row.id)
-    if (res.code === 0 && res.data) {
-      formData.i18n = res.data
-    }
-  } catch (error) {
-    console.error('获取国际化数据失败', error)
-    // 如果获取失败，使用当前行的数据作为默认值
-    formData.i18n = {
-      'zh-CN': { 
-        name: row.name || '', 
-        subtitle: row.subtitle || '', 
-        description: row.description || '',
-        ingredients: row.ingredients || '',
-        usage: row.usage || '',
-        features: []
-      },
-      'en-US': { 
-        name: row.nameEn || '', 
-        subtitle: row.subtitle || '', 
-        description: row.description || '',
-        ingredients: row.ingredients || '',
-        usage: row.usage || '',
-        features: []
-      },
-      'de-DE': { 
-        name: row.name || '', 
-        subtitle: row.subtitle || '', 
-        description: row.description || '',
-        ingredients: row.ingredients || '',
-        usage: row.usage || '',
-        features: []
-      }
-    }
-  }
   
   dialogVisible.value = true
 }

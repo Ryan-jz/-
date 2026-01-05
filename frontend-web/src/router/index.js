@@ -42,6 +42,12 @@ const routes = [
     meta: { title: '产品列表' }
   },
   {
+    path: '/nachhaltigkeit',
+    name: 'Nachhaltigkeit',
+    component: () => import('@/views/nachhaltigkeit/index.vue'),
+    meta: { title: '可持续性' }
+  },
+  {
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('@/views/product/detail.vue'),

@@ -63,7 +63,9 @@ const previewVisible = ref(false)
 
 // 上传地址
 const uploadUrl = computed(() => {
-  return '/api/v1/upload/image'
+  
+  const baseURL = import.meta.env.VITE_API_BASE_URL+'/api'
+  return `${baseURL}/v1/upload/image`
 })
 
 // 上传请求头

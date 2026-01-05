@@ -1,12 +1,12 @@
 -- 轮播图表
 CREATE TABLE IF NOT EXISTS `banner` (
   `banner_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '轮播图ID',
-  `title` varchar(100) NOT NULL COMMENT '标题',
-  `description` varchar(500) DEFAULT NULL COMMENT '描述',
+  `title` varchar(100) DEFAULT '' COMMENT '标题',
+  `description` varchar(500) DEFAULT '' COMMENT '描述',
   `media_type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '媒体类型（1图片 2视频）',
   `media_url` varchar(500) NOT NULL COMMENT '媒体URL',
-  `button_text` varchar(50) DEFAULT NULL COMMENT '按钮文字',
-  `button_link` varchar(500) DEFAULT NULL COMMENT '按钮链接',
+  `button_text` varchar(50) DEFAULT '' COMMENT '按钮文字',
+  `button_link` varchar(500) DEFAULT '' COMMENT '按钮链接',
   `sort_order` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态（0停用 1启用）',
   `position` varchar(50) DEFAULT 'home' COMMENT '位置（home首页 product产品页）',
@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS `banner` (
   KEY `idx_sort_order` (`sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='轮播图表';
 
--- 插入示例数据
 INSERT INTO `banner` (`title`, `description`, `media_type`, `media_url`, `button_text`, `button_link`, `sort_order`, `status`, `position`)
 VALUES 
 ('纯净阿尔卑斯盐', '源自2.5亿年前的原始海洋，深藏于巴伐利亚阿尔卑斯山', 1, 'https://images.unsplash.com/photo-1474440692490-2e83ae13ba29?w=1920', '了解更多', '#alpine-salt', 1, 1, 'home'),

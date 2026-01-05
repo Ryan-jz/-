@@ -103,13 +103,14 @@ onUnmounted(() => {
 
 <style scoped>
 .primary-navigation {
-  color: #fff;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  transition: all 0.3s ease;
+    transition: all 0.3s;
+    height: 68px;
+    border-top: 2px solid #fff;
+    border-bottom: 3px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #92121B 0%, #D5061C 25%, #D5061C 75%, #92121B 100%);
 }
 
 .primary-navigation.affixed {

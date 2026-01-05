@@ -40,17 +40,28 @@ func (c *cAuth) Login(r *ghttp.Request) {
 }
 
 func (c *cAuth) GetInfo(r *ghttp.Request) {
-	customCtx := service.Context().Get(r.Context())
-	if customCtx == nil {
-		r.Response.WriteJson(g.Map{"code": 1, "message": "获取用户信息失败"})
+	token := r.Header.Get("Authorization")
+	if token == "" {
+		r.Response.WriteJson(g.Map{"code": -1, "message": "未登录"})
 		return
 	}
 
-	claims := customCtx.Data["ContextKey"].(*service.Claims)
+	if len(token) > 7 && token[:7] == "Bearer " {
+		token = token[7:]
+	}
+
+	g.Log().Infof(r.Context(), "GetInfo token: %s", token)
+
+	claims, err := service.JWT().ParseToken(token)
+	if err != nil {
+		g.Log().Errorf(r.Context(), "ParseToken error: %v", err)
+		r.Response.WriteJson(g.Map{"code": -1, "message": "token无效"})
+		return
+	}
 
 	userInfo, err := service.Auth().GetUserInfo(r.Context(), claims.UserId)
 	if err != nil {
-		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
+		r.Response.WriteJson(g.Map{"code": -1, "message": err.Error()})
 		return
 	}
 

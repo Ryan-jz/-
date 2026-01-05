@@ -16,6 +16,7 @@ CREATE TABLE `product` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '产品ID',
   `category_id` int(11) unsigned NOT NULL COMMENT '分类ID',
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '产品名称',
+  `name_en` varchar(200) DEFAULT '' COMMENT '产品英文名称',
   `subtitle` varchar(500) DEFAULT '' COMMENT '副标题',
   `description` text COMMENT '产品描述',
   `image` varchar(500) DEFAULT '' COMMENT '主图片',

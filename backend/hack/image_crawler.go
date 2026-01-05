@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	targetURL := "https://www.bad-reichenhaller.de/de/index.html"
+	targetURL := "https://www.bad-reichenhaller.de/de/nachhaltigkeit.html#recycling-tipps"
 	outputDir := "./downloaded_images"
 
 	// 创建输出目录
@@ -93,7 +93,7 @@ func downloadImage(imageURL, outputDir string) error {
 	// 生成文件名
 	parsedURL, _ := url.Parse(imageURL)
 	filename := path.Base(parsedURL.Path)
-	
+
 	// 如果文件名为空或只是 "/"，使用默认名称
 	if filename == "" || filename == "/" {
 		filename = fmt.Sprintf("image_%d.jpg", len(imageURL))
