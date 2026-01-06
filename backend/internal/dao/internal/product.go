@@ -20,50 +20,60 @@ type ProductDao struct {
 
 // ProductColumns defines and stores column names for table product.
 type ProductColumns struct {
-	Id          string // 产品ID
-	CategoryId  string // 分类ID
-	Name        string // 产品名称
-	NameEn      string // 产品英文名称
-	Subtitle    string // 副标题
-	Description string // 产品描述
-	Image       string // 主图片
-	Images      string // 产品图片集(JSON数组)
-	Price       string // 价格
-	Stock       string // 库存
-	Weight      string // 重量/规格
-	Ingredients string // 成分说明
-	Nutrition   string // 营养信息(JSON)
-	Usage       string // 使用方法
-	Features    string // 产品特点(JSON数组)
-	SortOrder   string // 排序
-	Status      string // 状态：1上架 0下架
-	ViewCount   string // 浏览次数
-	CreatedAt   string // 创建时间
-	UpdatedAt   string // 更新时间
+	Id            string // 产品ID
+	CategoryId    string // 分类ID
+	Name          string // 产品名称
+	NameEn        string // 产品英文名称
+	Subtitle      string // 副标题
+	Description   string // 产品描述
+	Image         string // 主图片
+	Images        string // 产品图片集(JSON数组)
+	Price         string // 价格
+	Stock         string // 库存
+	Weight        string // 重量/规格
+	Ingredients   string // 成分说明
+	Nutrition     string // 营养信息(JSON)
+	Usage         string // 使用方法
+	Features      string // 产品特点(JSON数组)
+	OrganicCert   string // 有机认证图标
+	RecyclingInfo string // 回收信息
+	AllergenInfo  string // 过敏原信息
+	StorageInfo   string // 储存信息
+	Origin        string // 产地
+	SortOrder     string // 排序
+	Status        string // 状态：1上架 0下架
+	ViewCount     string // 浏览次数
+	CreatedAt     string // 创建时间
+	UpdatedAt     string // 更新时间
 }
 
 // productColumns holds the columns for table product.
 var productColumns = ProductColumns{
-	Id:          "id",
-	CategoryId:  "category_id",
-	Name:        "name",
-	NameEn:      "name_en",
-	Subtitle:    "subtitle",
-	Description: "description",
-	Image:       "image",
-	Images:      "images",
-	Price:       "price",
-	Stock:       "stock",
-	Weight:      "weight",
-	Ingredients: "ingredients",
-	Nutrition:   "nutrition",
-	Usage:       "usage",
-	Features:    "features",
-	SortOrder:   "sort_order",
-	Status:      "status",
-	ViewCount:   "view_count",
-	CreatedAt:   "created_at",
-	UpdatedAt:   "updated_at",
+	Id:            "id",
+	CategoryId:    "category_id",
+	Name:          "name",
+	NameEn:        "name_en",
+	Subtitle:      "subtitle",
+	Description:   "description",
+	Image:         "image",
+	Images:        "images",
+	Price:         "price",
+	Stock:         "stock",
+	Weight:        "weight",
+	Ingredients:   "ingredients",
+	Nutrition:     "nutrition",
+	Usage:         "usage",
+	Features:      "features",
+	OrganicCert:   "organic_cert",
+	RecyclingInfo: "recycling_info",
+	AllergenInfo:  "allergen_info",
+	StorageInfo:   "storage_info",
+	Origin:        "origin",
+	SortOrder:     "sort_order",
+	Status:        "status",
+	ViewCount:     "view_count",
+	CreatedAt:     "created_at",
+	UpdatedAt:     "updated_at",
 }
 
 // NewProductDao creates and returns a new DAO object for table data access.

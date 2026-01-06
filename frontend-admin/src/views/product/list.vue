@@ -163,6 +163,33 @@
           <NutritionEditor v-model="formData.nutrition" />
         </el-form-item>
         
+        <el-divider content-position="left">产品详情</el-divider>
+        <el-form-item label="有机认证图标" prop="organicCert">
+          <ImageUpload v-model="formData.organicCert" placeholder="上传有机认证图标" />
+        </el-form-item>
+        <el-form-item label="产地" prop="origin">
+          <el-input v-model="formData.origin" placeholder="请输入产地" />
+        </el-form-item>
+        <el-form-item label="过敏原信息" prop="allergenInfo">
+          <el-input
+            v-model="formData.allergenInfo"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入过敏原信息"
+          />
+        </el-form-item>
+        <el-form-item label="储存信息" prop="storageInfo">
+          <el-input v-model="formData.storageInfo" placeholder="请输入储存信息" />
+        </el-form-item>
+        <el-form-item label="回收信息" prop="recyclingInfo">
+          <el-input
+            v-model="formData.recyclingInfo"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入回收信息"
+          />
+        </el-form-item>
+        
         <el-divider content-position="left">其他设置</el-divider>
         <el-form-item label="排序" prop="sortOrder">
           <el-input-number v-model="formData.sortOrder" :min="0" />
@@ -227,6 +254,11 @@ const formData = reactive({
   ingredients: '',
   nutrition: '',
   usage: '',
+  organicCert: '',
+  recyclingInfo: '',
+  allergenInfo: '',
+  storageInfo: '',
+  origin: '',
   sortOrder: 0,
   status: 1
 })
@@ -305,6 +337,11 @@ const handleCreate = () => {
     ingredients: '',
     nutrition: '',
     usage: '',
+    organicCert: '',
+    recyclingInfo: '',
+    allergenInfo: '',
+    storageInfo: '',
+    origin: '',
     sortOrder: 0,
     status: 1
   })
@@ -328,6 +365,11 @@ const handleEdit = async (row) => {
     ingredients: row.ingredients,
     nutrition: row.nutrition,
     usage: row.usage,
+    organicCert: row.organicCert || '',
+    recyclingInfo: row.recyclingInfo || '',
+    allergenInfo: row.allergenInfo || '',
+    storageInfo: row.storageInfo || '',
+    origin: row.origin || '',
     sortOrder: row.sortOrder,
     status: row.status
   })

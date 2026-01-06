@@ -24,7 +24,7 @@ export default defineConfig({
     // 代理配置 - 解决开发环境跨域问题
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',   // 后端 API 地址
+        target: 'http://8.133.175.112:8000',   // 后端 API 地址
         changeOrigin: true,                // 改变请求源
         // 不需要 rewrite，保持 /api 前缀
       }

@@ -34,34 +34,68 @@
           <div class="product-detail-layout">
             <div class="product-left">
               <h1 class="product-title">{{ product.name }}</h1>
+              
+              <div class="product-badges" v-if="product.organic_cert">
+                <img :src="product.organic_cert" alt="有机认证" class="cert-badge">
+              </div>
+
               <div class="product-description" v-html="product.description"></div>
-              <div class="product-info">
-                <p v-if="product.price"><strong>价格：</strong>¥{{ product.price }}</p>
-                <p v-if="product.weight"><strong>规格：</strong>{{ product.weight }}</p>
-                <p v-if="product.ingredients"><strong>成分：</strong>{{ product.ingredients }}</p>
-                <p v-if="product.usage"><strong>使用方法：</strong>{{ product.usage }}</p>
-                <div v-if="nutritionData && nutritionData.length > 0">
-                  <h3>营养信息</h3>
-                  <table class="nutrition-table">
-                    <thead>
-                      <tr>
-                        <th>营养成分</th>
-                        <th>含量</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(item, index) in nutritionData" :key="index">
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.value }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+
+              <div class="product-specs">
+                <div class="spec-item" v-if="product.weight">
+                  <strong>规格：</strong>{{ product.weight }}
+                </div>
+                <div class="spec-item" v-if="product.origin">
+                  <strong>产地：</strong>{{ product.origin }}
+                </div>
+                <div class="spec-item" v-if="product.ingredients">
+                  <strong>成分：</strong>{{ product.ingredients }}
                 </div>
               </div>
+
+              <div class="nutrition-section" v-if="nutritionData && nutritionData.length > 0">
+                <h3>营养信息</h3>
+                <p class="nutrition-note">平均营养价值</p>
+                <table class="nutrition-table">
+                  <tbody>
+                    <tr v-for="(item, index) in nutritionData" :key="index">
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.value }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="allergen-info" v-if="product.allergen_info">
+                <h3>过敏原信息</h3>
+                <p>{{ product.allergen_info }}</p>
+              </div>
+
+              <div class="storage-info" v-if="product.storage_info">
+                <p><strong>储存：</strong>{{ product.storage_info }}</p>
+              </div>
+
+              <div class="recycling-info" v-if="product.recycling_info">
+                <h3>回收信息</h3>
+                <div v-html="product.recycling_info"></div>
+              </div>
+
+              <div class="product-actions">
+                <button class="btn-primary">在线购买</button>
+                <button class="btn-secondary">立即购买</button>
+              </div>
+
+              <div class="product-note" v-if="product.usage">
+                <p>{{ product.usage }}</p>
+              </div>
             </div>
+
             <div class="product-right">
               <div class="product-images">
                 <img :src="product.image" :alt="product.name" class="product-image" />
+                <template v-if="productImages && productImages.length > 0">
+                  <img v-for="(img, idx) in productImages" :key="idx" :src="img" :alt="product.name" class="product-image" />
+                </template>
               </div>
             </div>
           </div>
@@ -87,6 +121,15 @@ const nutritionData = computed(() => {
   if (!product.value?.nutrition) return []
   try {
     return JSON.parse(product.value.nutrition)
+  } catch {
+    return []
+  }
+})
+
+const productImages = computed(() => {
+  if (!product.value?.images) return []
+  try {
+    return JSON.parse(product.value.images)
   } catch {
     return []
   }
@@ -508,37 +551,124 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     top: 100px;
     
     .product-title {
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
       color: #333;
+    }
+
+    .product-badges {
+      margin-bottom: 20px;
+
+      .cert-badge {
+        width: 80px;
+        height: auto;
+      }
     }
     
     .product-description {
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.8;
       color: #666;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
-    .product-info {
-      p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        line-height: 1.6;
+    .product-specs {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #f8f8f8;
+      border-radius: 4px;
+
+      .spec-item {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #666;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        strong {
+          color: #333;
+        }
       }
+    }
+
+    .nutrition-section {
+      margin-bottom: 25px;
 
       h3 {
-        margin-top: 20px;
+        font-size: 18px;
         margin-bottom: 10px;
-        font-size: 20px;
+        color: #333;
       }
+
+      .nutrition-note {
+        font-size: 13px;
+        color: #999;
+        margin-bottom: 10px;
+      }
+    }
+
+    .allergen-info,
+    .storage-info,
+    .recycling-info {
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #666;
+
+      h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #333;
+      }
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 15px;
+      margin: 30px 0;
+
+      button {
+        padding: 12px 30px;
+        font-size: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: #c41e3a;
+        color: #fff;
+
+        &:hover {
+          background: #a01830;
+        }
+      }
+
+      .btn-secondary {
+        background: #fff;
+        color: #c41e3a;
+        border: 2px solid #c41e3a;
+
+        &:hover {
+          background: #c41e3a;
+          color: #fff;
+        }
+      }
+    }
+
+    .product-note {
+      font-size: 13px;
+      color: #999;
+      font-style: italic;
     }
   }
 
   .product-right {
     overflow-y: auto;
-    max-height: calc(100vh - 200px);
+
     
     .product-images {
       display: flex;
@@ -1192,21 +1322,25 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 .nutrition-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
   
-  th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
+  td {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 10px 0;
+    font-size: 14px;
+
+    &:first-child {
+      color: #666;
+    }
+
+    &:last-child {
+      text-align: right;
+      color: #333;
+      font-weight: 500;
+    }
   }
-  
-  th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-  }
-  
-  tbody tr:hover {
-    background-color: #f9f9f9;
+
+  tr:last-child td {
+    border-bottom: none;
   }
 }
 </style>

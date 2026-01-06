@@ -122,40 +122,52 @@ type DetailReq struct {
 }
 
 type DetailRes struct {
-	Id          uint     `json:"id"`
-	CategoryId  uint     `json:"categoryId"`
-	Name        string   `json:"name"`
-	Subtitle    string   `json:"subtitle"`
-	Description string   `json:"description"`
-	Image       string   `json:"image"`
-	Images      []string `json:"images"`
-	Price       float64  `json:"price"`
-	Stock       int      `json:"stock"`
-	Weight      string   `json:"weight"`
-	Ingredients string   `json:"ingredients"`
-	Usage       string   `json:"usage"`
-	Features    []string `json:"features"`
-	SortOrder   int      `json:"sortOrder"`
-	Status      int      `json:"status"`
-	ViewCount   int      `json:"viewCount"`
+	Id            uint     `json:"id"`
+	CategoryId    uint     `json:"categoryId"`
+	Name          string   `json:"name"`
+	Subtitle      string   `json:"subtitle"`
+	Description   string   `json:"description"`
+	Image         string   `json:"image"`
+	Images        []string `json:"images"`
+	Price         float64  `json:"price"`
+	Stock         int      `json:"stock"`
+	Weight        string   `json:"weight"`
+	Ingredients   string   `json:"ingredients"`
+	Nutrition     string   `json:"nutrition"`
+	Usage         string   `json:"usage"`
+	Features      []string `json:"features"`
+	OrganicCert   string   `json:"organicCert"`
+	RecyclingInfo string   `json:"recyclingInfo"`
+	AllergenInfo  string   `json:"allergenInfo"`
+	StorageInfo   string   `json:"storageInfo"`
+	Origin        string   `json:"origin"`
+	SortOrder     int      `json:"sortOrder"`
+	Status        int      `json:"status"`
+	ViewCount     int      `json:"viewCount"`
 }
 
 type CreateReq struct {
-	g.Meta      `path:"/product/create" method:"post" tags:"产品" summary:"创建产品"`
-	CategoryId  uint     `json:"categoryId" v:"required#分类ID不能为空"`
-	Name        string   `json:"name" v:"required#产品名称不能为空"`
-	Subtitle    string   `json:"subtitle"`
-	Description string   `json:"description"`
-	Image       string   `json:"image" v:"required#产品图片不能为空"`
-	Images      []string `json:"images"`
-	Price       float64  `json:"price"`
-	Stock       int      `json:"stock"`
-	Weight      string   `json:"weight"`
-	Ingredients string   `json:"ingredients"`
-	Usage       string   `json:"usage"`
-	Features    []string `json:"features"`
-	SortOrder   int      `json:"sortOrder"`
-	Status      int      `json:"status" d:"1"`
+	g.Meta        `path:"/product/create" method:"post" tags:"产品" summary:"创建产品"`
+	CategoryId    uint     `json:"categoryId" v:"required#分类ID不能为空"`
+	Name          string   `json:"name" v:"required#产品名称不能为空"`
+	Subtitle      string   `json:"subtitle"`
+	Description   string   `json:"description"`
+	Image         string   `json:"image" v:"required#产品图片不能为空"`
+	Images        []string `json:"images"`
+	Price         float64  `json:"price"`
+	Stock         int      `json:"stock"`
+	Weight        string   `json:"weight"`
+	Ingredients   string   `json:"ingredients"`
+	Nutrition     string   `json:"nutrition"`
+	Usage         string   `json:"usage"`
+	Features      []string `json:"features"`
+	OrganicCert   string   `json:"organicCert"`
+	RecyclingInfo string   `json:"recyclingInfo"`
+	AllergenInfo  string   `json:"allergenInfo"`
+	StorageInfo   string   `json:"storageInfo"`
+	Origin        string   `json:"origin"`
+	SortOrder     int      `json:"sortOrder"`
+	Status        int      `json:"status" d:"1"`
 }
 
 type CreateRes struct {
@@ -163,22 +175,28 @@ type CreateRes struct {
 }
 
 type UpdateReq struct {
-	g.Meta      `path:"/product/update" method:"put" tags:"产品" summary:"更新产品"`
-	Id          uint     `json:"id" v:"required#产品ID不能为空"`
-	CategoryId  uint     `json:"categoryId" v:"required#分类ID不能为空"`
-	Name        string   `json:"name" v:"required#产品名称不能为空"`
-	Subtitle    string   `json:"subtitle"`
-	Description string   `json:"description"`
-	Image       string   `json:"image" v:"required#产品图片不能为空"`
-	Images      []string `json:"images"`
-	Price       float64  `json:"price"`
-	Stock       int      `json:"stock"`
-	Weight      string   `json:"weight"`
-	Ingredients string   `json:"ingredients"`
-	Usage       string   `json:"usage"`
-	Features    []string `json:"features"`
-	SortOrder   int      `json:"sortOrder"`
-	Status      int      `json:"status"`
+	g.Meta        `path:"/product/update" method:"put" tags:"产品" summary:"更新产品"`
+	Id            uint     `json:"id" v:"required#产品ID不能为空"`
+	CategoryId    uint     `json:"categoryId" v:"required#分类ID不能为空"`
+	Name          string   `json:"name" v:"required#产品名称不能为空"`
+	Subtitle      string   `json:"subtitle"`
+	Description   string   `json:"description"`
+	Image         string   `json:"image" v:"required#产品图片不能为空"`
+	Images        []string `json:"images"`
+	Price         float64  `json:"price"`
+	Stock         int      `json:"stock"`
+	Weight        string   `json:"weight"`
+	Ingredients   string   `json:"ingredients"`
+	Nutrition     string   `json:"nutrition"`
+	Usage         string   `json:"usage"`
+	Features      []string `json:"features"`
+	OrganicCert   string   `json:"organicCert"`
+	RecyclingInfo string   `json:"recyclingInfo"`
+	AllergenInfo  string   `json:"allergenInfo"`
+	StorageInfo   string   `json:"storageInfo"`
+	Origin        string   `json:"origin"`
+	SortOrder     int      `json:"sortOrder"`
+	Status        int      `json:"status"`
 }
 
 type UpdateRes struct{}

@@ -47,11 +47,23 @@ const routes = [
     component: () => import('@/views/nachhaltigkeit/index.vue'),
     meta: { title: '可持续性' }
   },
+    {
+    path: '/dian',
+    name: 'Dian',
+    component: () => import('@/views/dian/index.vue'),
+    meta: { title: '可持续性' }
+  },
   {
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('@/views/product/detail.vue'),
     meta: { title: '产品详情' }
+  },
+    {
+    path: '/alpensalze',
+    name: 'Alpensalze',
+    component: () => import('@/views/alpensalze/index.vue'),
+    meta: { title: '关于我们' }
   },
   {
     path: '/test-unocss',
