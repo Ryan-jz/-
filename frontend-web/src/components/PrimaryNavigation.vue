@@ -22,10 +22,10 @@
                     :key="category.id" 
                     class="dropdown-column"
                   >
-                    <router-link :to="`/product?category=${category.id}`">
+                    <router-link :to="`/product?category=${category.id}`"  v-if="Array.isArray(category?.products) &&category?.products?.length>0">
                       <h4 class="dropdown-title">{{ category.name }}</h4>
                     </router-link>
-                    <ul>
+                    <ul v-if="Array.isArray(category?.products) && category?.products?.length>0">
                       <li v-for="product in category.products" :key="product.id">
                         <router-link :to="`/product/${product.id}`">
                           {{ product.name }}
@@ -39,13 +39,13 @@
           </div>
         </li>
         <li class="nav-item">
-          <a href="https://www.example.com" target="_blank">德育</a>
+           <router-link to="/recipe">食谱</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/about">关于</router-link>
+          <router-link to="/nachhaltigkeit">可持续性</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/contact">联系</router-link>
+          <router-link to="/brand">品牌</router-link>
         </li>
       </ul>
     </div>
@@ -103,6 +103,9 @@ onUnmounted(() => {
 
 <style scoped>
 .primary-navigation {
+    position: sticky;
+    top: 0;
+    z-index: 999;
     transition: all 0.3s;
     height: 68px;
     border-top: 2px solid #fff;
@@ -194,6 +197,7 @@ onUnmounted(() => {
   visibility: hidden;
   padding-top: 10px;
   pointer-events: none;
+  z-index: 9999999;
 }
 
 .dropdown-menu {

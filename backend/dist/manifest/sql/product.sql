@@ -15,7 +15,9 @@ CREATE TABLE `product_category` (
 CREATE TABLE `product` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '产品ID',
   `category_id` int(11) unsigned NOT NULL COMMENT '分类ID',
+  `category_ids` varchar(255) DEFAULT '' COMMENT '分类ID列表(逗号分隔)',
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '产品名称',
+  `name_en` varchar(200) DEFAULT '' COMMENT '产品英文名称',
   `subtitle` varchar(500) DEFAULT '' COMMENT '副标题',
   `description` text COMMENT '产品描述',
   `image` varchar(500) DEFAULT '' COMMENT '主图片',
@@ -27,6 +29,12 @@ CREATE TABLE `product` (
   `nutrition` text COMMENT '营养信息(JSON)',
   `usage` text COMMENT '使用方法',
   `features` text COMMENT '产品特点(JSON数组)',
+  `organic_cert` varchar(500) DEFAULT '' COMMENT '有机认证图标',
+  `recycling_info` text COMMENT '回收信息',
+  `purchase_link` varchar(500) DEFAULT '' COMMENT '购买链接',
+  `allergen_info` text COMMENT '过敏原信息',
+  `storage_info` varchar(500) DEFAULT '' COMMENT '储存信息',
+  `origin` varchar(200) DEFAULT '' COMMENT '产地',
   `sort_order` int(11) DEFAULT 0 COMMENT '排序',
   `status` tinyint(1) DEFAULT 1 COMMENT '状态：1上架 0下架',
   `view_count` int(11) DEFAULT 0 COMMENT '浏览次数',
@@ -36,6 +44,9 @@ CREATE TABLE `product` (
   KEY `idx_category_id` (`category_id`),
   KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='产品表';
+
+-- 添加新字段的 ALTER TABLE 语句（如果表已存在）
+ 
 
 INSERT INTO `product_category` (`name`, `slug`, `description`, `sort_order`, `status`) VALUES
 ('调味盐系列', 'seasoned-salt', 'BBQ调味盐、香草调味盐等特色调味盐产品', 1, 1),
@@ -61,3 +72,4 @@ INSERT INTO `product` (`category_id`, `name`, `subtitle`, `description`, `image`
 (4, '喜马拉雅粉盐', '粉红色泽，矿物质丰富', '来自喜马拉雅山脉的天然粉盐，富含84种矿物质和微量元素，呈现独特的粉红色泽。', 'https://via.placeholder.com/300x350?text=Himalayan', 29.90, 400, '500g', 1, 1),
 (4, '黑盐', '独特风味，印度特色', '印度传统黑盐，带有独特的硫磺味，常用于印度料理和素食烹饪。', 'https://via.placeholder.com/300x350?text=Black+Salt', 24.90, 300, '250g', 2, 1),
 (4, '烟熏盐', '烟熏风味，提升层次', '经过天然木材烟熏处理的盐，带有浓郁的烟熏香气，为菜肴增添独特风味。', 'https://via.placeholder.com/300x350?text=Smoked', 26.90, 350, '200g', 3, 1);
+

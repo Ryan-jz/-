@@ -34,7 +34,7 @@
             <el-image
               v-if="row.image"
               :src="getImageUrl(row.image)"
-              fit="cover"
+              fit="fill"
               style="width: 60px; height: 60px; border-radius: 4px"
               :preview-src-list="[getImageUrl(row.image)]"
             />
@@ -104,16 +104,17 @@
         ref="formRef"
         :model="formData"
         :rules="formRules"
-        label-width="120px"
+        label-width="100px"
       >
-        <el-divider content-position="left">基本信息</el-divider>
+        <el-form-item label="食谱图片" prop="image">
+          <ImageUpload v-model="formData.image" />
+        </el-form-item>
+        
+        <el-form-item label="食谱名称" prop="name">
+          <el-input v-model="formData.name" placeholder="请输入食谱名称" />
+        </el-form-item>
+
         <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="烹饪时间" prop="cookingTime">
-              <el-input-number v-model="formData.cookingTime" :min="0" :step="5" />
-              <span style="margin-left: 10px">分钟</span>
-            </el-form-item>
-          </el-col>
           <el-col :span="8">
             <el-form-item label="难度等级" prop="difficulty">
               <el-select v-model="formData.difficulty" style="width: 100%">
@@ -129,6 +130,12 @@
               <span style="margin-left: 10px">人份</span>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="烹饪时间" prop="cookingTime">
+              <el-input-number v-model="formData.cookingTime" :min="0" :step="5" />
+              <span style="margin-left: 10px">分钟</span>
+            </el-form-item>
+          </el-col>
         </el-row>
 
         <el-form-item label="食材列表" prop="ingredients">
@@ -140,6 +147,10 @@
             </div>
             <el-button type="primary" size="small" @click="addIngredient">添加食材</el-button>
           </div>
+        </el-form-item>
+
+        <el-form-item label="制作步骤" prop="content">
+          <RichTextEditor v-model="formData.content" />
         </el-form-item>
 
         <el-form-item label="关联产品" prop="productIds">
@@ -154,13 +165,9 @@
         </el-form-item>
 
         <el-form-item label="标签" prop="tagIds">
-          <el-select v-model="formData.tagIds" multiple placeholder="请选择标签" style="width: 100%;">
+          <el-select v-model="formData.tagIds" multiple placeholder="请选择标签" style="width: 100%">
             <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id" />
           </el-select>
-        </el-form-item>
-
-        <el-form-item label="制作步骤" prop="content">
-          <RichTextEditor v-model="formData.content" />
         </el-form-item>
 
         <el-row :gutter="20">
@@ -192,7 +199,6 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ImageUpload from '@/components/ImageUpload.vue'
 import RichTextEditor from '@/components/RichTextEditor.vue'
-import RecipeI18nEditor from '@/components/I18nEditor/RecipeI18nEditor.vue'
 import {
   getRecipeList,
   createRecipe,
@@ -225,6 +231,8 @@ const formData = reactive({
   id: null,
   image: '',
   images: [],
+  name: '',
+
   ingredients: [{ name: '', amount: '' }],
   content: '',
   cookingTime: 30,
@@ -340,19 +348,21 @@ const handleCreate = () => {
 // 编辑
 const handleEdit = async (row) => {
   dialogTitle.value = '编辑食谱'
-  
+  console.log(row)
   // 复制基本数据
   Object.assign(formData, {
     id: row.id,
+    name: row.name,
     image: row.image,
     productIds: row.productIds ? row.productIds.split(',').map(Number) : [],
-    ingredients: typeof row.ingredients === 'string' ? JSON.parse(row.ingredients || '[]') : row.ingredients || [{ name: '', amount: '' }],
-    images: typeof row.images === 'string' ? JSON.parse(row.images || '[]') : row.images || [],
-    content: row.content,
-    cookingTime: row.cookingTime,
-    difficulty: row.difficulty,
-    servings: row.servings,
-    sortOrder: row.sortOrder,
+    ingredients: row.ingredients && row.ingredients.length > 0 ? row.ingredients : [{ name: '', amount: '' }],
+    images: row.images || [],
+    content: row.content || '',
+    cookingTime: row.cookingTime || 30,
+    difficulty: row.difficulty || 1,
+    servings: row.servings || 2,
+    tagIds: row.tagIds ? row.tagIds.split(',').map(Number) : [],
+    sortOrder: row.sortOrder || 0,
     status: row.status
   })
   

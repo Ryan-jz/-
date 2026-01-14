@@ -120,7 +120,7 @@ const getProduct = (id) => products.value.find(p => p.id === id)
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('@/assets/downloaded_images/berge.jpg') center/cover no-repeat;
+  background: url('@/assets/downloaded_images/berge.jpg') center/fill no-repeat;
   z-index: -1;
 }
 
@@ -243,7 +243,7 @@ const getProduct = (id) => products.value.find(p => p.id === id)
 .bigteaser {
   padding: 100px 20px;
   text-align: center;
-  background: url('@/assets/downloaded_images/bg-blue.jpg') center/cover;
+  background: url('@/assets/downloaded_images/bg-blue.jpg') center/fill;
   color: #fff;
   position: relative;
   height: 100vh;

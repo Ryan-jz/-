@@ -44,7 +44,7 @@
             <el-image
               v-if="row.image"
               :src="getImageUrl(row.image)"
-              fit="cover"
+              fit="fill"
               style="width: 60px; height: 60px; border-radius: 4px"
               :preview-src-list="[getImageUrl(row.image)]"
             />
@@ -53,9 +53,11 @@
         </el-table-column>
         <el-table-column prop="name" label="产品名称" min-width="200" />
         <el-table-column prop="nameEn" label="英文名称" min-width="180" />
-        <el-table-column label="分类" width="120">
+        <el-table-column label="分类" width="180">
           <template #default="{ row }">
-            {{ getCategoryName(row.categoryId) }}
+            <el-tag v-for="id in getCategoryIds(row)" :key="id" size="small" style="margin-right: 5px">
+              {{ getCategoryName(id) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="价格" width="100">
@@ -65,6 +67,12 @@
         </el-table-column>
         <el-table-column prop="stock" label="库存" width="80" />
         <el-table-column prop="weight" label="规格" width="100" />
+        <el-table-column label="购买链接" width="120">
+          <template #default="{ row }">
+            <el-tag v-if="row.purchaseLink" type="success">已设置</el-tag>
+            <el-tag v-else type="info">未设置</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="viewCount" label="浏览量" width="100" />
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
@@ -114,7 +122,7 @@
           <el-input v-model="formData.name" placeholder="请输入产品名称" />
         </el-form-item>
         <el-form-item label="产品分类" prop="categoryId">
-          <el-select v-model="formData.categoryId" placeholder="请选择分类" style="width: 100%">
+          <el-select v-model="formData.categoryIds" placeholder="请选择分类" multiple style="width: 100%">
             <el-option
               v-for="item in categoryList"
               :key="item.id"
@@ -189,6 +197,9 @@
             placeholder="请输入回收信息"
           />
         </el-form-item>
+        <el-form-item label="购买链接" prop="purchaseLink">
+          <PurchaseLinkEditor v-model="formData.purchaseLink" />
+        </el-form-item>
         
         <el-divider content-position="left">其他设置</el-divider>
         <el-form-item label="排序" prop="sortOrder">
@@ -214,6 +225,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ImageUpload from '@/components/ImageUpload.vue'
 import NutritionEditor from '@/components/NutritionEditor.vue'
+import PurchaseLinkEditor from '@/components/PurchaseLinkEditor.vue'
 import {
   getCategoryList,
   getProductList,
@@ -247,6 +259,7 @@ const formData = reactive({
   subtitle: '',
   description: '',
   categoryId: null,
+  categoryIds: [],
   image: '',
   price: 0,
   stock: 0,
@@ -256,6 +269,7 @@ const formData = reactive({
   usage: '',
   organicCert: '',
   recyclingInfo: '',
+  purchaseLink: '',
   allergenInfo: '',
   storageInfo: '',
   origin: '',
@@ -299,6 +313,13 @@ const getCategoryName = (categoryId) => {
   return category ? category.name : '-'
 }
 
+const getCategoryIds = (row) => {
+  if (row.categoryIds) {
+    return row.categoryIds.split(',').map(id => parseInt(id)).filter(id => id)
+  }
+  return row.categoryId ? [row.categoryId] : []
+}
+
 // 获取完整图片URL
 const getImageUrl = (url) => {
   if (!url) return ''
@@ -330,6 +351,7 @@ const handleCreate = () => {
     subtitle: '',
     description: '',
     categoryId: null,
+    categoryIds: [],
     image: '',
     price: 0,
     stock: 0,
@@ -339,6 +361,7 @@ const handleCreate = () => {
     usage: '',
     organicCert: '',
     recyclingInfo: '',
+    purchaseLink: '',
     allergenInfo: '',
     storageInfo: '',
     origin: '',
@@ -358,6 +381,7 @@ const handleEdit = async (row) => {
     subtitle: row.subtitle,
     description: row.description,
     categoryId: row.categoryId,
+    categoryIds: row.categoryIds ? row.categoryIds.split(',').map(id => parseInt(id)) : (row.categoryId ? [row.categoryId] : []),
     image: row.image,
     price: row.price,
     stock: row.stock,
@@ -367,6 +391,7 @@ const handleEdit = async (row) => {
     usage: row.usage,
     organicCert: row.organicCert || '',
     recyclingInfo: row.recyclingInfo || '',
+    purchaseLink: row.purchaseLink || '',
     allergenInfo: row.allergenInfo || '',
     storageInfo: row.storageInfo || '',
     origin: row.origin || '',
@@ -385,11 +410,17 @@ const handleSubmit = async () => {
     if (!valid) return
     
     try {
+      const submitData = {
+        ...formData,
+        categoryId: formData.categoryIds.length > 0 ? formData.categoryIds[0] : null,
+        categoryIds: formData.categoryIds.join(',')
+      }
+      
       if (formData.id) {
-        await updateProduct(formData)
+        await updateProduct(submitData)
         ElMessage.success('更新成功')
       } else {
-        await createProduct(formData)
+        await createProduct(submitData)
         ElMessage.success('创建成功')
       }
       dialogVisible.value = false

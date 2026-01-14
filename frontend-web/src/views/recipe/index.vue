@@ -21,8 +21,7 @@
     <main class="main-content">
       <div class="recipe-container">
         <div class="container">
-          <h1 class="page-title">食谱</h1>
-          
+       
           <div class="filter-tabs">
             <button 
               v-for="tab in tabs" 
@@ -57,14 +56,17 @@
               </div>
               <div class="recipe-info">
                 <h3>{{ recipe.name }}</h3>
-                <p class="recipe-subtitle">{{ recipe.subtitle }}</p>
-                <div class="recipe-meta">
-                  <span v-if="recipe.cookingTime">
-                    <i class="icon-time"></i> {{ recipe.cookingTime }}分钟
-                  </span>
-                  <span v-if="recipe.difficulty">
-                    <i class="icon-difficulty"></i> {{ getDifficultyText(recipe.difficulty) }}
-                  </span>
+                <div class="ingredients-list" v-if="recipe.ingredients && recipe.ingredients.length">
+                  <div 
+                    v-for="(ingredient, index) in recipe.ingredients.slice(0, 3)" 
+                    :key="index"
+                    class="ingredient-tag"
+                  >
+                    {{ ingredient.name }}
+                  </div>
+                  <div v-if="recipe.ingredients.length > 3" class="ingredient-more">
+                    +{{ recipe.ingredients.length - 3 }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -88,9 +90,9 @@ const activeTag = ref('all')
 const recipes = ref([])
 
 const tabs = [
-  { label: '全部', value: 'all' },
-  { label: '菜肴', value: 'dishes' },
-  { label: '产品', value: 'product' }
+  // { label: '全部', value: 'all' },
+  // { label: '菜肴', value: 'dishes' },
+  // { label: '产品', value: 'product' }
 ]
 
 const dishTags = [
@@ -788,6 +790,152 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   }
 }
 
+// 食谱容器
+.recipe-container {
+  padding: 60px 0;
+  min-height: 600px;
+}
+
+.page-title {
+  font-size: 42px;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+.filter-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  
+  .tab-button {
+    padding: 12px 30px;
+    border: 2px solid #ddd;
+    background: #fff;
+    color: #666;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s;
+    
+    &:hover {
+      border-color: #c41e3a;
+      color: #c41e3a;
+    }
+    
+    &.active {
+      background: #c41e3a;
+      border-color: #c41e3a;
+      color: #fff;
+    }
+  }
+}
+
+.tag-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 40px;
+  
+  .tag-button {
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.3s;
+    
+    &:hover {
+      border-color: #c41e3a;
+      color: #c41e3a;
+    }
+    
+    &.active {
+      background: #c41e3a;
+      border-color: #c41e3a;
+      color: #fff;
+    }
+  }
+}
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.recipe-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .recipe-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      transition: transform 0.3s;
+    }
+  }
+  
+  &:hover .recipe-image img {
+    transform: scale(1.1);
+  }
+  
+  .recipe-info {
+    padding: 20px;
+    
+    h3 {
+      font-size: 18px;
+      color: #333;
+      margin: 0 0 12px 0;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    
+    .ingredients-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .ingredient-tag {
+        padding: 4px 12px;
+        background: #f5f5f5;
+        color: #666;
+        font-size: 12px;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+      }
+      
+      .ingredient-more {
+        padding: 4px 12px;
+        background: #c41e3a;
+        color: #fff;
+        font-size: 12px;
+        border-radius: 12px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
 // 响应式设计
 @media (max-width: 768px) {
   // 容器在移动端减少内边距
@@ -1064,8 +1212,68 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 
   // 背景图片移动端优化
   .home-container {
-    background-size: cover;
+    background-size: fill;
     background-position: center;
+  }
+  
+  // 食谱页面移动端优化
+  .recipe-container {
+    padding: 30px 0;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+  
+  .filter-tabs {
+    gap: 10px;
+    padding: 0 10px;
+    
+    .tab-button {
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+  }
+  
+  .tag-filters {
+    gap: 8px;
+    padding: 0 10px;
+    
+    .tag-button {
+      padding: 6px 15px;
+      font-size: 12px;
+    }
+  }
+  
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  
+  .recipe-card {
+    .recipe-image {
+      height: 150px;
+    }
+    
+    .recipe-info {
+      padding: 12px;
+      
+      h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      
+      .ingredients-list {
+        gap: 6px;
+        
+        .ingredient-tag,
+        .ingredient-more {
+          font-size: 11px;
+          padding: 3px 8px;
+        }
+      }
+    }
   }
 }
 

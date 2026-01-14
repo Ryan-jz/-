@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"gf-admin/api/v1/product"
 	"gf-admin/internal/dao"
 	"gf-admin/internal/model/entity"
 
@@ -102,38 +103,28 @@ func (s *productImpl) DeleteCategory(ctx context.Context, id uint) error {
 }
 
 func (s *productImpl) GetCategoryWithProducts(ctx context.Context, status *int) ([]any, error) {
-	categoryModel := dao.ProductCategory.Ctx(ctx)
+	m := dao.ProductCategory.Ctx(ctx)
 	if status != nil {
-		categoryModel = categoryModel.Where("status", *status)
+		m = m.Where("status", *status)
 	}
 
-	var categories []*entity.ProductCategory
-	err := categoryModel.Order("sort_order ASC, id ASC").Scan(&categories)
+	var categories []product.CategoryWithProducts
+	err := m.Order("sort_order asc, id asc").Scan(&categories)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make([]any, 0, len(categories))
-	for _, category := range categories {
-		var products []*entity.Product
-		dao.Product.Ctx(ctx).
-			Where("category_id", category.Id).
-			Where("status", 1).
-			Order("sort_order ASC, id DESC").
-			Scan(&products)
-
-		result = append(result, g.Map{
-			"id":          category.Id,
-			"name":        category.Name,
-			"slug":        category.Slug,
-			"description": category.Description,
-			"image":       category.Image,
-			"sortOrder":   category.SortOrder,
-			"status":      category.Status,
-			"products":    products,
-		})
+	for i := range categories {
+		pm := dao.Product.Ctx(ctx).Where("category_id", categories[i].Id).Where("status", 1)
+		var products []product.ProductItem
+		pm.Order("sort_order asc, id desc").Scan(&products)
+		categories[i].Products = products
 	}
 
+	result := make([]any, len(categories))
+	for i, v := range categories {
+		result[i] = v
+	}
 	return result, nil
 }
 

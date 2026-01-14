@@ -15,6 +15,7 @@ CREATE TABLE `product_category` (
 CREATE TABLE `product` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '产品ID',
   `category_id` int(11) unsigned NOT NULL COMMENT '分类ID',
+  `category_ids` varchar(255) DEFAULT '' COMMENT '分类ID列表(逗号分隔)',
   `name` varchar(200) NOT NULL DEFAULT '' COMMENT '产品名称',
   `name_en` varchar(200) DEFAULT '' COMMENT '产品英文名称',
   `subtitle` varchar(500) DEFAULT '' COMMENT '副标题',
@@ -30,6 +31,7 @@ CREATE TABLE `product` (
   `features` text COMMENT '产品特点(JSON数组)',
   `organic_cert` varchar(500) DEFAULT '' COMMENT '有机认证图标',
   `recycling_info` text COMMENT '回收信息',
+  `purchase_link` varchar(500) DEFAULT '' COMMENT '购买链接',
   `allergen_info` text COMMENT '过敏原信息',
   `storage_info` varchar(500) DEFAULT '' COMMENT '储存信息',
   `origin` varchar(200) DEFAULT '' COMMENT '产地',

@@ -13,6 +13,7 @@ const routes = [
     component: () => import('@/views/login/index.vue'),
     meta: { title: '登录', requiresAuth: false }
   },
+
   {
     path: '/',
     component: () => import('@/layout/index.vue'),

@@ -2,13 +2,17 @@
   前台根组件
 -->
 <template>
-
   <router-view />
-    <Footer />
+  <Footer v-if="showFooter" />
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Footer from '@/components/Footer.vue'
+
+const route = useRoute()
+const showFooter = computed(() => route.meta.layout !== false)
 </script>
 
 <style>

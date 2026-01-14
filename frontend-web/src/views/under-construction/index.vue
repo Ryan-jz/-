@@ -250,7 +250,7 @@ onUnmounted(() => {
   min-height: 100vh;
   position: relative;
   background-image: url('@/assets/images/background.jpg');
-  background-size: cover;
+  background-size: fill;
   background-position: center;
   background-attachment: fixed;
   

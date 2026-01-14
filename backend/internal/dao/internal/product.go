@@ -22,6 +22,7 @@ type ProductDao struct {
 type ProductColumns struct {
 	Id            string // 产品ID
 	CategoryId    string // 分类ID
+	CategoryIds   string // 分类ID列表(逗号分隔)
 	Name          string // 产品名称
 	NameEn        string // 产品英文名称
 	Subtitle      string // 副标题
@@ -37,6 +38,7 @@ type ProductColumns struct {
 	Features      string // 产品特点(JSON数组)
 	OrganicCert   string // 有机认证图标
 	RecyclingInfo string // 回收信息
+	PurchaseLink  string // 购买链接
 	AllergenInfo  string // 过敏原信息
 	StorageInfo   string // 储存信息
 	Origin        string // 产地
@@ -51,6 +53,7 @@ type ProductColumns struct {
 var productColumns = ProductColumns{
 	Id:            "id",
 	CategoryId:    "category_id",
+	CategoryIds:   "category_ids",
 	Name:          "name",
 	NameEn:        "name_en",
 	Subtitle:      "subtitle",
@@ -66,6 +69,7 @@ var productColumns = ProductColumns{
 	Features:      "features",
 	OrganicCert:   "organic_cert",
 	RecyclingInfo: "recycling_info",
+	PurchaseLink:  "purchase_link",
 	AllergenInfo:  "allergen_info",
 	StorageInfo:   "storage_info",
 	Origin:        "origin",

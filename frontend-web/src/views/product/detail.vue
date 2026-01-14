@@ -1,47 +1,30 @@
-<!--
-  前台首页 - 参考 Bad Reichenhaller 经典垂直布局
--->
 <template>
   <div class="home-container">
-    <!-- 高对比度模式切换按钮 -->
-
-
-    <!-- 页头 -->
     <header class="header">
-      <!-- 顶部栏：Logo、社交媒体、语言切换 -->
       <div class="top-bar">
         <div class="container">
           <router-link to="/" class="logo">
             <img src="@/assets/images/logo.png" class="logo" alt="Brand Logo" />
           </router-link>
- 
         </div>
       </div>
-
-      <!-- 主导航 -->
-      <PrimaryNavigation 
-        :is-nav-fixed="isNavFixed" 
-        @scroll-to-section="scrollToSection"
-      />
     </header>
 
-    <!-- 主内容区 -->
+    <PrimaryNavigation 
+      :is-nav-fixed="isNavFixed" 
+      @scroll-to-section="scrollToSection"
+    />
+
     <main class="main-content">
-
-
       <section v-if="product" class="product-section-area">
         <div class="container">
           <div class="product-detail-layout">
             <div class="product-left">
               <h1 class="product-title">{{ product.name }}</h1>
               
-              <div class="product-badges" v-if="product.organic_cert">
-                <img :src="product.organic_cert" alt="有机认证" class="cert-badge">
-              </div>
+              <div class="product-description" style="white-space: pre-line;" v-html="product.description"></div>
 
-              <div class="product-description" v-html="product.description"></div>
-
-              <div class="product-specs">
+              <div class="product-specs" v-if="product.weight || product.origin || product.ingredients">
                 <div class="spec-item" v-if="product.weight">
                   <strong>规格：</strong>{{ product.weight }}
                 </div>
@@ -53,36 +36,24 @@
                 </div>
               </div>
 
-              <div class="nutrition-section" v-if="nutritionData && nutritionData.length > 0">
-                <h3>营养信息</h3>
-                <p class="nutrition-note">平均营养价值</p>
-                <table class="nutrition-table">
-                  <tbody>
-                    <tr v-for="(item, index) in nutritionData" :key="index">
-                      <td>{{ item.name }}</td>
-                      <td>{{ item.value }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="storage-info" v-if="product.storageInfo">
+                <p><strong>储存：</strong>{{ product.storageInfo }}</p>
               </div>
 
-              <div class="allergen-info" v-if="product.allergen_info">
-                <h3>过敏原信息</h3>
-                <p>{{ product.allergen_info }}</p>
-              </div>
-
-              <div class="storage-info" v-if="product.storage_info">
-                <p><strong>储存：</strong>{{ product.storage_info }}</p>
-              </div>
-
-              <div class="recycling-info" v-if="product.recycling_info">
+              <div class="recycling-info" v-if="product.recyclingInfo">
                 <h3>回收信息</h3>
-                <div v-html="product.recycling_info"></div>
+                <p v-html="product.recyclingInfo.replace(/\\n/g, '<br>')"></p>
               </div>
 
-              <div class="product-actions">
-                <button class="btn-primary">在线购买</button>
-                <button class="btn-secondary">立即购买</button>
+              <div class="product-actions" v-if="purchaseLinks && Object.keys(purchaseLinks).length > 0">
+                <div v-for="(links, platform) in purchaseLinks" :key="platform" class="platform-links">
+                  <h4>{{ platform }}</h4>
+                  <div class="links-row">
+                    <a v-for="(link, index) in links" :key="index" :href="link.url" target="_blank" class="btn-primary">
+                      {{ link.spec }}
+                    </a>
+                  </div>
+                </div>
               </div>
 
               <div class="product-note" v-if="product.usage">
@@ -91,24 +62,60 @@
             </div>
 
             <div class="product-right">
-              <div class="product-images">
+              <div class="product-image-wrapper">
                 <img :src="product.image" :alt="product.name" class="product-image" />
-                <template v-if="productImages && productImages.length > 0">
-                  <img v-for="(img, idx) in productImages" :key="idx" :src="img" :alt="product.name" class="product-image" />
-                </template>
+              </div>
+              <div class="product-badges" v-if="product.organicCert">
+                <img :src="product.organicCert" alt="有机认证" class="cert-badge">
+              </div>
+
+              <div class="collapsible-section" v-if="nutritionData && nutritionData.length > 0">
+                <div class="section-header" @click="nutritionOpen = !nutritionOpen">
+                  <h3>我的营养价值</h3>
+                  <span class="toggle-icon">{{ nutritionOpen ? '−' : '+' }}</span>
+                </div>
+                <div class="section-content" v-show="nutritionOpen">
+                  <p class="nutrition-note">平均营养价值</p>
+                  <table class="nutrition-table">
+                    <tbody>
+                      <tr v-for="(item, index) in nutritionData" :key="index">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.value }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="collapsible-section" v-if="product.allergenInfo">
+                <div class="section-header" @click="allergenOpen = !allergenOpen">
+                  <h3>我的配料</h3>
+                  <span class="toggle-icon">{{ allergenOpen ? '−' : '+' }}</span>
+                </div>
+                <div class="section-content" v-show="allergenOpen">
+                  <p>{{ product.allergenInfo }}</p>
+                </div>
+              </div>
+
+              <div class="collapsible-section">
+                <div class="section-header" @click="retailOpen = !retailOpen">
+                  <h3>我信任的经销商</h3>
+                  <span class="toggle-icon">{{ retailOpen ? '−' : '+' }}</span>
+                </div>
+                <div class="section-content" v-show="retailOpen">
+                  <p>经销商信息</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
     </main>
-
-
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
 import { getProductDetail } from '@/api/product'
@@ -116,6 +123,9 @@ import { getProductDetail } from '@/api/product'
 const route = useRoute()
 const isNavFixed = ref(false)
 const product = ref(null)
+const nutritionOpen = ref(false)
+const allergenOpen = ref(false)
+const retailOpen = ref(false)
 
 const nutritionData = computed(() => {
   if (!product.value?.nutrition) return []
@@ -135,6 +145,15 @@ const productImages = computed(() => {
   }
 })
 
+const purchaseLinks = computed(() => {
+  if (!product.value?.purchaseLink) return {}
+  try {
+    return JSON.parse(product.value.purchaseLink)
+  } catch {
+    return {}
+  }
+})
+
 const loadProduct = async () => {
   try {
     const id = route.params.id
@@ -146,6 +165,12 @@ const loadProduct = async () => {
     console.error('加载产品详情失败:', error)
   }
 }
+
+watch(() => route.params.id, () => {
+  if (route.params.id) {
+    loadProduct()
+  }
+})
 
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId)
@@ -533,6 +558,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 .product-section-area {
   padding: 60px 0;
   
+  
   .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -542,47 +568,45 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   .product-detail-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 80px;
     align-items: start;
   }
 
   .product-left {
     position: sticky;
     top: 100px;
+    padding-top: 40px;
     
     .product-title {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 20px;
+      font-size: 36px;
+      font-weight: 400;
+      margin-bottom: 30px;
       color: #333;
-    }
-
-    .product-badges {
-      margin-bottom: 20px;
-
-      .cert-badge {
-        width: 80px;
-        height: auto;
-      }
+      line-height: 1.3;
     }
     
     .product-description {
-      font-size: 15px;
+      font-size: 16px;
       line-height: 1.8;
       color: #666;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+
+      :deep(p) {
+        margin-bottom: 15px;
+      }
     }
 
     .product-specs {
-      margin-bottom: 25px;
-      padding: 15px;
-      background: #f8f8f8;
-      border-radius: 4px;
+      margin-bottom: 30px;
+
+      background: rgba(255, 255, 255, 0.8);
+    
 
       .spec-item {
-        margin-bottom: 8px;
-        font-size: 14px;
+        margin-bottom: 10px;
+        font-size: 15px;
         color: #666;
+        line-height: 1.6;
 
         &:last-child {
           margin-bottom: 0;
@@ -595,91 +619,190 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     }
 
     .nutrition-section {
-      margin-bottom: 25px;
+      margin-bottom: 30px;
 
       h3 {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 10px;
         color: #333;
+        font-weight: 500;
       }
 
       .nutrition-note {
-        font-size: 13px;
+        font-size: 14px;
         color: #999;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
     }
 
     .allergen-info,
     .storage-info,
     .recycling-info {
-      margin-bottom: 20px;
-      font-size: 14px;
+      margin-bottom: 25px;
+      font-size: 15px;
       color: #666;
+      line-height: 1.6;
 
       h3 {
-        font-size: 16px;
-        margin-bottom: 10px;
+        font-size: 18px;
+        margin-bottom: 12px;
         color: #333;
+        font-weight: 500;
       }
     }
 
     .product-actions {
-      display: flex;
-      gap: 15px;
-      margin: 30px 0;
+      margin: 40px 0;
 
-      button {
-        padding: 12px 30px;
-        font-size: 15px;
+      .platform-links {
+        margin-bottom: 25px;
+
+        h4 {
+          font-size: 16px;
+          color: #333;
+          margin-bottom: 12px;
+          font-weight: 500;
+        }
+
+        .links-row {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+      }
+
+      a {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 14px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         transition: all 0.3s;
-      }
-
-      .btn-primary {
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
         background: #c41e3a;
         color: #fff;
 
         &:hover {
           background: #a01830;
-        }
-      }
-
-      .btn-secondary {
-        background: #fff;
-        color: #c41e3a;
-        border: 2px solid #c41e3a;
-
-        &:hover {
-          background: #c41e3a;
-          color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(196, 30, 58, 0.3);
         }
       }
     }
 
     .product-note {
-      font-size: 13px;
+      font-size: 14px;
       color: #999;
       font-style: italic;
+      line-height: 1.6;
     }
   }
 
   .product-right {
-    overflow-y: auto;
-
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     
-    .product-images {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    
-    .product-image {
+    .product-image-wrapper {
       width: 100%;
-      height: auto;
-      display: block;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 0;
+      
+      .product-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+    }
+
+    .product-badges {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+
+      .cert-badge {
+        width: 100px;
+        height: auto;
+      }
+    }
+
+    .collapsible-section {
+      width: 100%;
+      border-bottom: 1px solid #e0e0e0;
+      margin-top: 20px;
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        cursor: pointer;
+        user-select: none;
+
+        h3 {
+          font-size: 18px;
+          color: #333;
+          margin: 0;
+          font-weight: 500;
+        }
+
+        .toggle-icon {
+          font-size: 24px;
+          color: #666;
+          font-weight: 300;
+        }
+
+        &:hover {
+          h3 {
+            color: #c41e3a;
+          }
+        }
+      }
+
+      .section-content {
+        padding-bottom: 20px;
+        color: #666;
+        font-size: 15px;
+        line-height: 1.6;
+
+        .nutrition-note {
+          font-size: 14px;
+          color: #999;
+          margin-bottom: 15px;
+        }
+
+        .nutrition-table {
+          width: 100%;
+          border-collapse: collapse;
+
+          td {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 0;
+            font-size: 14px;
+
+            &:first-child {
+              color: #666;
+            }
+
+            &:last-child {
+              text-align: right;
+              color: #333;
+              font-weight: 500;
+            }
+          }
+
+          tr:last-child td {
+            border-bottom: none;
+          }
+        }
+      }
     }
   }
 }
@@ -1078,20 +1201,29 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     }
     
     .product-left {
-      position: static;
+      padding-top: 20px;
 
       .product-title {
-        font-size: 24px;
+        font-size: 26px;
       }
 
       .product-description {
-        font-size: 14px;
+        font-size: 15px;
+      }
+
+      .product-actions {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
       }
     }
     
     .product-right {
-      max-height: none;
-      overflow-y: visible;
+      .product-image-wrapper {
+        padding: 20px 0;
+      }
     }
   }
   
@@ -1215,7 +1347,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 
   // 背景图片移动端优化
   .home-container {
-    background-size: cover;
+    background-size: fill;
     background-position: center;
   }
 }

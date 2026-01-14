@@ -38,7 +38,6 @@ func RegisterRecipe(i IRecipe) {
 }
 
 func (s *recipeImpl) GetList(ctx context.Context, keyword string, status *int, page, pageSize int) ([]recipe.ListItem, int, error) {
-	var list []recipe.ListItem
 	m := dao.Recipe.Ctx(ctx)
 
 	if keyword != "" {
@@ -53,22 +52,126 @@ func (s *recipeImpl) GetList(ctx context.Context, keyword string, status *int, p
 		return nil, 0, err
 	}
 
-	err = m.Order("sort_order asc, id desc").Page(page, pageSize).Scan(&list)
-	return list, total, err
+	type RawItem struct {
+		Id             uint   `json:"id"`
+		Name           string `json:"name"`
+		NameEn         string `json:"nameEn"`
+		Subtitle       string `json:"subtitle"`
+		Description    string `json:"description"`
+		Image          string `json:"image"`
+		ImagesStr      string `orm:"images"`
+		IngredientsStr string `orm:"ingredients"`
+		Content        string `json:"content"`
+		CookingTime    int    `json:"cookingTime"`
+		Difficulty     int    `json:"difficulty"`
+		Servings       int    `json:"servings"`
+		ProductIds     string `json:"productIds"`
+		Tags           string `json:"tags"`
+		ViewCount      int    `json:"viewCount"`
+		LikeCount      int    `json:"likeCount"`
+		SortOrder      int    `json:"sortOrder"`
+		Status         int    `json:"status"`
+	}
+
+	var rawList []RawItem
+	err = m.Order("sort_order asc, id desc").Page(page, pageSize).Scan(&rawList)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	list := make([]recipe.ListItem, 0, len(rawList))
+	for _, item := range rawList {
+		listItem := recipe.ListItem{
+			Id:          item.Id,
+			Name:        item.Name,
+			NameEn:      item.NameEn,
+			Subtitle:    item.Subtitle,
+			Description: item.Description,
+			Image:       item.Image,
+			Content:     item.Content,
+			CookingTime: item.CookingTime,
+			Difficulty:  item.Difficulty,
+			Servings:    item.Servings,
+			ProductIds:  item.ProductIds,
+			Tags:        item.Tags,
+			ViewCount:   item.ViewCount,
+			LikeCount:   item.LikeCount,
+			SortOrder:   item.SortOrder,
+			Status:      item.Status,
+		}
+
+		if item.ImagesStr != "" && item.ImagesStr != "null" {
+			json.Unmarshal([]byte(item.ImagesStr), &listItem.Images)
+		}
+		if item.IngredientsStr != "" && item.IngredientsStr != "null" {
+			json.Unmarshal([]byte(item.IngredientsStr), &listItem.Ingredients)
+		}
+
+		list = append(list, listItem)
+	}
+
+	return list, total, nil
 }
 
 func (s *recipeImpl) GetDetail(ctx context.Context, id uint) (*recipe.DetailRes, error) {
-	var detail recipe.DetailRes
-	err := dao.Recipe.Ctx(ctx).Where("id", id).Scan(&detail)
+	type RawDetail struct {
+		Id             uint   `json:"id"`
+		Name           string `json:"name"`
+		NameEn         string `json:"nameEn"`
+		Subtitle       string `json:"subtitle"`
+		Description    string `json:"description"`
+		Image          string `json:"image"`
+		ImagesStr      string `orm:"images"`
+		IngredientsStr string `orm:"ingredients"`
+		Content        string `json:"content"`
+		CookingTime    int    `json:"cookingTime"`
+		Difficulty     int    `json:"difficulty"`
+		Servings       int    `json:"servings"`
+		ProductIds     string `json:"productIds"`
+		Tags           string `json:"tags"`
+		ViewCount      int    `json:"viewCount"`
+		LikeCount      int    `json:"likeCount"`
+		SortOrder      int    `json:"sortOrder"`
+		Status         int    `json:"status"`
+	}
+
+	var rawDetail RawDetail
+	err := dao.Recipe.Ctx(ctx).Where("id", id).Scan(&rawDetail)
 	if err != nil {
 		return nil, err
 	}
-	if detail.Id == 0 {
+	if rawDetail.Id == 0 {
 		return nil, gerror.New("食谱不存在")
 	}
 
+	detail := &recipe.DetailRes{
+		Id:          rawDetail.Id,
+		Name:        rawDetail.Name,
+		NameEn:      rawDetail.NameEn,
+		Subtitle:    rawDetail.Subtitle,
+		Description: rawDetail.Description,
+		Image:       rawDetail.Image,
+		Content:     rawDetail.Content,
+		CookingTime: rawDetail.CookingTime,
+		Difficulty:  rawDetail.Difficulty,
+		Servings:    rawDetail.Servings,
+		ProductIds:  rawDetail.ProductIds,
+		Tags:        rawDetail.Tags,
+		ViewCount:   rawDetail.ViewCount,
+		LikeCount:   rawDetail.LikeCount,
+		SortOrder:   rawDetail.SortOrder,
+		Status:      rawDetail.Status,
+	}
+
+	if rawDetail.ImagesStr != "" && rawDetail.ImagesStr != "null" {
+		json.Unmarshal([]byte(rawDetail.ImagesStr), &detail.Images)
+	}
+	if rawDetail.IngredientsStr != "" && rawDetail.IngredientsStr != "null" {
+		json.Unmarshal([]byte(rawDetail.IngredientsStr), &detail.Ingredients)
+	}
+
 	dao.Recipe.Ctx(ctx).Where("id", id).Increment("view_count", 1)
-	return &detail, nil
+	return detail, nil
 }
 
 func (s *recipeImpl) Create(ctx context.Context, req *recipe.CreateReq) (uint, error) {

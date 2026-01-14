@@ -3,16 +3,7 @@
 -->
 <template>
   <div class="contact-container">
-    <header class="header">
-      <div class="container">
-        <div class="logo">GF Admin</div>
-        <nav class="nav">
-          <router-link to="/">首页</router-link>
-          <router-link to="/about">关于我们</router-link>
-          <router-link to="/contact">联系我们</router-link>
-        </nav>
-      </div>
-    </header>
+   <PageHeader></PageHeader>
 
     <section class="content">
       <div class="container">
@@ -20,15 +11,18 @@
         <div class="contact-info">
           <div class="info-item">
             <h3>📧 邮箱</h3>
-            <p>admin@example.com</p>
+            <p>rps@alpensalz.cn</p>
           </div>
           <div class="info-item">
             <h3>📱 电话</h3>
-            <p>+86 138-0000-0000</p>
+            <p>+86 400 820 7820</p>
+            <p>18101843788</p>
           </div>
           <div class="info-item">
             <h3>📍 地址</h3>
-            <p>中国 北京市 朝阳区</p>
+            <p>Alpen 白金盐上海代表处
+上海虹桥商务区
+闵行盘阳路158弄5号105室</p>
           </div>
         </div>
       </div>
@@ -43,6 +37,7 @@
 </template>
 
 <script setup>
+  import PageHeader from '@/components/PageHeader.vue'
 </script>
 
 <style lang="scss" scoped>

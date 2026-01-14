@@ -1014,7 +1014,7 @@ body {
 .food-item img {
   width: 100%;
   height: 150px;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .food-info {

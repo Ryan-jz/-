@@ -95,11 +95,13 @@
         :rules="formRules"
         label-width="100px"
       >
-        <!-- 国际化内容 -->
-        <el-divider content-position="left">多语言内容</el-divider>
-        <BannerI18nEditor v-model="formData.i18n" />
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="formData.title" placeholder="请输入标题" />
+        </el-form-item>
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="formData.description" type="textarea" :rows="3" placeholder="请输入描述" />
+        </el-form-item>
         
-        <el-divider content-position="left">媒体设置</el-divider>
         <el-form-item label="媒体类型" prop="mediaType">
           <el-radio-group v-model="formData.mediaType">
             <el-radio :label="1">图片</el-radio>
@@ -122,11 +124,10 @@
             <video v-else :src="formData.mediaUrl" class="preview" controls />
           </div>
         </el-form-item>
-        <el-form-item label="按钮链接" prop="buttonLink">
-          <el-input v-model="formData.buttonLink" placeholder="请输入按钮链接" />
+        <el-form-item label="跳转链接" prop="buttonLink">
+          <el-input v-model="formData.buttonLink" placeholder="请输入跳转链接" />
         </el-form-item>
         
-        <el-divider content-position="left">其他设置</el-divider>
         <el-form-item label="位置" prop="position">
           <el-select v-model="formData.position" placeholder="请选择位置">
             <el-option label="首页" value="home" />
@@ -154,8 +155,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getBannerList, createBanner, updateBanner, deleteBanner, getBannerI18n } from '@/api/banner'
-import BannerI18nEditor from '@/components/I18nEditor/BannerI18nEditor.vue'
+import { getBannerList, createBanner, updateBanner, deleteBanner } from '@/api/banner'
 
 const loading = ref(false)
 const bannerList = ref([])
@@ -173,20 +173,18 @@ const dialogTitle = ref('')
 const formRef = ref(null)
 const formData = reactive({
   bannerId: null,
+  title: '',
+  description: '',
   mediaType: 1,
   mediaUrl: '',
   buttonLink: '',
   position: 'home',
   sortOrder: 0,
-  status: 1,
-  i18n: {
-    'zh-CN': { title: '', description: '', buttonText: '' },
-    'en-US': { title: '', description: '', buttonText: '' },
-    'de-DE': { title: '', description: '', buttonText: '' }
-  }
+  status: 1
 })
 
 const formRules = {
+  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   mediaType: [{ required: true, message: '请选择媒体类型', trigger: 'change' }],
   mediaUrl: [{ required: true, message: '请上传媒体文件', trigger: 'change' }],
   position: [{ required: true, message: '请选择位置', trigger: 'change' }]
@@ -197,14 +195,12 @@ const uploadHeaders = {
   Authorization: 'Bearer ' + localStorage.getItem('token')
 }
 
-// 根据媒体类型动态获取上传URL
 const currentUploadUrl = computed(() => {
   return formData.mediaType === 2 
     ? `${baseUrl}/api/v1/upload/video`
     : `${baseUrl}/api/v1/upload/image`
 })
 
-// 获取列表
 const getList = async () => {
   loading.value = true
   try {
@@ -218,13 +214,11 @@ const getList = async () => {
   }
 }
 
-// 查询
 const handleQuery = () => {
   queryParams.page = 1
   getList()
 }
 
-// 重置
 const handleReset = () => {
   queryParams.position = ''
   queryParams.status = null
@@ -232,19 +226,17 @@ const handleReset = () => {
   getList()
 }
 
-// 新增
 const handleAdd = () => {
   dialogTitle.value = '新增轮播图'
   dialogVisible.value = true
 }
 
-// 编辑
 const handleEdit = async (row) => {
   dialogTitle.value = '编辑轮播图'
-  
-  // 复制基本数据
   Object.assign(formData, {
     bannerId: row.bannerId,
+    title: row.title,
+    description: row.description,
     mediaType: row.mediaType,
     mediaUrl: row.mediaUrl,
     buttonLink: row.buttonLink,
@@ -252,27 +244,9 @@ const handleEdit = async (row) => {
     sortOrder: row.sortOrder,
     status: row.status
   })
-  
-  // 获取国际化数据
-  try {
-    const res = await getBannerI18n(row.bannerId)
-    if (res.code === 0 && res.data) {
-      formData.i18n = res.data
-    }
-  } catch (error) {
-    console.error('获取国际化数据失败', error)
-    // 如果获取失败，使用当前行的数据作为默认值
-    formData.i18n = {
-      'zh-CN': { title: row.title || '', description: row.description || '', buttonText: row.buttonText || '' },
-      'en-US': { title: row.title || '', description: row.description || '', buttonText: row.buttonText || '' },
-      'de-DE': { title: row.title || '', description: row.description || '', buttonText: row.buttonText || '' }
-    }
-  }
-  
   dialogVisible.value = true
 }
 
-// 删除
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm('确定要删除该轮播图吗？', '提示', {
@@ -288,22 +262,18 @@ const handleDelete = async (row) => {
   }
 }
 
-// 状态切换
 const handleStatusChange = async (row) => {
   try {
     await updateBanner({
       bannerId: row.bannerId,
+      title: row.title,
+      description: row.description,
       mediaType: row.mediaType,
       mediaUrl: row.mediaUrl,
       buttonLink: row.buttonLink,
       position: row.position,
       sortOrder: row.sortOrder,
-      status: row.status,
-      i18n: row.i18n || {
-        'zh-CN': { title: row.title, description: row.description, buttonText: row.buttonText },
-        'en-US': { title: row.title, description: row.description, buttonText: row.buttonText },
-        'de-DE': { title: row.title, description: row.description, buttonText: row.buttonText }
-      }
+      status: row.status
     })
     ElMessage.success('状态更新成功')
   } catch (error) {
@@ -312,7 +282,6 @@ const handleStatusChange = async (row) => {
   }
 }
 
-// 上传成功
 const handleUploadSuccess = (response) => {
   if (response.code === 0) {
     formData.mediaUrl = response.data.url
@@ -322,7 +291,6 @@ const handleUploadSuccess = (response) => {
   }
 }
 
-// 上传前校验
 const beforeUpload = (file) => {
   const isImage = file.type.startsWith('image/')
   const isVideo = file.type.startsWith('video/')
@@ -347,7 +315,6 @@ const beforeUpload = (file) => {
   return true
 }
 
-// 提交表单
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
@@ -367,22 +334,18 @@ const handleSubmit = async () => {
   }
 }
 
-// 关闭对话框
 const handleDialogClose = () => {
   formRef.value?.resetFields()
   Object.assign(formData, {
     bannerId: null,
+    title: '',
+    description: '',
     mediaType: 1,
     mediaUrl: '',
     buttonLink: '',
     position: 'home',
     sortOrder: 0,
-    status: 1,
-    i18n: {
-      'zh-CN': { title: '', description: '', buttonText: '' },
-      'en-US': { title: '', description: '', buttonText: '' },
-      'de-DE': { title: '', description: '', buttonText: '' }
-    }
+    status: 1
   })
 }
 
@@ -409,7 +372,7 @@ onMounted(() => {
 .preview-image {
   width: 120px;
   height: 80px;
-  object-fit: cover;
+  object-fit: fill;
   border-radius: 4px;
 }
 

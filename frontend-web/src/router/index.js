@@ -8,7 +8,7 @@ const routes = [
     path: '/',
     name: 'Home',
     component: () => import('@/views/home/index.vue'),
-      // component: () => import('@/views/under-construction/index.vue'),
+      //  component: () => import('@/views/under-construction/index.vue'),
     meta: { title: '网站建设中' }
   },
   {
@@ -58,6 +58,12 @@ const routes = [
     name: 'ProductDetail',
     component: () => import('@/views/product/detail.vue'),
     meta: { title: '产品详情' }
+  },
+  {
+    path: '/brand',
+    name: 'Brand',
+    component: () => import('@/views/brand/index.vue'),
+    meta: { title: '品牌', layout: false }
   },
     {
     path: '/alpensalze',

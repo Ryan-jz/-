@@ -9,12 +9,7 @@
           </ul>
         </div>
         
-        <div class="footer-section">
-          <h4>关于我们</h4>
-          <ul>
-            <li><router-link to="/about">品牌故事</router-link></li>
-          </ul>
-        </div>
+ 
         
         <div class="footer-section">
           <h4>客户服务</h4>
@@ -23,15 +18,15 @@
           </ul>
         </div>
         
-        <div class="footer-section">
+        <!-- <div class="footer-section">
           <h4>法律信息</h4>
           <ul>
             <li><a href="#">隐私政策</a></li>
             <li><a href="#">使用条款</a></li>
           </ul>
-        </div>
+        </div> -->
         
-        <div class="footer-section">
+        <!-- <div class="footer-section">
           <h4>关注我们</h4>
           <div class="footer-social">
             <a href="#" aria-label="Facebook">Facebook</a>
@@ -39,7 +34,7 @@
             <a href="#" aria-label="TikTok">TikTok</a>
             <a href="#" aria-label="YouTube">YouTube</a>
           </div>
-        </div>
+        </div> -->
       </div>
       
       <div class="footer-bottom">

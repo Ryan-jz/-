@@ -28,14 +28,13 @@
 
     </header>
 
+    <PrimaryNavigation 
+      :is-nav-fixed="isNavFixed" 
+      @scroll-to-section="scrollToSection"
+    />
+
     <!-- 主内容区 -->
     <main class="main-content">
-    
-
-      <PrimaryNavigation 
-        :is-nav-fixed="isNavFixed" 
-        @scroll-to-section="scrollToSection"
-      />
       <!-- Hero Banner -->
       <section class="hero-banner">
         <div class="container">
@@ -46,21 +45,78 @@
       </section>
 
       <!-- 阿尔卑斯盐产品板块 -->
-      <!-- <section class="product-section-area">
+      <section class="product-section-area">
         <div class="container">
-          <ProductSection
-            category="经典"
-            title="阿尔卑斯盐"
-            description="巴特赖兴哈勒阿尔卑斯盐产品世代以来都是厨房必备。无论过去还是现在，无论您喜欢烹饪什么菜肴，阿尔卑斯盐都是您烹饪和调味的得力助手。在如今注重营养的饮食文化中，我们采用纯正阿尔卑斯盐水制成的蒸发盐，风味恰到好处。此外，它们还添加了碘、氟、叶酸和硒等营养成分，提供人体必需的矿物质。"
-            :products="alpineSaltProducts"
-            :columns="5"
-            max-width="100%"
-            spacing="60px"
-          />
+          <div class="category-grid">
+            <div 
+              v-for="category in categories" 
+              :key="category.id"
+              class="category-card"
+              @click="$router.push(`/product?category=${category.id}`)"
+            >
+              <div class="category-image">
+                <img :src="category.image" :alt="category.name" />
+              </div>
+              <h3 class="category-name">{{ category.name }}</h3>
+            </div>
+          </div>
         </div>
-      </section> -->
+      </section>
 
-    
+      <div class="product-section-area-mar20">
+       <img src="@/assets/images/LY01_BRHDIG-30297-002_Banner_TopMarke_2025__2_.jpg" alt="" srcset="">
+      </div>
+
+            <section class="hero-banner">
+        <div class="container">
+        
+          <div class="title">厨房达人和美食家的</div>
+        <div class="copyTitle">食谱创意</div>
+        </div>
+        
+      </section>
+
+        <section class="product-section-area parallax" data-speed="0.3">
+        <div class="full-width-container">
+          <div class="content-grid">
+            <div class="product-carousel">
+              <div class="carousel-wrapper">
+                <div 
+                  v-for="(product, index) in displayProducts" 
+                  :key="product.id"
+                  :class="['carousel-item', { active: currentProductIndex === index }]"
+                  @click="$router.push(`/product/${product.id}`)"
+                >
+                  <img :src="product.image" :alt="product.name" />
+                  <div class="product-name">{{ product.name }}</div>
+                </div>
+              </div>
+              <div class="carousel-dots">
+                <span 
+                  v-for="(product, index) in displayProducts" 
+                  :key="index"
+                  :class="['dot', { active: currentProductIndex === index }]"
+                  @click="currentProductIndex = index"
+                ></span>
+              </div>
+            </div>
+            
+            <div class="recipe-grid">
+              <div 
+                v-for="recipe in displayRecipes" 
+                :key="recipe.id"
+                class="recipe-item"
+                @click="$router.push(`/recipe/${recipe.id}`)"
+              >
+                <div class="recipe-image-wrapper">
+                  <img :src="recipe.image" :alt="recipe.name" />
+                </div>
+                <div class="recipe-name">{{ recipe.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
  
@@ -73,8 +129,9 @@ import ProductSection from '@/components/ProductSection.vue'
 import Carousel from '@/components/Carousel.vue'
 import { getProductList } from '@/api/product'
 import { getBannerList } from '@/api/banner'
+import { getCategoryList } from '@/api/product'
+import { getRecipeList } from '@/api/recipe'
 import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
-
 // 轮播图数据
 const carouselItems = ref([])
 
@@ -118,30 +175,51 @@ const isNavFixed = ref(false)
 
 // 产品数据
 const alpineSaltProducts = ref([])
+const categories = ref([])
+const displayProducts = ref([])
+const displayRecipes = ref([])
+const currentProductIndex = ref(0)
+
+// 加载分类数据
+const loadCategories = async () => {
+  try {
+    const res = await getCategoryList({ status: 1 })
+    if (res.data && res.data.list) {
+      categories.value = res.data.list
+    }
+  } catch (error) {
+    console.error('加载分类失败:', error)
+  }
+}
 
 // 加载产品数据
 const loadProducts = async () => {
   try {
     const res = await getProductList({
-      categoryId: 2, // 阿尔卑斯盐分类ID
       status: 1,
       page: 1,
-      pageSize: 20
+      pageSize: 4
     })
     if (res.data && res.data.list) {
-      alpineSaltProducts.value = res.data.list
+      displayProducts.value = res.data.list
     }
   } catch (error) {
     console.error('加载产品数据失败:', error)
-    // 如果API失败，使用默认数据
-    alpineSaltProducts.value = [
-      { id: 5, name: '阿尔卑斯粗盐', image: '@/assets/images/02.png' },
-      { id: 6, name: '阿尔卑斯细盐', image: '@/assets/images/02.png' },
-      { id: 7, name: 'AlpenJodSalz + 碘化物', image: '@/assets/images/02.png' },
-      { id: 8, name: 'AlpenJodSalz + 氟化物 + Folsäure', image: '@/assets/images/02.png' },
-      { id: 9, name: '阿尔卑斯盐 + 碘', image: '@/assets/images/02.png' },
-      { id: 10, name: '阿尔卑斯盐袋装', image: '@/assets/images/02.png' }
-    ]
+  }
+}
+
+const loadRecipes = async () => {
+  try {
+    const res = await getRecipeList({
+      status: 1,
+      page: 1,
+      pageSize: 4
+    })
+    if (res.data && res.data.list) {
+      displayRecipes.value = res.data.list
+    }
+  } catch (error) {
+    console.error('加载食谱数据失败:', error)
   }
 }
 
@@ -164,12 +242,36 @@ const scrollToSection = (sectionId) => {
 // 监听滚动事件，实现导航栏固定
 const handleScroll = () => {
   isNavFixed.value = window.scrollY > 100
+  
+  requestAnimationFrame(() => {
+    const scrolled = window.pageYOffset
+    const parallaxSections = document.querySelectorAll('.parallax-section')
+    
+    parallaxSections.forEach(section => {
+      const rect = section.getBoundingClientRect()
+      const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
+      
+      if (scrollPercent >= 0 && scrollPercent <= 1) {
+        const speed = parseFloat(section.dataset.speed) || 0.5
+        const yPos = -(scrollPercent * 100 * speed)
+        section.style.transform = `translateY(${yPos}px)`
+      }
+    })
+  })
 }
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   loadBanners()
   loadProducts()
+  loadCategories()
+  loadRecipes()
+  
+  setInterval(() => {
+    if (displayProducts.value.length > 0) {
+      currentProductIndex.value = (currentProductIndex.value + 1) % displayProducts.value.length
+    }
+  }, 3000)
 })
 
 onUnmounted(() => {
@@ -181,6 +283,15 @@ onUnmounted(() => {
 .main-content {
   width: 100%;
 }
+  .product-section-area-mar20{
+    border-top: 1px solid #eee;
+    margin: 0 100px;
+  padding-top: 100px;
+
+   @media (max-width: 768px) {
+     margin: 0px
+  }
+  }
 .copyTitle{
   color: #b0b2b3;
   text-align: center;
@@ -240,7 +351,11 @@ onUnmounted(() => {
 
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 80vh;
+    height: 514px;
+
+  @media (max-width: 768px) {
+    height: 300px;
+  }
 
   // 顶部栏
 .top-bar {
@@ -295,7 +410,7 @@ onUnmounted(() => {
       }
     }
   }
-  
+
   .language-switcher {
     display: flex;
     align-items: center;
@@ -551,12 +666,180 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 // 产品板块区域
 .product-section-area {
   padding: 60px 0;
+  width: 100%;
+}
 
+.full-width-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
   
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.product-carousel {
+  position: relative;
+  
+  .carousel-wrapper {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    border-radius: 12px;
+    
+    .carousel-item {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.5s;
+      cursor: pointer;
+      
+      &.active {
+        opacity: 1;
+      }
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+      }
+      
+      .product-name {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ddd;
+      cursor: pointer;
+      transition: all 0.3s;
+      
+      &.active {
+        background: #c41e3a;
+        width: 30px;
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  
+  .recipe-item {
+    position: relative;
+    height: 240px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      
+      .recipe-image-wrapper img {
+        transform: scale(1.15);
+      }
+    }
+    
+    .recipe-image-wrapper {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        transition: transform 0.5s ease;
+      }
+    }
+    
+    .recipe-name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 15px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+}
+
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.category-card {
+ flex: 1;
+  cursor: pointer;
+  transition: all 0.3s;
+    gap: 30px;
+  &:hover {
+    transform: translateY(-8px);
+    
+    .category-image img {
+      transform: scale(1.1);
+    }
+  }
+  
+  .category-image {
+    width: 100%;
+
+    overflow: hidden;
+    margin-bottom: 15px;
+
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      transition: transform 0.3s;
+    }
+  }
+  
+  .category-name {
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    font-weight: 600;
   }
 }
 
@@ -1069,7 +1352,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 
   // 背景图片移动端优化
   .home-container {
-    background-size: cover;
+    background-size: fill;
     background-position: center;
   }
 }

@@ -8,6 +8,8 @@
           v-show="index === currentIndex"
           :key="item.id || index"
           class="carousel-item"
+          @click="handleItemClick(item)"
+          :style="{ cursor: item.buttonLink ? 'pointer' : 'default' }"
         >
           <!-- 图片 -->
           <img 
@@ -28,11 +30,11 @@
           ></video>
           
           <div v-if="showContent && (item.title || item.description)" class="carousel-content">
-            <h2 v-if="item.title" class="carousel-title">{{ item.title }}</h2>
-            <p v-if="item.description" class="carousel-description">{{ item.description }}</p>
+            <!-- <h2 v-if="item.title" class="carousel-title">{{ item.title }}</h2> -->
+            <!-- <p v-if="item.description" class="carousel-description">{{ item.description }}</p>
             <button v-if="item.buttonText" class="carousel-button" @click="handleButtonClick(item)">
               {{ item.buttonText }}
-            </button>
+            </button> -->
           </div>
         </div>
       </transition-group>
@@ -133,6 +135,16 @@ const handleButtonClick = (item) => {
   emit('button-click', item)
 }
 
+const handleItemClick = (item) => {
+  if (item.buttonLink) {
+    if (item.buttonLink.startsWith('http')) {
+      window.open(item.buttonLink, '_blank')
+    } else {
+      window.location.href = item.buttonLink
+    }
+  }
+}
+
 const startAutoplay = () => {
   if (props.autoplay && !isAutoplayPaused.value) {
     autoplayTimer = setInterval(() => {
@@ -207,14 +219,14 @@ onUnmounted(() => {
 .carousel-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   display: block;
 }
 
 .carousel-video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   display: block;
 }
 

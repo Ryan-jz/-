@@ -12,6 +12,7 @@ import (
 type Product struct {
 	Id            uint        `json:"id"            orm:"id"             description:"产品ID"`          // 产品ID
 	CategoryId    uint        `json:"categoryId"    orm:"category_id"    description:"分类ID"`          // 分类ID
+	CategoryIds   string      `json:"categoryIds"   orm:"category_ids"   description:"分类ID列表(逗号分隔)"`  // 分类ID列表(逗号分隔)
 	Name          string      `json:"name"          orm:"name"           description:"产品名称"`          // 产品名称
 	NameEn        string      `json:"nameEn"        orm:"name_en"        description:"产品英文名称"`        // 产品英文名称
 	Subtitle      string      `json:"subtitle"      orm:"subtitle"       description:"副标题"`           // 副标题
@@ -27,6 +28,7 @@ type Product struct {
 	Features      string      `json:"features"      orm:"features"       description:"产品特点(JSON数组)"`  // 产品特点(JSON数组)
 	OrganicCert   string      `json:"organicCert"   orm:"organic_cert"   description:"有机认证图标"`        // 有机认证图标
 	RecyclingInfo string      `json:"recyclingInfo" orm:"recycling_info" description:"回收信息"`          // 回收信息
+	PurchaseLink  string      `json:"purchaseLink"  orm:"purchase_link"  description:"购买链接"`          // 购买链接
 	AllergenInfo  string      `json:"allergenInfo"  orm:"allergen_info"  description:"过敏原信息"`         // 过敏原信息
 	StorageInfo   string      `json:"storageInfo"   orm:"storage_info"   description:"储存信息"`          // 储存信息
 	Origin        string      `json:"origin"        orm:"origin"         description:"产地"`            // 产地

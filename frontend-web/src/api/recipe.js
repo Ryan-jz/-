@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getRecipeList(params) {
   return request({
-    url: '/v1/recipe/list',
+    url: '/recipe/list',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getRecipeList(params) {
 
 export function getRecipeDetail(id) {
   return request({
-    url: `/v1/recipe/detail/${id}`,
+    url: `/recipe/detail/${id}`,
     method: 'get'
   })
 }

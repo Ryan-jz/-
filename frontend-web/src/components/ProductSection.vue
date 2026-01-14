@@ -28,7 +28,7 @@
           <div class="product-image-wrapper">
          
             <img 
-             src="@/assets/images/02.png" 
+             :src="product.image" 
               :alt="product.name"
               loading="lazy"
               class="product-image"
@@ -179,7 +179,7 @@ defineProps({
 .product-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   transition: transform 0.3s ease;
 }
 

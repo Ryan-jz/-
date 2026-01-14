@@ -16,7 +16,7 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="image" label="封面" width="100">
           <template #default="{ row }">
-            <el-image v-if="row.image" :src="row.image" style="width: 60px; height: 60px;" fit="cover" />
+            <el-image v-if="row.image" :src="row.image" style="width: 60px; height: 60px;" fit="fill" />
           </template>
         </el-table-column>
         <el-table-column prop="name" label="食谱名称" />
