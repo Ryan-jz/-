@@ -4,20 +4,20 @@
 <template>
   <div class="product-section-wrapper" :style="{ maxWidth: maxWidth, width: '100%', marginBottom: spacing }">
     <!-- 标题区域 -->
-    <div class="flex flex-col text-black justify-start items-start">
+    <div class="flex flex-col text-black justify-center items-center text-center">
       <div class="category-label text-base text-gray-500 mb-2">{{ category }}</div>
       <h2 class="product-title text-2xl  mb-6">{{ title }}</h2>
     </div>
     
     <!-- 描述文字 -->
-    <div class="product-description">
+    <div class="product-description text-center">
       <p class="text-lg leading-relaxed text-gray-700">
         {{ description }}
       </p>
     </div>
 
     <!-- 产品图片网格 -->
-    <div v-if="products && products.length > 0" class="product-grid" :class="`grid-cols-${columns}`">
+    <div v-if="products && products.length > 0" class="product-grid">
       <div 
         v-for="product in products" 
         :key="product.id"
@@ -117,28 +117,16 @@ defineProps({
 
 /* 产品网格 */
 .product-grid {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 24px;
   margin-top: 40px;
-}
-
-.product-grid.grid-cols-3 {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-}
-
-.product-grid.grid-cols-4 {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-}
-
-.product-grid.grid-cols-5 {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-}
-
-.product-grid.grid-cols-6 {
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  justify-content: center;
 }
 
 .product-item {
+  flex: 0 0 auto;
+  width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -168,18 +156,18 @@ defineProps({
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-item:hover .product-image-wrapper {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); */
 }
 
 .product-image {
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 

@@ -8,8 +8,8 @@
       </button>
       
       <ul class="nav-menu" :class="{ open: mobileMenuOpen }">
-        <li class="nav-item has-dropdown">
-          <span class="nav-link">
+        <li class="nav-item has-dropdown" :class="{ active: productMenuOpen }">
+          <span class="nav-link" @click="toggleProductMenu">
             产品
             <span class="arrow">▼</span>
           </span>
@@ -22,12 +22,12 @@
                     :key="category.id" 
                     class="dropdown-column"
                   >
-                    <router-link :to="`/product?category=${category.id}`"  v-if="Array.isArray(category?.products) &&category?.products?.length>0">
+                    <router-link :to="`/product?category=${category.id}`" @click="closeMobileMenu" v-if="Array.isArray(category?.products) &&category?.products?.length>0">
                       <h4 class="dropdown-title">{{ category.name }}</h4>
                     </router-link>
                     <ul v-if="Array.isArray(category?.products) && category?.products?.length>0">
                       <li v-for="product in category.products" :key="product.id">
-                        <router-link :to="`/product/${product.id}`">
+                        <router-link :to="`/product/${product.id}`" @click="closeMobileMenu">
                           {{ product.name }}
                         </router-link>
                       </li>
@@ -39,13 +39,13 @@
           </div>
         </li>
         <li class="nav-item">
-           <router-link to="/recipe">食谱</router-link>
+           <router-link to="/recipe" @click="closeMobileMenu">食谱</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/nachhaltigkeit">可持续性</router-link>
+          <router-link to="/nachhaltigkeit" @click="closeMobileMenu">可持续性</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/brand">品牌</router-link>
+          <router-link to="/brand" @click="closeMobileMenu">品牌</router-link>
         </li>
       </ul>
     </div>
@@ -66,7 +66,19 @@ defineProps({
 const emit = defineEmits(['scroll-to-section'])
 
 const mobileMenuOpen = ref(false)
+const productMenuOpen = ref(false)
 const categories = ref([])
+
+const toggleProductMenu = () => {
+  if (window.innerWidth <= 768) {
+    productMenuOpen.value = !productMenuOpen.value
+  }
+}
+
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false
+  productMenuOpen.value = false
+}
 
 const loadCategories = async () => {
   try {
@@ -88,6 +100,7 @@ const handleClickOutside = (event) => {
   const nav = event.target.closest('.primary-navigation')
   if (!nav && mobileMenuOpen.value) {
     mobileMenuOpen.value = false
+    productMenuOpen.value = false
   }
 }
 
@@ -128,6 +141,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 
 .menu-toggle {
@@ -143,7 +157,7 @@ onUnmounted(() => {
 .menu-toggle span {
   width: 25px;
   height: 3px;
-  background: #333;
+  background: #fff;
   transition: all 0.3s ease;
 }
 
@@ -201,7 +215,7 @@ onUnmounted(() => {
 }
 
 .dropdown-menu {
-  background: white;
+  background: linear-gradient(90deg, #92121B 0%, #D5061C 25%, #D5061C 75%, #92121B 100%);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   overflow: hidden;
@@ -261,10 +275,10 @@ onUnmounted(() => {
 .dropdown-title {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #fff;
   margin: 0 0 15px 0;
   padding-bottom: 10px;
-  border-bottom: 2px solid #e31e24;
+  border-bottom: 2px solid #fff;
 }
 
 .dropdown-column ul {
@@ -278,7 +292,7 @@ onUnmounted(() => {
 }
 
 .dropdown-column a {
-  color: #666;
+  color: #fff;
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s ease;
@@ -287,7 +301,7 @@ onUnmounted(() => {
 }
 
 .dropdown-column a:hover {
-  color: #e31e24;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 @media (max-width: 768px) {
@@ -300,15 +314,15 @@ onUnmounted(() => {
     top: 100%;
     left: 0;
     right: 0;
-    background: white;
+    background: linear-gradient(90deg, #92121B 0%, #D5061C 25%, #D5061C 75%, #92121B 100%);
     flex-direction: column;
     gap: 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
-    order: 2;
     width: 100%;
+    z-index: 9999;
   }
 
   .nav-menu.open {
@@ -318,24 +332,37 @@ onUnmounted(() => {
   .nav-item > a,
   .nav-link {
     padding: 15px 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #fff;
+    color: #fff;
   }
 
-  .dropdown-menu-wrapper {
+  .has-dropdown .dropdown-menu-wrapper {
     position: static;
     transform: none;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
     opacity: 1;
     visibility: visible;
-    padding: 0;
+  }
+
+  .has-dropdown.active .dropdown-menu-wrapper {
+    max-height: 2000px;
   }
 
   .dropdown-menu {
     box-shadow: none;
     border-radius: 0;
+    transform: none;
+    background: linear-gradient(90deg, #92121B 0%, #D5061C 25%, #D5061C 75%, #92121B 100%);
   }
 
   .dropdown-container {
     padding: 0;
+    padding-top: 10px;
+    max-height: 500px;
+    overflow-y: auto;
   }
 
   .dropdown-content {
@@ -346,21 +373,15 @@ onUnmounted(() => {
 
   .dropdown-column {
     padding: 15px 20px;
-    border-bottom: 1px solid #eee;
+    opacity: 1;
+    transform: none;
+    border-bottom: 1px solid #fff;
   }
 
   .dropdown-title {
     font-size: 14px;
     margin-bottom: 10px;
-  }
-
-  .has-dropdown .dropdown-menu-wrapper {
-    display: none;
-  }
-
-  .has-dropdown:hover .dropdown-menu-wrapper,
-  .has-dropdown.active .dropdown-menu-wrapper {
-    display: block;
+    color: #fff;
   }
 }
 </style>

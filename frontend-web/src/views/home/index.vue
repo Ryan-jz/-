@@ -88,8 +88,8 @@
                   @click="$router.push(`/product/${product.id}`)"
                 >
                   <img :src="product.image" :alt="product.name" />
-                  <div class="product-name">{{ product.name }}</div>
                 </div>
+                <div class="product-name">{{ displayProducts[currentProductIndex]?.name }}</div>
               </div>
               <div class="carousel-dots">
                 <span 
@@ -687,18 +687,21 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 
 .product-carousel {
   position: relative;
-  
+
   .carousel-wrapper {
     position: relative;
     width: 100%;
     height: 500px;
     overflow: hidden;
-    border-radius: 12px;
-    
+
+      background-image: url('@/assets/downloaded_images/slideshow-background.jpg');
+      background-size: cover;
     .carousel-item {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
       opacity: 0;
       transition: opacity 0.5s;
       cursor: pointer;
@@ -709,22 +712,23 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
       
       img {
         width: 100%;
-        height: 100%;
-        object-fit: fill;
-      }
-      
-      .product-name {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 20px;
-        background: linear-gradient(transparent, rgba(0,0,0,0.8));
-        color: #fff;
-        font-size: 20px;
-        font-weight: 600;
+        height: auto;
+        object-fit: contain;
       }
     }
+    
+    .product-name {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+  }
   }
   
   .carousel-dots {
@@ -748,17 +752,17 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
       }
     }
   }
-}
+
 
 .recipe-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  
+  gap: 5px;
+  padding-bottom: 20px;
   .recipe-item {
     position: relative;
-    height: 240px;
-    border-radius: 12px;
+    height: 100%;
+
     overflow: hidden;
     cursor: pointer;
     transition: all 0.3s;
@@ -1353,7 +1357,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   // 背景图片移动端优化
   .home-container {
     background-size: fill;
-    background-position: center;
+    // background-position: center;
   }
 }
 

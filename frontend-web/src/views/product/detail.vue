@@ -570,12 +570,23 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     grid-template-columns: 1fr 1fr;
     gap: 80px;
     align-items: start;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
   }
 
   .product-left {
     position: sticky;
     top: 100px;
     padding-top: 40px;
+    
+    @media (max-width: 768px) {
+      position: static;
+      padding-top: 20px;
+    }
+  }
     
     .product-title {
       font-size: 36px;
@@ -805,7 +816,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
       }
     }
   }
-}
+
 
 // 产品板块
 .product-section {
@@ -1348,7 +1359,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   // 背景图片移动端优化
   .home-container {
     background-size: fill;
-    background-position: center;
+    // background-position: center;
   }
 }
 

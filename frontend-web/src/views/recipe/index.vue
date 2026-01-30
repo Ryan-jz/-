@@ -890,7 +890,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
     img {
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: contain;
       transition: transform 0.3s;
     }
   }
@@ -1213,7 +1213,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   // 背景图片移动端优化
   .home-container {
     background-size: fill;
-    background-position: center;
+    // background-position: center;
   }
   
   // 食谱页面移动端优化

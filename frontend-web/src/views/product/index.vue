@@ -26,10 +26,12 @@
       <section class="product-section-area">
         <div class="container">
           <ProductSection
-            category="经典"
-            title="阿尔卑斯盐"
-            description="巴特赖兴哈勒阿尔卑斯盐产品世代以来都是厨房必备。无论过去还是现在，无论您喜欢烹饪什么菜肴，阿尔卑斯盐都是您烹饪和调味的得力助手。在如今注重营养的饮食文化中，我们采用纯正阿尔卑斯盐水制成的蒸发盐，风味恰到好处。此外，它们还添加了碘、氟、叶酸和硒等营养成分，提供人体必需的矿物质。"
-            :products="alpineSaltProducts"
+            v-for="category in categories"
+            :key="category.id"
+            :category="category.name"
+            :title="category.name"
+            :description="category.description"
+            :products="category.products"
             :columns="5"
             max-width="100%"
             spacing="60px"
@@ -48,25 +50,23 @@
 import { ref, onMounted } from 'vue'
 import ProductSection from '@/components/ProductSection.vue'
 import PageHeader from '@/components/PageHeader.vue'
-import { getProductList } from '@/api/product'
+import { getCategoryWithProducts } from '@/api/product'
 
-const products = ref([])
-const alpineSaltProducts = ref([])
+const categories = ref([])
 
-const loadProducts = async () => {
+const loadCategories = async () => {
   try {
-    const res = await getProductList({ status: 1, page: 1, pageSize: 100 })
+    const res = await getCategoryWithProducts({ status: 1 })
     if (res.data?.list) {
-      products.value = res.data.list
-      alpineSaltProducts.value = res.data.list.filter(p => p.categoryId === 2)
+      categories.value = res.data.list
     }
   } catch (error) {
-    console.error('加载产品失败:', error)
+    console.error('加载分类失败:', error)
   }
 }
 
 onMounted(() => {
-  loadProducts()
+  loadCategories()
 })
 </script>
 
@@ -951,7 +951,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   // 背景图片移动端优化
   .home-container {
     background-size: fill;
-    background-position: center;
+    // background-position: center;
   }
 }
 
