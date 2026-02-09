@@ -3,19 +3,7 @@
 -->
 <template>
   <div class="home-container">
-    <!-- 高对比度模式切换按钮 -->
-      <!-- 轮播图 -->
-
-    <!-- 页头 -->
     <header class="header">
-        <Carousel 
-        :items="carouselItems"
-        :autoplay="true"
-        :interval="5000"
-        aspect-ratio="16/9"
-        @button-click="handleCarouselButtonClick"
-      />
-
       <!-- 顶部栏：Logo、社交媒体、语言切换 -->
       <div class="top-bar">
         <div class="container">
@@ -126,48 +114,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import ProductSection from '@/components/ProductSection.vue'
-import Carousel from '@/components/Carousel.vue'
 import { getProductList } from '@/api/product'
-import { getBannerList } from '@/api/banner'
 import { getCategoryList } from '@/api/product'
 import { getRecipeList } from '@/api/recipe'
 import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
-// 轮播图数据
-const carouselItems = ref([])
-
-// 加载轮播图数据
-const loadBanners = async () => {
-  try {
-    const res = await getBannerList({
-      position: 'home',
-      status: 1,
-      page: 1,
-      pageSize: 10
-    })
-    if (res.data && res.data.list) {
-      carouselItems.value = res.data.list.map(item => ({
-        id: item.bannerId,
-        title: item.title,
-        description: item.description,
-        mediaType: item.mediaType,
-        mediaUrl: item.mediaUrl,
-        buttonText: item.buttonText,
-        buttonLink: item.buttonLink
-      }))
-    }
-  } catch (error) {
-    console.error('加载轮播图失败:', error)
-  }
-}
-
-// 轮播图按钮点击事件
-const handleCarouselButtonClick = (item) => {
-  if (item.buttonLink && item.buttonLink.startsWith('#')) {
-    scrollToSection(item.buttonLink.substring(1))
-  } else if (item.buttonLink) {
-    window.location.href = item.buttonLink
-  }
-}
 
 // 状态管理
 const mobileMenuOpen = ref(false)
@@ -262,7 +212,6 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
-  loadBanners()
   loadProducts()
   loadCategories()
   loadRecipes()
@@ -305,14 +254,10 @@ onUnmounted(() => {
   padding: 0 20px;
 }
 
-.home-container {
-
+ .home-container {
      background-image:url('@/assets/images/background.jpg');
-         background-repeat: no-repeat;
-    
+     background-repeat: no-repeat;
      background-size:100% ;
-
-
 }
 
 // 高对比度切换按钮

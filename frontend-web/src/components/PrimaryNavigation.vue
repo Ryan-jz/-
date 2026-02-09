@@ -116,20 +116,24 @@ onUnmounted(() => {
 
 <style scoped>
 .primary-navigation {
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    transition: all 0.3s;
-    height: 68px;
-    border-top: 2px solid #fff;
-    border-bottom: 3px solid #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(90deg, #92121B 0%, #D5061C 25%, #D5061C 75%, #92121B 100%);
+  position: relative;
+  z-index: 999;
+  transition: all 0.3s;
+  height: 68px;
+  border-top: 2px solid #fff;
+  border-bottom: 3px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #92121B 0%, #D5061C 25%, #D5061C 75%, #92121B 100%);
+  width: 100%;
 }
 
 .primary-navigation.affixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
