@@ -13,7 +13,9 @@
  
         </div>
       </div>
-
+      <div class="full-width-image">
+        <img src="@/assets/images/home1.jpg" alt="" srcset="">
+      </div>
     </header>
 
     <PrimaryNavigation 
@@ -118,7 +120,7 @@ import { getProductList } from '@/api/product'
 import { getCategoryList } from '@/api/product'
 import { getRecipeList } from '@/api/recipe'
 import PrimaryNavigation from '@/components/PrimaryNavigation.vue'
-
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 // 状态管理
 const mobileMenuOpen = ref(false)
 const isNavFixed = ref(false)
@@ -254,10 +256,20 @@ onUnmounted(() => {
   padding: 0 20px;
 }
 
- .home-container {
-     background-image:url('@/assets/images/background.jpg');
-     background-repeat: no-repeat;
-     background-size:100% ;
+.home-container {
+  overflow-x: hidden;
+}
+
+.full-width-image {
+  width: 100%;
+  line-height: 0; // 消除图片底部默认间隙
+  
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain; // 保持图片原始比例，不裁剪
+  }
 }
 
 // 高对比度切换按钮
@@ -293,10 +305,11 @@ onUnmounted(() => {
 
 // 页头
 .header {
-
+  background-image: url('@/assets/images/background.jpg');
+  background-size: cover;
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 514px;
+    height: 544px;
 
   @media (max-width: 768px) {
     height: 300px;

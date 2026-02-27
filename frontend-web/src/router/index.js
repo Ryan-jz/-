@@ -65,6 +65,12 @@ const routes = [
     component: () => import('@/views/brand/index.vue'),
     meta: { title: '品牌', layout: false }
   },
+  {
+    path: '/brand/platinum',
+    name: 'PlatinumBrand',
+    component: () => import('@/views/brand/PlatinumBrand.vue'),
+    meta: { title: '白金盐·皇室传承', layout: false }
+  },
     {
     path: '/alpensalze',
     name: 'Alpensalze',
