@@ -187,6 +187,7 @@ const timeline = [
       text-align: left;
     }
 
+    &.right .timeline-dot,
     .timeline-dot {
       left: 10px;
       right: auto;

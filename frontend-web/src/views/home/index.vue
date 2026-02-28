@@ -269,6 +269,11 @@ onUnmounted(() => {
     height: auto;
     display: block;
     object-fit: contain; // 保持图片原始比例，不裁剪
+
+    @media (max-width: 768px) {
+      height: 300px;
+      object-fit: fill; // 移动端固定高度时，使用 cover 填充，避免留白
+    }
   }
 }
 

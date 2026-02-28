@@ -62,7 +62,7 @@ const routes = [
   {
     path: '/brand',
     name: 'Brand',
-    component: () => import('@/views/brand/index.vue'),
+    component: () => import('@/views/brand/PlatinumBrand.vue'),
     meta: { title: '品牌', layout: false }
   },
   {

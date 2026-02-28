@@ -1,10 +1,18 @@
 <template>
   <div class="platinum-brand-page">
-    <nav class="platinum-nav" :class="{ 'scrolled': isScrolled }">
+    <nav class="platinum-nav" :class="{ 'scrolled': isScrolled, 'mobile-menu-open': isMobileMenuOpen }">
       <div class="nav-container">
         <router-link to="/" class="nav-logo">
           <img src="@/assets/images/logo.png" alt="ALPEN SALZ" class="logo-img" />
         </router-link>
+        
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" @click="toggleMobileMenu" aria-label="Menu">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+
         <div class="nav-links">
           <a href="#" @click.prevent="scrollToSection('heritage')">皇室传承</a>
           <a href="#" @click.prevent="scrollToSection('purity')">极境纯净</a>
@@ -259,12 +267,18 @@ import img3 from '@/assets/brand/微信图片_20250408203638.jpg'
 import img4 from '@/assets/brand/2018-08-14 162039.jpg'
 
 const isScrolled = ref(false)
+const isMobileMenuOpen = ref(false)
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50
 }
 
 const scrollToSection = (sectionId) => {
+  isMobileMenuOpen.value = false
   const element = document.getElementById(sectionId)
   if (element) {
     const navHeight = 80 // 导航栏高度
@@ -463,6 +477,28 @@ img { max-width: 100%; display: block; }
   .logo-img {
     filter: none;
   }
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1001;
+  padding: 8px;
+  
+  .hamburger-line {
+    width: 24px;
+    height: 2px;
+    background-color: var(--white);
+    transition: all 0.3s ease;
+  }
+}
+
+.platinum-nav.scrolled .mobile-menu-toggle .hamburger-line {
+  background-color: var(--dark-bg);
 }
 
 .nav-links {
@@ -1125,18 +1161,104 @@ img { max-width: 100%; display: block; }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .hero-title { font-size: 48px; }
+  /* Navigation */
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .nav-container {
+    padding: 0 24px;
+  }
+  
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100vh;
+    background: var(--dark-bg);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    transition: right 0.4s ease;
+    z-index: 999;
+    padding: 40px;
+  }
+  
+  .platinum-nav.mobile-menu-open .nav-links {
+    right: 0;
+  }
+  
+  .nav-links a {
+    color: var(--white) !important;
+    font-size: 24px;
+  }
+
+  /* Toggle Animation */
+  .platinum-nav.mobile-menu-open .mobile-menu-toggle {
+    .hamburger-line:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+    .hamburger-line:nth-child(2) { opacity: 0; }
+    .hamburger-line:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+    
+    .hamburger-line { background-color: var(--white) !important; }
+  }
+
+  /* Hero */
+  .hero-title { font-size: 12vw; line-height: 1.1; }
+  .hero-subtitle { font-size: 12px; letter-spacing: 2px; }
+  .hero-content { padding: 0 24px; }
+  
+  /* Grids */
   .grid-2 { grid-template-columns: 1fr; gap: 40px; }
-  .features-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; gap: 24px; }
   .sustain-grid { flex-direction: column; gap: 40px; }
-  .nav-links { display: none; } /* Hide links on mobile for now */
-  .section { padding: 80px 0; }
+  .scenes-grid { grid-template-columns: 1fr; gap: 24px; }
+  .authority-grid { grid-template-columns: 1fr; gap: 40px; }
+  
+  .section { padding: 60px 0; }
   
   .image-box .year-badge {
     right: 0;
     bottom: -10px;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 14px;
   }
+  
+  /* Timeline */
+  .timeline-track { left: 20px; transform: none; }
+  .timeline-item, .timeline-item.reverse {
+    flex-direction: column;
+    padding: 0 0 0 50px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    
+    .timeline-dot { left: 14px; right: auto; }
+    .timeline-date {
+      position: relative;
+      left: 0;
+      top: 0;
+      right: auto;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    .timeline-content {
+      padding: 0;
+      text-align: left;
+      align-items: flex-start;
+      
+      p { max-width: 100%; }
+    }
+  }
+  
+  /* QA */
+  .qa-header { padding-right: 0; margin-bottom: 40px; }
+  .qa-list { gap: 24px; }
+  
+  /* General Text */
+  .section-title { font-size: 32px; margin-bottom: 24px; }
+  .text-body { font-size: 16px; }
+  .hero-desc { font-size: 18px; }
 }
 </style>
