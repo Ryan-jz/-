@@ -11,7 +11,7 @@ import router from '@/router'
 const getBaseURL = () => {
   // 生产环境使用公网 IP
   if (import.meta.env.MODE === 'production') {
-    return 'http://8.133.175.112:8000/api'
+    return 'http://139.196.155.119:8000/api'
   }
   // 开发环境使用代理
   return '/api'

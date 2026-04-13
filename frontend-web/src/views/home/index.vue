@@ -263,12 +263,12 @@ onUnmounted(() => {
 .full-width-image {
   width: 100%;
   line-height: 0; // 消除图片底部默认间隙
-  
+  height:100%;
   img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    object-fit: contain; // 保持图片原始比例，不裁剪
+    // object-fit: contain; // 保持图片原始比例，不裁剪
 
     @media (max-width: 768px) {
       height: 300px;
@@ -788,7 +788,7 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   
   .category-image {
     width: 100%;
-
+   height: 300px;
     overflow: hidden;
     margin-bottom: 15px;
 

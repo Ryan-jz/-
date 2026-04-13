@@ -97,7 +97,7 @@ func (c *cProduct) CategoryWithProducts(r *ghttp.Request) {
 		return
 	}
 
-	list, err := service.Product().GetCategoryWithProducts(r.Context(), req.Status)
+	list, err := service.Product().GetCategoryWithProducts(r.Context(), req.Status, req.Category)
 	if err != nil {
 		r.Response.WriteJson(g.Map{"code": 1, "message": err.Error()})
 		return

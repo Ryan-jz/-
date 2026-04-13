@@ -41,7 +41,7 @@
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2024 GF Admin. All rights reserved.</p>
+        <!-- <p>&copy; 2024 GF Admin. All rights reserved.</p> -->
       </div>
     </footer>
   </div>

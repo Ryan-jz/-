@@ -11,7 +11,7 @@
         <div class="contact-info">
           <div class="info-item">
             <h3>📧 邮箱</h3>
-            <p>rps@alpensalz.cn</p>
+            <p>csm@alpensalt.com</p>
           </div>
           <div class="info-item">
             <h3>📱 电话</h3>
@@ -30,7 +30,7 @@
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2024 GF Admin. All rights reserved.</p>
+        <!-- <p>&copy; 2024 GF Admin. All rights reserved.</p> -->
       </div>
     </footer>
   </div>

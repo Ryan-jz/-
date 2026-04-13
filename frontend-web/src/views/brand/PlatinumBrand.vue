@@ -37,7 +37,12 @@
 
     <!-- Hero Section -->
     <header class="hero-section" id="hero">
-      <div class="hero-bg" :style="{ backgroundImage: `url(${heroBg})` }"></div>
+      <div
+        class="hero-bg"
+        :style="{
+          backgroundImage: `url(${heroBgLoaded ? heroBg : heroBgPlaceholder})`,
+        }"
+      ></div>
       <div class="hero-content">
         <h1 class="hero-title" data-aos="fade-up">Alpen 白金盐</h1>
         <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
@@ -85,7 +90,13 @@
             </div>
           </div>
           <div class="image-box" data-aos="fade-left">
-            <img :src="heritageImg" alt="Ancient Mine" class="parallax-img" />
+            <img
+              :src="heritageImg"
+              alt="Ancient Mine"
+              class="parallax-img"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
 
@@ -102,11 +113,66 @@
             <div class="timeline-date">{{ item.year }}</div>
             <div class="timeline-content">
               <div class="timeline-image-container" v-if="item.image">
-                <img :src="item.image" :alt="item.title" />
+                <img
+                  :src="item.image"
+                  :alt="item.title"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <h3>{{ item.title }}</h3>
               <p>{{ item.desc }}</p>
             </div>
+          </div>
+        </div>
+
+        <div class="china-market" data-aos="fade-up">
+          <div class="china-market-content">
+            <span class="section-label">CHINA</span>
+            <h2 class="section-title">2017 年<br />白金盐进入中国市场</h2>
+            <p class="text-body">进口商：中盐集团、广盐集团</p>
+            <ul class="china-market-points">
+              <li>广泛上架中高端商超、知名连锁超市、百货公司销售</li>
+              <li>尤其覆盖北上广深地区</li>
+            </ul>
+          </div>
+          <div class="china-market-gallery">
+            <picture class="china-market-photo">
+              <source :srcset="china01WebpSrcset" type="image/webp" />
+              <img
+                :src="china01FallbackSrc"
+                alt="2017 白金盐进入中国市场"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+            <picture class="china-market-photo">
+              <source :srcset="china02WebpSrcset" type="image/webp" />
+              <img
+                :src="china02FallbackSrc"
+                alt="渠道上架展示"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+            <picture class="china-market-photo">
+              <source :srcset="china03WebpSrcset" type="image/webp" />
+              <img
+                :src="china03FallbackSrc"
+                alt="商超渠道展示"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+            <picture class="china-market-photo">
+              <source :srcset="china04WebpSrcset" type="image/webp" />
+              <img
+                :src="china04FallbackSrc"
+                alt="北上广深地区销售"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
         </div>
       </div>
@@ -214,7 +280,12 @@
       <div class="container">
         <div class="grid-2 reverse-mobile">
           <div class="image-box product-showcase" data-aos="zoom-in">
-            <img :src="productImg" alt="Platinum Salt Product" />
+            <img
+              :src="productImg"
+              alt="Platinum Salt Product"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <div class="content-box" data-aos="fade-left">
             <span class="section-label">COLLECTION</span>
@@ -300,7 +371,12 @@
         <div class="bottom-carousel-wrapper" data-aos="fade-right">
           <button class="nav prev" @click="prevBottom">‹</button>
           <div class="bottom-carousel-window">
-            <img :src="currentBottomSrc" alt="History slide" />
+            <img
+              :src="currentBottomSrc"
+              alt="History slide"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <button class="nav next" @click="nextBottom">›</button>
         </div>
@@ -318,7 +394,7 @@
     <footer class="brand-footer">
       <div class="container">
         <div class="footer-logo">ALPENSALZ</div>
-        <p class="copyright">© 2024 Bad Reichenhaller. All Rights Reserved.</p>
+        <!-- <p class="copyright">© 2024 Bad Reichenhaller. All Rights Reserved.</p> -->
       </div>
     </footer>
   </div>
@@ -326,24 +402,34 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import heroBg from "@/assets/brand/banner.png";
-import heritageImg from "@/assets/brand/01_03_promotionslider_brh-keyvisual_desktop_blauundgelb_01.jpg";
-import productImg from "@/assets/brand/20250626袋装盐6-10(4).png";
+import heroBg from "@/assets/brand/banner.png?w=1600&format=webp&quality=75";
+import heroBgPlaceholder from "@/assets/brand/banner.png?w=48&format=webp&quality=30&blur=20&inline";
+import heritageImg from "@/assets/brand/01_03_promotionslider_brh-keyvisual_desktop_blauundgelb_01.jpg?w=1200&format=webp&quality=80";
+import productImg from "@/assets/brand/20250626袋装盐6-10(4).png?w=1200&format=webp&quality=80";
 import interludeBg from "@/assets/images/background.jpg";
 import sustainBg from "@/assets/brand/Salzbergwerk-Berchtesgaden-Highlights.194559e5.e2f073ed.jpg";
 import TimelineSection from "@/components/brand/TimelineSection.vue";
 // Timeline images
-import time1517 from "@/assets/brand/Pressebild-Bergler-Sprengung.9f9680d3.jpg";
-import time1706 from "@/assets/brand/Salzbergwerk-Berchtesgaden-Highlights.194559e5.e2f073ed.jpg";
-import time1960 from "@/assets/brand/Spiegelsee-Familie.b01c4e2b.jpg";
+import time1517 from "@/assets/brand/Pressebild-Bergler-Sprengung.9f9680d3.jpg?w=1200&format=webp&quality=80";
+import time1706 from "@/assets/brand/Salzbergwerk-Berchtesgaden-Highlights.194559e5.e2f073ed.jpg?w=1200&format=webp&quality=80";
+import time1960 from "@/assets/brand/Spiegelsee-Familie.b01c4e2b.jpg?w=1200&format=webp&quality=80";
 import time2025 from "@/assets/brand/20250612白金盐_袋装盐1-5_低钠盐6-8.png";
-import img1 from "@/assets/brand/Spiegelsee-Familie.b01c4e2b.jpg";
-import img2 from "@/assets/brand/2017-12-05 090626.jpg";
-import img3 from "@/assets/brand/微信图片_20250408203638.jpg";
-import img4 from "@/assets/brand/Content-Veranstaltung-Salzkathedrale.feba5f13.jpg";
+import img1 from "@/assets/brand/Spiegelsee-Familie.b01c4e2b.jpg?w=1200&format=webp&quality=80";
+import img2 from "@/assets/brand/2017-12-05 090626.jpg?w=1200&format=webp&quality=80";
+import img3 from "@/assets/brand/微信图片_20250408203638.jpg?w=1200&format=webp&quality=80";
+import img4 from "@/assets/brand/Content-Veranstaltung-Salzkathedrale.feba5f13.jpg?w=1200&format=webp&quality=80";
+import china01WebpSrcset from "@/assets/brand/_20260323134841_1644_1 (1).jpg?w=320;480;640&format=webp&quality=78&as=srcset";
+import china01FallbackSrc from "@/assets/brand/_20260323134841_1644_1 (1).jpg?w=640&format=jpg&quality=82";
+import china02WebpSrcset from "@/assets/brand/_20260323134841_1644_1 (2).jpg?w=320;480;640&format=webp&quality=78&as=srcset";
+import china02FallbackSrc from "@/assets/brand/_20260323134841_1644_1 (2).jpg?w=640&format=jpg&quality=82";
+import china03WebpSrcset from "@/assets/brand/_20260323134841_1644_1 (3).jpg?w=320;480;640&format=webp&quality=78&as=srcset";
+import china03FallbackSrc from "@/assets/brand/_20260323134841_1644_1 (3).jpg?w=640&format=jpg&quality=82";
+import china04WebpSrcset from "@/assets/brand/_20260323134841_1644_1 (4).jpg?w=320;480;640&format=webp&quality=78&as=srcset";
+import china04FallbackSrc from "@/assets/brand/_20260323134841_1644_1 (4).jpg?w=640&format=jpg&quality=82";
 
 const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
+const heroBgLoaded = ref(false);
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -370,6 +456,12 @@ const scrollToSection = (sectionId) => {
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
+
+  const img = new Image();
+  img.src = heroBg;
+  img.onload = () => {
+    heroBgLoaded.value = true;
+  };
 
   // Simple intersection observer for fade-in animations if AOS is not available
   const observer = new IntersectionObserver(
@@ -701,7 +793,7 @@ img {
   width: 100%;
   height: 100%;
   background-position: center;
-  background-image: url("@/assets/brand/40c223a33eee291c.jpg");
+  background-color: #000;
   background-size: cover;
   background-repeat: no-repeat;
   filter: brightness(0.6);
@@ -986,6 +1078,88 @@ img {
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.china-market {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 44px;
+  align-items: start;
+  padding: 32px;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  background: linear-gradient(
+    180deg,
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(255, 255, 255, 1) 55%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+
+.china-market-content .section-title {
+  font-size: 40px;
+  margin-bottom: 18px;
+}
+
+.china-market-content .text-body {
+  margin-bottom: 14px;
+}
+
+.china-market-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+
+  li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 15px;
+    color: var(--text-main);
+    line-height: 1.7;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--gold-primary);
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.16);
+    }
+  }
+}
+
+.china-market-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.china-market-photo {
+  display: block;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+  aspect-ratio: 4 / 3;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transform: scale(1.001);
+    transition: transform 0.6s ease;
   }
 
   &:hover img {
@@ -1535,6 +1709,22 @@ img {
         max-width: 100%;
       }
     }
+  }
+
+  .china-market {
+    margin-top: 50px;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 20px;
+  }
+
+  .china-market-content .section-title {
+    font-size: 32px;
+  }
+
+  .china-market-gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   /* QA */

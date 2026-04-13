@@ -88,6 +88,18 @@ const routes = [
     name: 'UnderConstruction',
     component: () => import('@/views/under-construction/index.vue'),
     meta: { title: '网站建设中' }
+  },
+  {
+    path: '/video',
+    name: 'Video',
+    component: () => import('@/views/video/index.vue'),
+    meta: { title: '视频' }
+  },
+  {
+    path: '/flagship-store',
+    name: 'FlagshipStore',
+    component: () => import('@/views/flagship-store/index.vue'),
+    meta: { title: '旗舰店' }
   }
 ]
 

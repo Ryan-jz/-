@@ -2,13 +2,15 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import UnoCSS from 'unocss/vite'
+import { imagetools } from 'vite-imagetools'
 
 // Vite 配置文件
 export default defineConfig({
   base: './',
   plugins: [
     vue(),
-    UnoCSS()
+    UnoCSS(),
+    imagetools()
   ],
   
   resolve: {
@@ -24,7 +26,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000/api/v1',
+        target: 'https://bad-reichenhaller.com.cn/api/v1',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

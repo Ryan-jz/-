@@ -57,8 +57,9 @@ type CategoryDeleteReq struct {
 type CategoryDeleteRes struct{}
 
 type CategoryWithProductsReq struct {
-	g.Meta `path:"/product/category/with-products" method:"get" tags:"产品" summary:"获取分类及产品列表"`
-	Status *int `json:"status" dc:"状态：1启用 0禁用"`
+	g.Meta   `path:"/product/category/with-products" method:"get" tags:"产品" summary:"获取分类及产品列表"`
+	Status   *int  `json:"status" p:"status" dc:"状态：1启用 0禁用"`
+	Category *uint `json:"category" p:"category" dc:"分类ID（前端路由 query: category）"`
 }
 
 type CategoryWithProductsRes struct {

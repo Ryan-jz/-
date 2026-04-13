@@ -14,7 +14,12 @@
           <div class="timeline-content">
             <div class="timeline-year">{{ item.year }}</div>
             <div class="timeline-image" v-if="item.image">
-              <img :src="item.image" :alt="item.title" />
+              <img
+                :src="item.image"
+                :alt="item.title"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <h3>{{ item.title }}</h3>
             <p>{{ item.desc }}</p>

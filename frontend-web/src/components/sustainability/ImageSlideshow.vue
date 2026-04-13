@@ -76,7 +76,7 @@ const nextSlide = () => {
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 20px;
-
+   object-fit: contain;
     img {
       width: 100%;
       height: 100%;

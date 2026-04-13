@@ -8,8 +8,8 @@
       </button>
       
       <ul class="nav-menu" :class="{ open: mobileMenuOpen }">
-        <li class="nav-item has-dropdown" :class="{ active: productMenuOpen }">
-          <span class="nav-link" @click="toggleProductMenu">
+        <li class="nav-item has-dropdown" :class="{ active: productMenuOpen || isProductRoute }">
+          <span class="nav-link" :class="{ 'is-active': isProductRoute }" @click="toggleProductMenu">
             产品
             <span class="arrow">▼</span>
           </span>
@@ -39,7 +39,7 @@
           </div>
         </li>
         <li class="nav-item">
-           <router-link to="/recipe" @click="closeMobileMenu">食谱</router-link>
+          <router-link to="/recipe" @click="closeMobileMenu">食谱</router-link>
         </li>
         <li class="nav-item">
           <router-link to="/nachhaltigkeit" @click="closeMobileMenu">可持续性</router-link>
@@ -47,13 +47,31 @@
         <li class="nav-item">
           <router-link to="/brand" @click="closeMobileMenu">品牌</router-link>
         </li>
+        <li class="nav-item">
+          <router-link to="/video" @click="closeMobileMenu">视频</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/flagship-store" @click="closeMobileMenu">旗舰店</router-link>
+        </li>
       </ul>
+
+      <a
+        class="de-site-link"
+        href="https://www.bad-reichenhaller.de/de/index.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="跳转德国官网"
+      >
+        <span class="de-site-flag" aria-hidden="true"></span>
+        <span class="de-site-text">DE</span>
+      </a>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { getCategoryWithProducts } from '@/api/product'
 
 defineProps({
@@ -68,6 +86,9 @@ const emit = defineEmits(['scroll-to-section'])
 const mobileMenuOpen = ref(false)
 const productMenuOpen = ref(false)
 const categories = ref([])
+const route = useRoute()
+
+const isProductRoute = computed(() => route.path.startsWith('/product'))
 
 const toggleProductMenu = () => {
   if (window.innerWidth <= 768) {
@@ -175,6 +196,49 @@ onUnmounted(() => {
   justify-content: center;
 }
 
+.de-site-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.de-site-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.de-site-link:active {
+  transform: translateY(1px);
+}
+
+.de-site-link:focus-visible {
+  outline: 2px solid rgba(255, 211, 78, 0.95);
+  outline-offset: 2px;
+}
+
+.de-site-flag {
+  width: 22px;
+  height: 14px;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #000 0 33.33%, #dd0000 33.33% 66.66%, #ffce00 66.66% 100%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+}
+
+.de-site-text {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+}
+
 .nav-item {
   position: relative;
 }
@@ -188,6 +252,26 @@ onUnmounted(() => {
   font-weight: 500;
   cursor: pointer;
   transition: color 0.3s ease;
+}
+
+.nav-item > a.router-link-active,
+.nav-item > a.router-link-exact-active,
+.nav-link.is-active {
+  font-weight: 700;
+  position: relative;
+}
+
+.nav-item > a.router-link-active::after,
+.nav-item > a.router-link-exact-active::after,
+.nav-link.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  height: 2px;
+  background: #ffd34e;
+  border-radius: 999px;
 }
 
 .nav-item > a:hover,
@@ -313,6 +397,11 @@ onUnmounted(() => {
     display: flex;
   }
 
+  .de-site-link {
+    height: 40px;
+    padding: 0 12px;
+  }
+
   .nav-menu {
     position: absolute;
     top: 100%;
@@ -338,6 +427,20 @@ onUnmounted(() => {
     padding: 15px 20px;
     border-bottom: 1px solid #fff;
     color: #fff;
+  }
+
+  .nav-item > a.router-link-active,
+  .nav-item > a.router-link-exact-active,
+  .nav-link.is-active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .nav-item > a.router-link-active::after,
+  .nav-item > a.router-link-exact-active::after,
+  .nav-link.is-active::after {
+    left: 20px;
+    right: 20px;
+    bottom: 6px;
   }
 
   .has-dropdown .dropdown-menu-wrapper {

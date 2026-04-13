@@ -16,7 +16,7 @@ type IProduct interface {
 	CreateCategory(ctx context.Context, req any) (uint, error)
 	UpdateCategory(ctx context.Context, req any) error
 	DeleteCategory(ctx context.Context, id uint) error
-	GetCategoryWithProducts(ctx context.Context, status *int) ([]any, error)
+	GetCategoryWithProducts(ctx context.Context, status *int, categoryId *uint) ([]any, error)
 	GetList(ctx context.Context, categoryId *uint, keyword string, status *int, page, pageSize int) ([]any, int, error)
 	GetDetail(ctx context.Context, id uint) (any, error)
 	Create(ctx context.Context, req any) (uint, error)
@@ -102,10 +102,13 @@ func (s *productImpl) DeleteCategory(ctx context.Context, id uint) error {
 	return err
 }
 
-func (s *productImpl) GetCategoryWithProducts(ctx context.Context, status *int) ([]any, error) {
+func (s *productImpl) GetCategoryWithProducts(ctx context.Context, status *int, categoryId *uint) ([]any, error) {
 	m := dao.ProductCategory.Ctx(ctx)
 	if status != nil {
 		m = m.Where("status", *status)
+	}
+	if categoryId != nil {
+		m = m.Where("id", *categoryId)
 	}
 
 	var categories []product.CategoryWithProducts
@@ -115,7 +118,9 @@ func (s *productImpl) GetCategoryWithProducts(ctx context.Context, status *int) 
 	}
 
 	for i := range categories {
-		pm := dao.Product.Ctx(ctx).Where("category_id", categories[i].Id).Where("status", 1)
+		pm := dao.Product.Ctx(ctx).
+			Where("status", 1).
+			Where("FIND_IN_SET(CAST(? AS CHAR), REPLACE(REPLACE(category_ids, '，', ','), ' ', ''))", categories[i].Id)
 		var products []product.ProductItem
 		pm.Order("sort_order asc, id desc").Scan(&products)
 		categories[i].Products = products
@@ -132,7 +137,7 @@ func (s *productImpl) GetList(ctx context.Context, categoryId *uint, keyword str
 	model := dao.Product.Ctx(ctx)
 
 	if categoryId != nil {
-		model = model.Where("category_id", *categoryId)
+		model = model.Where("FIND_IN_SET(CAST(? AS CHAR), REPLACE(REPLACE(category_ids, '，', ','), ' ', ''))", *categoryId)
 	}
 	if keyword != "" {
 		model = model.WhereLike("name", "%"+keyword+"%")

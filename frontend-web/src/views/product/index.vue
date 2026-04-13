@@ -14,10 +14,63 @@
       <!-- Hero Banner -->
       <section class="hero-banner">
         <div class="container">
-          <div class="title">最精妙的盐渍和调味</div>
-          <div class="hero-content">
-            <p class="subtitle">好东西需要时间：我们珍贵的阿尔卑斯山盐形成于大约2.5亿年前原始海洋蒸发之时。自那时起，这些盐就一直受到保护，静静地躺在巴伐利亚阿尔卑斯山基岩深处。这真是大自然的馈赠！</p>
-            <p class="subtitle">我们从纯净的阿尔卑斯山盐水中提取珍贵的盐。这种盐水是由清澈的山泉水缓慢溶解岩石中的盐分而形成的。它是巴特赖兴哈尔各种盐产品的天然来源。这些产品包括添加或不添加维生素和微量元素的阿尔卑斯山盐、芳香调味盐以及各种特色盐。</p>
+          <div class="hero-panel">
+            <div class="hero-kicker">来自阿尔卑斯山的珍宝！</div>
+            <h1 class="hero-title">
+              Bad Reichenhaller
+              <span class="hero-title-sub">阿尔卑斯山白金盐</span>
+            </h1>
+
+            <div class="hero-subline">
+              <span class="hero-en">Treasures from the ALPS</span>
+              <span class="hero-dot">·</span>
+              <span class="hero-cn">大自然的恩赐</span>
+            </div>
+
+            <div class="hero-badges">
+              <span class="hero-badge hero-badge-strong">Alpen 白金盐·德国 No.1</span>
+              <span class="hero-badge">食盐中的钻石</span>
+              <span class="hero-badge hero-badge-outline">纯净度 99.9% ｜ 越纯净越健康</span>
+            </div>
+
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <p>源自阿尔卑斯山的白金（盐），完美生态，无价之宝！</p>
+                <p>原始海洋蒸发 2.5 亿年前产生，食盐沉睡在阿尔卑斯山深处，千百年来，宝贵的盐随山泉水缓释流出，形成天然纯净珍贵的高山盐水。</p>
+                <p>德国西南盐业股份公司是德国最大的制盐企业，德国市场领导品牌，500 年精湛技艺传承。</p>
+                <p>贝希特斯加登盐矿，建于 1517 年，也是德国最重要的旅游景点之一。</p>
+              </div>
+
+              <div class="hero-facts">
+                <div class="facts-lead">每个德国家庭都知道的优质产品！高品质健康生活从这里开始！</div>
+                <ul class="facts">
+                  <li>
+                    <span class="fact-num">60%+</span>
+                    <span class="fact-label">德国市场份额</span>
+                  </li>
+                  <li>
+                    <span class="fact-num">90%+</span>
+                    <span class="fact-label">品牌知名度</span>
+                  </li>
+                  <li>
+                    <span class="fact-text">原始海洋蒸发储存在阿尔卑斯山的珍宝</span>
+                  </li>
+                </ul>
+
+                <div class="essentials">
+                  <div class="essentials-head">
+                    <span class="essentials-title">阳光·空气·水·盐</span>
+                    <span class="essentials-sub">每日健康必须</span>
+                  </div>
+                  <div class="essentials-body">食盐（NaCl）是人类第四个维持生命的要素，每日 5g，不可缺少，不可替代！</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-footer">
+              <div class="hero-slogan">少吃盐·吃好盐！世界卫生组织倡导减盐丨您的“盐”值关系到全家健康！</div>
+              <div class="hero-cta">把健康带回家！Alpen 白金盐·赋予您有滋有味的健康生活！</div>
+            </div>
           </div>
         </div>
       </section>
@@ -47,18 +100,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import ProductSection from '@/components/ProductSection.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { getCategoryWithProducts } from '@/api/product'
 
+const route = useRoute()
 const categories = ref([])
 
-const loadCategories = async () => {
+const categoryId = computed(() => {
+  const categoryParam = Array.isArray(route.query.category)
+    ? route.query.category[0]
+    : route.query.category
+  const id = typeof categoryParam === 'string' && categoryParam !== '' ? Number(categoryParam) : NaN
+  return Number.isFinite(id) ? id : undefined
+})
+
+let loadSeq = 0
+
+const loadCategories = async (id) => {
   try {
-    const res = await getCategoryWithProducts({ status: 1 })
+    const seq = ++loadSeq
+
+    const params = { status: 1 }
+    if (Number.isFinite(id)) {
+      params.category = id
+    }
+
+    const res = await getCategoryWithProducts(params)
+    if (seq !== loadSeq) return
     if (res.data?.list) {
-      categories.value = res.data.list
+      categories.value = res.data.list.filter(item => item.id===categoryId.value)
     }
   } catch (error) {
     console.error('加载分类失败:', error)
@@ -66,7 +139,7 @@ const loadCategories = async () => {
 }
 
 onMounted(() => {
-  loadCategories()
+  loadCategories(categoryId.value)
 })
 </script>
 
@@ -389,43 +462,241 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
 
 // Hero Banner
 .hero-banner {
-
-  padding-top:130px;
-  color: #000;
+  padding-top: 130px;
+  padding-bottom: 24px;
+  color: #0e0e10;
   position: relative;
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
 
+  .hero-panel {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 44px 48px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 26px 55px rgba(18, 22, 28, 0.14),
+      0 2px 0 rgba(255, 255, 255, 0.55) inset;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -40% -30% auto -30%;
+      height: 280px;
+      background:
+        radial-gradient(closest-side, rgba(196, 30, 58, 0.16), rgba(196, 30, 58, 0) 72%),
+        radial-gradient(closest-side, rgba(10, 90, 140, 0.12), rgba(10, 90, 140, 0) 70%);
+      pointer-events: none;
+      filter: blur(2px);
+      opacity: 0.95;
+    }
   }
-  
-  .title {
-    font-size: 2.57143em;
-    margin-top: 20px;
-    margin-bottom: 42px;
-    color: #000;
+
+  .hero-kicker {
+    position: relative;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(14, 14, 16, 0.62);
+    margin-bottom: 14px;
+  }
+
+  .hero-title {
+    position: relative;
+    margin: 0;
+    font-size: clamp(34px, 4.4vw, 56px);
+    line-height: 1.06;
+    font-weight: 760;
+    letter-spacing: -0.02em;
     text-align: center;
   }
-  
-  .hero-content {
-    max-width: 1000px;
-    margin: 0 auto;
-    
-    h1 {
-      font-size: 56px;
-      margin-bottom: 20px;
-      font-weight: 700;
+
+  .hero-title-sub {
+    display: block;
+    margin-top: 10px;
+    font-size: clamp(18px, 2.35vw, 28px);
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    color: rgba(14, 14, 16, 0.86);
+  }
+
+  .hero-subline {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    color: rgba(14, 14, 16, 0.62);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+  }
+
+  .hero-en {
+    font-weight: 650;
+  }
+
+  .hero-dot {
+    opacity: 0.5;
+  }
+
+  .hero-badges {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    line-height: 1;
+    color: rgba(14, 14, 16, 0.76);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .hero-badge-strong {
+    background: rgba(196, 30, 58, 0.1);
+    border-color: rgba(196, 30, 58, 0.22);
+    color: #7b0d1a;
+    font-weight: 700;
+  }
+
+  .hero-badge-outline {
+    background: rgba(255, 255, 255, 0.45);
+    color: rgba(14, 14, 16, 0.74);
+  }
+
+  .hero-grid {
+    position: relative;
+    margin-top: 26px;
+    display: grid;
+    grid-template-columns: 1.35fr 0.95fr;
+    gap: 26px;
+    align-items: start;
+  }
+
+  .hero-copy {
+    p {
+      margin: 0 0 14px;
+      font-size: 15px;
+      line-height: 1.85;
+      color: rgba(14, 14, 16, 0.82);
     }
-    
-    .subtitle {
-      font-size: 14px;
-      color: #000;
-      text-align: left;
-      line-height: 28px;
-      margin-bottom: 26px;
+  }
+
+  .hero-facts {
+    padding: 18px 18px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .facts-lead {
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 650;
+    color: rgba(14, 14, 16, 0.86);
+    margin-bottom: 12px;
+  }
+
+  .facts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+
+    li {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(0, 0, 0, 0.06);
     }
+  }
+
+  .fact-num {
+    flex: none;
+    font-size: 24px;
+    font-weight: 780;
+    letter-spacing: -0.02em;
+    color: #c41e3a;
+  }
+
+  .fact-label,
+  .fact-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(14, 14, 16, 0.76);
+  }
+
+  .essentials {
+    margin-top: 14px;
+    padding: 14px 14px 12px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(10, 90, 140, 0.09), rgba(10, 90, 140, 0.04));
+    border: 1px solid rgba(10, 90, 140, 0.14);
+  }
+
+  .essentials-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .essentials-title {
+    font-size: 14px;
+    font-weight: 780;
+    color: rgba(14, 14, 16, 0.86);
+    letter-spacing: 0.08em;
+  }
+
+  .essentials-sub {
+    font-size: 13px;
+    color: rgba(14, 14, 16, 0.6);
+  }
+
+  .essentials-body {
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgba(14, 14, 16, 0.78);
+  }
+
+  .hero-footer {
+    position: relative;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: grid;
+    gap: 10px;
+  }
+
+  .hero-slogan {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(14, 14, 16, 0.82);
+  }
+
+  .hero-cta {
+    font-size: 15px;
+    line-height: 1.65;
+    font-weight: 780;
+    color: rgba(14, 14, 16, 0.92);
   }
 }
 
@@ -784,35 +1055,61 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   // Hero Banner 移动端优化
   .hero-banner {
   
-    padding: 40px 0;
-    
-    .container {
-      padding: 0 15px;
+    padding-top: 110px;
+    padding-bottom: 16px;
+
+    .hero-panel {
+      padding: 26px 18px;
+      border-radius: 20px;
     }
-    
-    .title {
-      font-size: 1.8em !important;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      line-height: 1.3;
-      text-align: center;
+
+    .hero-kicker {
+      font-size: 12px;
+      margin-bottom: 10px;
     }
-    
-    .hero-content {
-      max-width: 100%;
-      padding: 0 10px;
-      
-      h1 {
-        font-size: 28px !important;
-        line-height: 1.3;
-      }
-      
-      .subtitle {
-        font-size: 14px;
-        line-height: 1.6;
-        text-align: left;
-        margin-bottom: 20px;
-      }
+
+    .hero-title {
+      font-size: 32px;
+    }
+
+    .hero-title-sub {
+      font-size: 18px;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-subline {
+      font-size: 13px;
+      gap: 8px;
+    }
+
+    .hero-badges {
+      justify-content: flex-start;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .hero-copy p {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .hero-facts {
+      padding: 14px;
+    }
+
+    .facts li {
+      padding: 9px 10px;
+    }
+
+    .fact-num {
+      font-size: 22px;
+    }
+
+    .hero-cta {
+      font-size: 14px;
     }
   }
 
@@ -968,24 +1265,39 @@ background: linear-gradient( 90deg, #92121B 0%, #D5061C 25%, #D5061C 75%,#92121B
   }
 
   .hero-banner {
-    padding-top:130px;
-    
-    .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 0 10px;
+    padding-top: 104px;
+    padding-bottom: 14px;
+
+    .hero-panel {
+      padding: 22px 14px;
+      border-radius: 18px;
     }
-    
-    .title {
-      font-size: 1.5em !important;
+
+    .hero-title {
+      font-size: 28px;
+      text-align: left;
     }
-    
-    .hero-content {
-      .subtitle {
-        font-size: 13px;
-      }
+
+    .hero-title-sub {
+      font-size: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-subline {
+      justify-content: flex-start;
+    }
+
+    .hero-badges {
+      justify-content: flex-start;
+    }
+
+    .hero-badge {
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+
+    .fact-num {
+      font-size: 20px;
     }
   }
 

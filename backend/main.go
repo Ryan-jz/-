@@ -12,6 +12,7 @@ import (
 	"gf-admin/internal/cmd"
 )
 
+// CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bai-jin-yan-api-linux-amd64
 // main 主函数，应用程序入口
 // 创建上下文并运行命令行应用
 func main() {

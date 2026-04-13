@@ -52,7 +52,7 @@
       </el-form>
       
       <div class="login-tips">
-        <p>默认账号：admin / admin123</p>
+        <p>默认账号：admin / admin</p>
       </div>
     </div>
   </div>
@@ -76,7 +76,7 @@ const loading = ref(false)
 // 登录表单数据
 const loginForm = reactive({
   username: 'admin',
-  password: 'admin123'
+  password: 'admin'
 })
 
 // 表单验证规则

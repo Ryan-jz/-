@@ -121,7 +121,7 @@
         <el-form-item label="产品名称" prop="name">
           <el-input v-model="formData.name" placeholder="请输入产品名称" />
         </el-form-item>
-        <el-form-item label="产品分类" prop="categoryId">
+        <el-form-item label="产品分类" prop="categoryIds">
           <el-select v-model="formData.categoryIds" placeholder="请选择分类" multiple style="width: 100%">
             <el-option
               v-for="item in categoryList"
@@ -221,7 +221,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ImageUpload from '@/components/ImageUpload.vue'
 import NutritionEditor from '@/components/NutritionEditor.vue'
@@ -277,9 +277,15 @@ const formData = reactive({
   status: 1
 })
 
+const validateCategoryIds = (rule, value, callback) => {
+  const ok = Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ''
+  if (ok) callback()
+  else callback(new Error('请选择产品分类'))
+}
+
 // 表单验证规则
 const formRules = {
-  categoryId: [{ required: true, message: '请选择产品分类', trigger: 'change' }],
+  categoryIds: [{ validator: validateCategoryIds, trigger: 'change' }],
   image: [{ required: true, message: '请上传产品主图', trigger: 'change' }]
 }
 
@@ -369,6 +375,7 @@ const handleCreate = () => {
     status: 1
   })
   dialogVisible.value = true
+  nextTick(() => formRef.value?.clearValidate())
 }
 
 // 编辑
@@ -400,6 +407,7 @@ const handleEdit = async (row) => {
   })
   
   dialogVisible.value = true
+  nextTick(() => formRef.value?.clearValidate())
 }
 
 // 提交

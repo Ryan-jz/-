@@ -1,0 +1,38 @@
+# GoFrame 应用配置文件
+
+# 服务器配置
+server:
+  address: ":8000"
+  url: "http://139.196.155.119:8000"  # 服务器访问地址，用于生成完整的文件URL
+  dumpRouterMap: true
+  routeOverWrite: true
+  accessLogEnabled: true
+  sessionIdName: "gfsessionid"
+  sessionMaxAge: "24h"
+  logStdout: true
+  errorStack: true
+  errorLogEnabled: true
+  errorLogPattern: "error-{Ymd}.log"
+  accessLogPattern: "access-{Ymd}.log"
+
+# 数据库配置
+database:
+  default:
+    link: "mysql:root:MyS@Ql2026!Rds@tcp(139.196.155.119:3306)/bai_jin_yan"
+    debug: true
+    charset: "utf8mb4"
+    dryRun: false
+    maxIdle: 10
+    maxOpen: 100
+    maxLifetime: "30s"
+
+# 日志配置
+logger:
+  path: "./temp/logs"
+  level: "all"
+  stdout: true
+
+# JWT配置
+jwt:
+  signingKey: "gf-admin-secret-key-2024"
+  expireTime: 86400
